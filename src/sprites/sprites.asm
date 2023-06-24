@@ -472,6 +472,22 @@ sprite52CathedralDomeRocketJet2:
 sprite53MusicTypeCursor:
         .byte   $00,$27,$00,$00,$00,$27,$40,$4A
         .byte   $FF
+.ifdef PENGUIN
+sprite54Penguin1:
+        .byte   $E8,$A9,$03,$00,$E8,$AA,$03,$08
+        .byte   $F0,$B8,$03,$F8,$F0,$B9,$03,$00
+        .byte   $F0,$BA,$03,$08,$F8,$C9,$03,$00
+        .byte   $F8,$CA,$03,$08,$F8,$CB,$03,$10
+        .byte   $00,$D9,$03,$00,$00,$DA,$03,$08
+        .byte   $FF
+sprite55Penguin2:
+        .byte   $E8,$AD,$03,$00,$E8,$AE,$03,$08
+        .byte   $F0,$BC,$03,$F8,$F0,$BD,$03,$00
+        .byte   $F0,$BE,$03,$08,$F8,$CD,$03,$00
+        .byte   $F8,$CE,$03,$08,$F8,$CF,$03,$10
+        .byte   $00,$DD,$03,$00,$00,$DE,$03,$08
+        .byte   $FF
+.else
 sprite54Penguin1:
         .byte   $E8,$A9,$21,$00,$E8,$AA,$21,$08
         .byte   $F0,$B8,$21,$F8,$F0,$B9,$21,$00
@@ -486,3 +502,4 @@ sprite55Penguin2:
         .byte   $F8,$CE,$21,$08,$F8,$CF,$21,$10
         .byte   $00,$DD,$21,$00,$00,$DE,$21,$08
         .byte   $FF
+.endif

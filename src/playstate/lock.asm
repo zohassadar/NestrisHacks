@@ -195,9 +195,15 @@ playState_checkForCompletedRows:
         lda     garbageLines,y
         clc
         adc     pendingGarbageInactivePlayer
+.ifndef PENGUIN
+        ; removes 2 bytes to account for additional 2 bytes below
         sta     pendingGarbageInactivePlayer
+.endif
         lda     #$00
         sta     vramRow
+.ifdef PENGUIN
+        lda     #$14
+.endif
         sta     rowY
         lda     completedLines
         cmp     #$04
