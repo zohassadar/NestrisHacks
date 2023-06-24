@@ -110,7 +110,7 @@ if command -v sha1sum &>/dev/null; then
     # sha1sum tetris.nes
 elif command -v shasum &>/dev/null; then
     # mac support
-    shasum tetris.nes
+    shasum -c tetris.sha1
 else
     echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
 fi
