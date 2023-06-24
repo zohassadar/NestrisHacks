@@ -15,6 +15,43 @@ playState_lockTetrimino:
         lda     vramRow
         cmp     #$20
         bmi     @ret
+.ifdef WALLHACK2
+        jmp     @skipOverWallhack2Padding
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00
+
+@skipOverWallhack2Padding:
+        ldy     currentPiece
+        ldx     multBy12Table,y
+        lda     #$04
+        sta     generalCounter3 ; Decrement for all 4 minos
+@lockSquare:
+        lda     tetriminoY
+        clc
+        adc     orientationTable,x
+        asl
+        sta     generalCounter
+        asl
+        asl
+        clc
+        adc     generalCounter
+        sta     generalCounter
+        inx
+        inx
+        lda     tetriminoX
+        clc
+        adc     orientationTable,x
+        tay
+        lda     effectiveTetriminoXTable,y
+        clc
+        adc     generalCounter
+        tay
+        dex
+        lda     orientationTable,x
+        sta     playfield,y
+        dec     generalCounter2
+        inx
+.else
         lda     tetriminoY
         asl     a
         sta     generalCounter
@@ -57,6 +94,7 @@ playState_lockTetrimino:
         tay
         lda     generalCounter5
         sta     (playfieldAddr),y
+.endif
         inx
         dec     generalCounter3
         bne     @lockSquare

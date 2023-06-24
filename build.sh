@@ -4,9 +4,9 @@ set -e
 compile_flags=()
 
 hacks=(
+    "anydas"
     "penguin"
     "wallhack2"
-    "anydas"
     )
 
 help () {
@@ -23,7 +23,10 @@ help () {
 }
 
 omit_ud1 () {
-    compile_flags+=("-D OMIT_UD1")
+    # Add flag if it hasn't been added already
+    if ! [[ ${compile_flags[*]} == *"-D OMIT_UD1"* ]]; then
+        compile_flags+=("-D OMIT_UD1")
+    fi
     }
 
 while getopts "vH:Bh" flag; do
@@ -31,19 +34,19 @@ while getopts "vH:Bh" flag; do
     v) set -x ;;
     H)
         case "${OPTARG}" in 
+        "anydas")
+            echo "Anydas enabled"
+            omit_ud1
+            compile_flags+=("-D ANYDAS")
+            ;;
         "penguin")
             echo "Penguin Line Clear enabled"
             compile_flags+=("-D PENGUIN")
             ;;
         "wallhack2")
             echo "Wallhack2 enabled"
-            compile_flags+=("-D WALLHACK2")
-            ;;
-        "anydas")
-            echo "Anydas enabled"
             omit_ud1
-            compile_flags+=("-D ANYDAS")
-            
+            compile_flags+=("-D WALLHACK2")
             ;;
         *)
             echo "${OPTARG} is an invalid hack"
@@ -159,6 +162,7 @@ else
         echo "Labels line up"
     else
         echo "Labels do not line up!"
+        diff -y labels.txt <(bash tools/select_labels.sh)
     fi
 fi
 

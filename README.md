@@ -35,6 +35,15 @@ The line clearing animation has been replaced with a penguin that clears the blo
     build.sh -H penguin
 
 
+## Wallhack 2
+
+![Wallhack2](./assets/Wallhack2.gif)
+
+Provides a wraparound experience similar to the vertical levels of Super Mario Bros. 2.  
+
+    build.sh -H wallhack2
+
+
 ## Thanks
 [CelestialAmber](https://github.com/CelestialAmber/TetrisNESDisasm) Repo from which this is derived
 

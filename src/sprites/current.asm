@@ -9,12 +9,15 @@ stageSpriteForCurrentPiece:
         lda     numberOfPlayers
         cmp     #$01
         beq     @calculateYPixel
+.ifndef WALLHACK2
+        ; omit bytes to account for the extra bytes below
         lda     generalCounter3
         sec
         sbc     #$40
         sta     generalCounter3 ; if 2 player mode, player 1's field is more to the left
         lda     activePlayer
         cmp     #$01
+.endif
         beq     @calculateYPixel
         lda     generalCounter3
         adc     #$6F
@@ -75,12 +78,27 @@ stageSpriteForCurrentPiece:
 @validYCoordinate:
         inc     oamStagingLength
         iny
+.ifdef WALLHACK2
+        sty     generalCounter
+        lda     orientationTable,x
+        clc
+        adc     tetriminoX
+        tay
+        lda     effectiveTetriminoXTable,y
+        asl     a
+        asl     a
+        asl     a
+        clc
+        adc     #$60
+        ldy     generalCounter
+.else
         lda     orientationTable,x
         asl     a
         asl     a
         asl     a
         clc
         adc     generalCounter3
+.endif
         sta     oamStaging,y ; stage actual x coordinate
 @finishLoop:
         inc     oamStagingLength

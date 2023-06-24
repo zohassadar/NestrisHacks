@@ -104,7 +104,11 @@ gameModeState_initGameState:
         sta     $03EF,x
         dex
         bne     @initStatsByType
+.ifdef WALLHACK2
+        lda     #$08
+.else
         lda     #$05
+.endif
         sta     player1_tetriminoX
         sta     player2_tetriminoX
         lda     #$00

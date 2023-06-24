@@ -30,7 +30,11 @@ playState_spawnNextTetrimino:
         sta     tetriminoY
         lda     #$01
         sta     playState
+.ifdef WALLHACK2
+        lda     #$08
+.else
         lda     #$05
+.endif
         sta     tetriminoX
         ldx     nextPiece
         lda     spawnOrientationFromOrientation,x

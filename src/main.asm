@@ -117,6 +117,10 @@ unreferenced_data1:
         .include "hacks/anydas.asm"
 .endif
 
+.ifdef WALLHACK2
+        .include "hacks/wallhack2.asm"
+.endif
+
 .ifndef OMIT_UD1
         .incbin "data/unreferenced_data1.bin"
 .endif

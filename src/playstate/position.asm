@@ -1,5 +1,47 @@
 
 isPositionValid:
+.ifdef WALLHACK2
+        jmp     @skipOverWallhack2Padding
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00
+@skipOverWallhack2Padding:
+        ldy     currentPiece
+        ldx     multBy12Table,y
+        lda     #$04
+        sta     generalCounter3
+; Checks one square within the tetrimino
+@checkSquare:
+        lda     orientationTable,x
+        clc
+        adc     tetriminoY
+        tay
+        clc
+        adc     #$02
+        cmp     #$16
+        bcs     @invalid
+        tya
+        asl
+        sta     generalCounter4
+        asl
+        asl
+        clc
+        adc     generalCounter4
+        sta     generalCounter4
+        inx
+        inx
+        lda     tetriminoX
+        clc
+        adc     orientationTable,x
+        tay
+        lda     effectiveTetriminoXTable,y
+        lda     generalCounter4
+        clc     
+        adc     effectiveTetriminoXTable,y
+        tay
+        lda     playfield,y
+        bpl     @invalid 
+.else
         lda     tetriminoY
         asl     a
         sta     generalCounter
@@ -52,6 +94,7 @@ isPositionValid:
         adc     tetriminoX
         cmp     #$0A
         bcs     @invalid
+.endif
         inx
         dec     generalCounter3
         bne     @checkSquare

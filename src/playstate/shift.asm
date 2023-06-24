@@ -39,7 +39,11 @@ shift_tetrimino:
         and     #$01
         beq     @notPressingRight
         inc     tetriminoX
+.ifdef WALLHACK2
+        jsr     testRightShiftAndValidate
+.else
         jsr     isPositionValid
+.endif
         bne     @restoreX
         lda     #$03
         sta     soundEffectSlot1Init
@@ -50,7 +54,11 @@ shift_tetrimino:
         and     #$02
         beq     @ret
         dec     tetriminoX
+.ifdef WALLHACK2
+        jsr     testLeftShiftAndValidate
+.else
         jsr     isPositionValid
+.endif
         bne     @restoreX
         lda     #$03
         sta     soundEffectSlot1Init
