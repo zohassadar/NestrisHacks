@@ -1,4 +1,5 @@
 
+import argparse
 import pathlib
 import sys
 
@@ -13,6 +14,12 @@ Unless modified, it will reproduce the original.
 
 file = pathlib.Path(__file__)
 output = file.parent / file.name.replace(".py", ".bin")
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-D', '--buildflag', action='append', dest='buildflags', help='Build Flag')
+args = parser.parse_args()
+buildflags = args.buildflags if args.buildflags else []
+
 
 original_sha1sum = "ea1a97c4553ec3d43de5476fbe28a50cd7ad61ce"
 

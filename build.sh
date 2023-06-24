@@ -78,7 +78,7 @@ ls src/nametables/*nametable.py | while read nametable; do
     fi
     if [ "$nametableTime" -gt "$scriptTime" ]; then
         printf "Building %s\n" $nametable
-        python $nametable
+        python $nametable ${compile_flags[*]}
     fi
 done
 
