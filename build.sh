@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 compile_flags=()
 
@@ -37,71 +38,56 @@ else
     scriptTime=$(stat -c "%X" "$0")
 fi
 
-nametableBuild () {
-    nametableCount=$(ls src/nametables/*nametable.bin 2>/dev/null | wc -l | xargs)
 
-    if ! [ "$(ls src/nametables/*nametable.py 2>/dev/null | wc -l | xargs)" = $nametableCount ]; then
-        echo "building all nametables"
-        touch src/nametables/*nametable.py
-    fi
+nametableCount=$(ls src/nametables/*nametable.bin 2>/dev/null | wc -l | xargs)
 
-    ls src/nametables/*nametable.py | while read nametable; do
-        if [[ $(uname) == "Darwin" ]]; then
-            # mac support
-            nametableTime=$(stat -f "%m" $nametable)
-        else
-            nametableTime=$(stat -c "%Y" $nametable)
-        fi
-        if [ "$nametableTime" -gt "$scriptTime" ]; then
-            printf "Building %s\n" $nametable
-            python $nametable
-        fi
-    done
-    }
+if ! [ "$(ls src/nametables/*nametable.py 2>/dev/null | wc -l | xargs)" = $nametableCount ]; then
+    echo "Building all nametables"
+    touch src/nametables/*nametable.py
+fi
 
-nametableBuild
-
-# PNG -> CHR
-png2chr() {
-    python tools/nes-util/nes_chr_encode.py src/gfx/game_tileset.png src/gfx/game_tileset.chr
-    python tools/nes-util/nes_chr_encode.py src/gfx/title_menu_tileset.png src/gfx/title_menu_tileset.chr
-    python tools/nes-util/nes_chr_encode.py src/gfx/typeA_ending_tileset.png src/gfx/typeA_ending_tileset.chr
-    python tools/nes-util/nes_chr_encode.py src/gfx/typeB_ending_tileset.png src/gfx/typeB_ending_tileset.chr
-}
-
-# build CHR if it doesnt already exist
-
-if ! [ "$(find src/gfx/*.chr 2>/dev/null | wc -l | xargs)" = 4 ]; then
-    echo "building CHR"
-    png2chr
-else
-
-    # if it does exist check if the PNG has been modified
+ls src/nametables/*nametable.py | while read nametable; do
     if [[ $(uname) == "Darwin" ]]; then
         # mac support
-        pngTimes=$(stat -f "%m" src/gfx/*.png)
-        scriptTime=$(stat -f "%m" "$0")
+        nametableTime=$(stat -f "%m" $nametable)
     else
-        pngTimes=$(stat -c "%Y" src/gfx/*.png)
-        scriptTime=$(stat -c "%X" "$0")
+        nametableTime=$(stat -c "%Y" $nametable)
     fi
+    if [ "$nametableTime" -gt "$scriptTime" ]; then
+        printf "Building %s\n" $nametable
+        python $nametable
+    fi
+done
 
-    for pngTime in $pngTimes; do
-        if [ "$pngTime" -gt "$scriptTime" ]; then
-            echo "converting PNG to CHR"
-                png2chr
-            break;
-        fi
-    done
+
+chrCount=$(ls src/gfx/*.chr 2>/dev/null | wc -l | xargs)
+
+if ! [ "$(ls src/gfx/*.png 2>/dev/null | wc -l | xargs)" = $chrCount ]; then
+    echo "Converting all PNG to CHR"
+    touch src/gfx/*png
 fi
+
+ls src/gfx/*.png | while read png; do
+    if [[ $(uname) == "Darwin" ]]; then
+        # mac support
+        pngTime=$(stat -f "%m" $png)
+    else
+        pngTime=$(stat -c "%Y" $png)
+    fi
+    if [ "$pngTime" -gt "$scriptTime" ]; then
+        printf "Converting %s\n" $png
+        python tools/nes-util/nes_chr_encode.py $png ${png%.png}.chr
+    fi
+done
+
 
 # touch this file to store the last modified / checked date
 
 touch src/gfx/*.png
+touch src/nametables/*nametable.py
 touch "$0"
 
 # build object files
-
 ca65 ${compile_flags[*]} -g src/tetris.asm -o header.o
 ca65 ${compile_flags[*]} -l tetris.lst -g src/main.asm -o main.o
 
