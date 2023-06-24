@@ -156,7 +156,11 @@ gameModeState_initGameState:
         sta     twoPlayerPieceDelayPiece
         lda     gameType
         beq     @skipTypeBInit
+.ifdef B_TYPE_DEBUG
+        lda     #$00
+.else
         lda     #$25
+.endif
         sta     player1_lines
         sta     player2_lines
 @skipTypeBInit:

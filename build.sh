@@ -10,9 +10,10 @@ hacks=(
     )
 
 help () {
-    echo "Usage: $0 [-v] [-m <hackname>] [-F] [-H]"
+    echo "Usage: $0 [-v] [-H <hackname>] [-B] [-h]"
     echo "-v  verbose"
     echo "-H  <hackname>"
+    echo "-B  B-Type debug"
     echo "-h  you are here"
     echo ""
     echo "Valid hacks:"
@@ -25,7 +26,7 @@ omit_ud1 () {
     compile_flags+=("-D OMIT_UD1")
     }
 
-while getopts "vH:h" flag; do
+while getopts "vH:Bh" flag; do
   case "${flag}" in
     v) set -x ;;
     H)
@@ -50,9 +51,9 @@ while getopts "vH:h" flag; do
             ;;
         esac
         ;;
-    F)
-        compile_flags+=("-D PLAIN_FLAG")
-        echo "PLAIN_FLAG enabled"  ;;
+    B)
+        compile_flags+=("-D B_TYPE_DEBUG")
+        echo "B-Type debug enabled"  ;;
     h)
         help; exit ;;
     *)
@@ -67,6 +68,8 @@ else
     scriptTime=$(stat -c "%X" "$0")
 fi
 
+# Title can be different, so always rebuild
+touch src/nametables/title_screen_nametable.py
 
 nametableCount=$(ls src/nametables/*nametable.bin 2>/dev/null | wc -l | xargs)
 
