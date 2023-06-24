@@ -1599,7 +1599,7 @@ musicDataTable:
         .addr   music_music3_sq1Script
         .addr   music_music3_sq2Script
         .addr   music_music3_triScript
-        .addr   LFFFF
+        .word   $FFFF
         .byte   $81,$00
         .addr   music_music1_sq1Script
         .addr   music_music1_sq2Script
@@ -1614,7 +1614,7 @@ musicDataTable:
         .addr   music_music3_sq1Script
         .addr   music_music3_sq2Script
         .addr   music_music3_triScript
-        .addr   LFFFF
+        .word   $FFFF
         .byte   $00,$18
         .addr   music_congratulations_sq1Script
         .addr   music_congratulations_sq2Script
@@ -1644,7 +1644,7 @@ music_titleScreen_triScript:
         .addr   music_titleScreen_triRoutine1
 music_titleScreen_noiseScript:
         .addr   music_titleScreen_noiseRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_titleScreen_noiseScript
 .include "audio/music/music_titlescreen.asm"
 
@@ -1653,60 +1653,60 @@ music_music1_sq1Script:
         .addr   music_music1_sq1Routine1
         .addr   music_music1_sq1Routine2
         .addr   music_music1_sq1Routine3
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music1_sq1Script
 music_music1_sq2Script:
         .addr   music_music1_sq2Routine1
         .addr   music_music1_sq2Routine2
         .addr   music_music1_sq2Routine3
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music1_sq2Script
 music_music1_triScript:
         .addr   music_music1_triRoutine1
         .addr   music_music1_triRoutine2
         .addr   music_music1_triRoutine3
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music1_triScript
 music_music1_noiseScript:
         .addr   music_music1_noiseRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music1_noiseScript
 .include "audio/music/music1.asm"
 music_music3_sq1Script:
         .addr   music_music3_sq1Routine1
 music_music3_sq1ScriptLoop:
         .addr   music_music3_sq1Routine2
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music3_sq1ScriptLoop
 music_music3_sq2Script:
         .addr   music_music3_sq2Routine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music3_sq2Script
 music_music3_triScript:
         .addr   music_music3_triRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music3_triScript
 ; unreferenced
 music_music3_noiseScript:
         .addr   music_music3_noiseRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music3_noiseScript
 .include "audio/music/music3.asm"
 music_congratulations_sq1Script:
         .addr   music_congratulations_sq1Routine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_congratulations_sq1Script
 music_congratulations_sq2Script:
         .addr   music_congratulations_sq2Routine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_congratulations_sq2Script
 music_congratulations_triScript:
         .addr   music_congratulations_triRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_congratulations_triScript
 music_congratulations_noiseScript:
         .addr   music_congratulations_noiseRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_congratulations_noiseScript
 .include "audio/music/music_congratulations.asm"
 music_music2_sq1Script:
@@ -1715,7 +1715,7 @@ music_music2_sq1Script:
         .addr   music_music2_sq1Routine3
         .addr   music_music2_sq1Routine3
         .addr   music_music2_sq1Routine4
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music2_sq1Script
 music_music2_sq2Script:
         .addr   music_music2_sq2Routine1
@@ -1723,7 +1723,7 @@ music_music2_sq2Script:
         .addr   music_music2_sq2Routine3
         .addr   music_music2_sq2Routine3
         .addr   music_music2_sq2Routine4
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music2_sq2Script
 music_music2_triScript:
         .addr   music_music2_triRoutine1
@@ -1731,11 +1731,11 @@ music_music2_triScript:
         .addr   music_music2_triRoutine3
         .addr   music_music2_triRoutine3
         .addr   music_music2_triRoutine4
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music2_triScript
 music_music2_noiseScript:
         .addr   music_music2_noiseRoutine1
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_music2_noiseScript
 .include "audio/music/music2.asm"
 music_endings_sq1Script:
@@ -1743,27 +1743,27 @@ music_endings_sq1Script:
         .addr   music_endings_sq1Routine2
         .addr   music_endings_sq1Routine1
         .addr   music_endings_sq1Routine3
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_endings_sq1Script
 music_endings_sq2Script:
         .addr   music_endings_sq2Routine1
         .addr   music_endings_sq2Routine2
         .addr   music_endings_sq2Routine1
         .addr   music_endings_sq2Routine3
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_endings_sq2Script
 music_endings_triScript:
         .addr   music_endings_triRoutine1
         .addr   music_endings_triRoutine2
         .addr   music_endings_triRoutine1
         .addr   music_endings_triRoutine3
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_endings_triScript
 music_endings_noiseScript:
         .addr   music_endings_noiseRoutine1
         .addr   music_endings_noiseRoutine1
         .addr   music_endings_noiseRoutine1
         .addr   music_endings_noiseRoutine2
-        .addr   LFFFF
+        .word   $FFFF
         .addr   music_endings_noiseScript
 .include "audio/music/music_endings.asm"
