@@ -1,47 +1,31 @@
 # Linux
 
-	sudo apt-get install make gcc bison git python
+	sudo apt-get install git python cc65
 	pip install pillow
-	git clone https://github.com/CelestialAmber/TetrisNESDisasm
-	cd TetrisNESDisasm
+	git clone https://github.com/zohassdar/NestrisHacks
+	cd NestrisHacks
 
 To build `tetris.nes`:
 
-	make
+	bash build.sh
 
 
 # OS X
 
+These steps are untested.  If they do not work or need adjustment, open an issue or send a PR.
+
 In **Terminal**, run:
 	
+	brew install cc65
 	pip install pillow
-	git clone https://github.com/CelestialAmber/TetrisNESDisasm
-	cd TetrisNESDisasm
-
+	git clone  https://github.com/zohassdar/NestrisHacks
+	cd NestrisHacks
 	
 To build `tetris.nes`:
 
-	make
+	bash build.sh
+
 
 # Windows
 
-Download [**Cygwin**](http://cygwin.com/install.html): **setup-x86_64.exe** for 64-bit Windows, **setup-x86.exe** for 32-bit.
-
-Run setup and leave the default settings. At "Select Packages", choose to install the following:
-
-- `make`
-- `git`
-- `gcc-core`
-- `python`
-
-
-
-In the **Cygwin terminal**, enter these commands:
-
-	pip install pillow
-	git clone https://github.com/CelestialAmber/TetrisNESDisasm
-	cd TetrisNESDisasm
-
-To build `tetris.nes`:
-
-	make
+Use Cygwin and the version of cc65, or use the Windows Subsystem for Linux (WSL)
