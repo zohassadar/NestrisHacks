@@ -112,7 +112,14 @@ type_a_ending_nametable:
 
 .segment        "unreferenced_data1": absolute
 unreferenced_data1:
+
+.ifdef ANYDAS
+        .include "hacks/anydas.asm"
+.endif
+
+.ifndef OMIT_UD1
         .incbin "data/unreferenced_data1.bin"
+.endif
 ; End of "unreferenced_data1" segment
 .code
 

@@ -31,7 +31,12 @@ gameMode_titleScreen:
         beq     @startButtonPressed
         lda     frameCounter+1
         cmp     #$05
+.ifdef ANYDAS
+        beq     @dontGoToTimeout
+@dontGoToTimeout:
+.else
         beq     @timeout
+.endif
         jmp     @waitForStartButton
 
 ; Show menu screens

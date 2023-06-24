@@ -3,8 +3,14 @@ nmi:    pha
         pha
         tya
         pha
+.ifdef ANYDAS
+        jmp     renderAnydasMenu
+returnFromAnydasRender:
+        nop
+.else
         lda     #$00
         sta     oamStagingLength
+.endif
         jsr     render
         dec     sleepCounter
         lda     sleepCounter
@@ -30,7 +36,11 @@ nmi:    pha
         sta     PPUSCROLL
         lda     #$01
         sta     verticalBlankingInterval
+.ifdef ANYDAS
+        jsr     anydasControllerInput
+.else
         jsr     pollControllerButtons
+.endif
         pla
         tay
         pla

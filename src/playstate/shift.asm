@@ -11,6 +11,17 @@ shift_tetrimino:
         lda     heldButtons
         and     #$03
         beq     @ret
+.ifdef ANYDAS
+        dec     autorepeatX
+        lda     autorepeatX
+        cmp     #$01
+        bpl     @ret
+        lda     anydasARRValue
+        sta     autorepeatX
+        jmp     @buttonHeldDown
+@resetAutorepeatX:
+        lda     anydasDASValue
+.else
         inc     autorepeatX
         lda     autorepeatX
         cmp     #$10
@@ -21,6 +32,7 @@ shift_tetrimino:
 
 @resetAutorepeatX:
         lda     #$00
+.endif
         sta     autorepeatX
 @buttonHeldDown:
         lda     heldButtons
@@ -47,6 +59,10 @@ shift_tetrimino:
 @restoreX:
         lda     originalY
         sta     tetriminoX
+.ifdef ANYDAS
+        lda     #$01
+.else
         lda     #$10
+.endif
         sta     autorepeatX
 @ret:   rts

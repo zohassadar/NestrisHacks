@@ -10,7 +10,16 @@ patchToPpuAddr: .res $1             ; $0014
 rng_seed: .res $2	                ; $0017
 spawnID: .res $1	                ; $0019
 spawnCount:	.res $1	                ; $001A
-.res $18
+.res $1
+
+; Anydas
+anydasMenu: .res $1                 ; $000C
+anydasDASValue: .res $1             ; $000D
+anydasARRValue: .res $1             ; $000E
+anydasARECharge: .res $1            ; $000F
+
+.res $13
+
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034
 .res $B
@@ -167,9 +176,16 @@ oamStaging:	.res $100	; $0200
 statsByType:	.res $0E	; $03F0
 .res 2
 playfield:	.res $C8	; $0400
-.res 56
+.res $38
 playfieldForSecondPlayer:	.res $C8	; $0500
-.res 184
+.res $38
+
+; Area for romhacks
+
+.res $80
+
+; End romhacks
+
 musicStagingSq1Lo:	.res 1	; $0680
 musicStagingSq1Hi:	.res 1	; $0681
 audioInitialized:	.res 1	; $0682

@@ -8,6 +8,10 @@ gameModeState_checkForResetKeyCombo:
         rts
 
 @reset: jsr     updateAudio2
+.ifdef ANYDAS
+        lda     #$01
+.else
         lda     #$00
+.endif
         sta     gameMode
         rts

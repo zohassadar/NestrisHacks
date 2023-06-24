@@ -1,12 +1,29 @@
 # NES Tetris Hacks
 
-These ~~are~~ will be various romhacks of the NES game Tetris.
+These are various romhacks of the NES game Tetris.
 
 Without any options, building this repo makes the following:
 
 * Tetris (U) [!].nes `md5: ec58574d96bee8c8927884ae6e7a2508`
 
 To set up the repository, see [**INSTALL.md**](INSTALL.md).
+
+Multiple hacks are compatible unless otherwise noted, for example to build Penguin Line Clear with Anydas:
+
+    build.sh -H anydas -H penguin
+
+
+## Anydas
+
+![Anydas](./assets/Anydas.png)
+
+Credit to [HydrantDude](https://www.youtube.com/@hydrantdude3642)
+
+Anydas skips the legal screen and provides a menu that allows for a customized Delayed Auto Shift (DAS) experience.  The DAS setting, presented in hexadecimal, controls the initial delay in number of frames.  The Auto Repeat Rate (ARR), also presented in hexadecimal, controls how many frames between shifts after the initial delay.   The ARE Charge setting when enabled allows the DAS charge to occur during entry delay.   
+
+See [this page](https://tetris.fandom.com/wiki/ARE) for an explanation of ARE.
+
+    build.sh -H anydas
 
 
 ## Penguin Line Clear

@@ -36,12 +36,25 @@ playState_spawnNextTetrimino:
         lda     spawnOrientationFromOrientation,x
         sta     currentPiece
         jsr     incrementPieceStat
+.ifdef ANYDAS
+        lda     anydasARECharge
+        cmp     #$01
+        bne     @dontResetAutorepeatX
+        sta     autorepeatX
+        nop
+        nop
+        nop
+        nop
+        nop
+@dontResetAutorepeatX:
+.else
         lda     numberOfPlayers
         cmp     #$01
         beq     @onePlayerPieceSelection
         lda     twoPlayerPieceDelayPiece
         sta     nextPiece
         jmp     @resetDownHold
+.endif
 
 @onePlayerPieceSelection:
         jsr     chooseNextTetrimino

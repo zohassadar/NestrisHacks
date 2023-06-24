@@ -21,6 +21,10 @@ help () {
     done
 }
 
+omit_ud1 () {
+    compile_flags+=("-D OMIT_UD1")
+    }
+
 while getopts "vH:h" flag; do
   case "${flag}" in
     v) set -x ;;
@@ -36,7 +40,9 @@ while getopts "vH:h" flag; do
             ;;
         "anydas")
             echo "Anydas enabled"
+            omit_ud1
             compile_flags+=("-D ANYDAS")
+            
             ;;
         *)
             echo "${OPTARG} is an invalid hack"
