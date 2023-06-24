@@ -41,7 +41,7 @@ if __name__ == "__main__":
         )
     except Exception as exc:
         print(
-            f"Unable to build nametable: {type(exc).__name}: {exc!s}", file=sys.stderr
+            f"Unable to build nametable: {type(exc).__name__}: {exc!s}", file=sys.stderr
         )
         sys.exit(1)
 """
