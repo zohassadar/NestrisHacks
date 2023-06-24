@@ -30,6 +30,36 @@ while getopts "vf:Fh" flag; do
   esac
 done
 
+if [[ $(uname) == "Darwin" ]]; then
+    # mac support
+    scriptTime=$(stat -f "%m" "$0")
+else
+    scriptTime=$(stat -c "%X" "$0")
+fi
+
+nametableBuild () {
+    nametableCount=$(ls src/nametables/*nametable.bin 2>/dev/null | wc -l | xargs)
+
+    if ! [ "$(ls src/nametables/*nametable.py 2>/dev/null | wc -l | xargs)" = $nametableCount ]; then
+        echo "building all nametables"
+        touch src/nametables/*nametable.py
+    fi
+
+    ls src/nametables/*nametable.py | while read nametable; do
+        if [[ $(uname) == "Darwin" ]]; then
+            # mac support
+            nametableTime=$(stat -f "%m" $nametable)
+        else
+            nametableTime=$(stat -c "%Y" $nametable)
+        fi
+        if [ "$nametableTime" -gt "$scriptTime" ]; then
+            printf "Building %s\n" $nametable
+            python $nametable
+        fi
+    done
+    }
+
+nametableBuild
 
 # PNG -> CHR
 png2chr() {
