@@ -1,0 +1,16 @@
+al 008005 .nmi
+al 0081CF .playState_playerControlsActiveTetrimino
+al 0082B1 .render_mode_legal_and_title_screens
+al 0085DA .render_mode_menu_screens
+al 0085F0 .gameModeState_initGameBackground
+al 008693 .gameModeState_initGameBackground_finish
+al 0088AB .rotate_tetrimino
+al 008914 .drop_tetrimino
+al 0089AE .shift_tetrimino
+al 00948B .isPositionValid
+al 009522 .@playStateNotDisplayLineClearingAnimation
+al 009D51 .pollControllerButtons
+al 00A344 .render_mode_congratulations_screen
+al 00AC6A .memset_page
+al 00E3D0 .soundEffectSlot1_rotateTetrimino_ret
+al 00F9EB .unreferenced_data4

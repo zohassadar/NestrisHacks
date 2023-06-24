@@ -141,7 +141,16 @@ if [ ${#compile_flags[@]} -eq 0 ]; then
         echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
     fi
 else
-    echo "Hacked version has been compiled.  sha1sum will not match"
+    echo "Hacked version has been compiled.  sha1sum will not match.  Validating label placement instead"
+    # Validate label placement
+    expected=$(cat labels.txt)
+    current=$(bash tools/select_labels.sh)
+
+    if [[ $expected = $current ]]; then
+        echo "Labels line up"
+    else
+        echo "Labels do not line up!"
+    fi
 fi
 
 
