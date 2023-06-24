@@ -3,24 +3,47 @@ set -e
 
 compile_flags=()
 
+hacks=(
+    "penguin"
+    "wallhack2"
+    "anydas"
+    )
+
 help () {
-    echo "Usage: $0 [-v] [-f <1|3|4>] [-F] [-h]"
+    echo "Usage: $0 [-v] [-m <hackname>] [-F] [-H]"
     echo "-v  verbose"
-    echo "-f  OPTION_FLAG"
-    echo "-F  PLAIN_FLAG"
+    echo "-H  <hackname>"
     echo "-h  you are here"
+    echo ""
+    echo "Valid hacks:"
+    for hack in "${hacks[@]}"; do
+        echo "  $hack"
+    done
 }
 
-while getopts "vf:Fh" flag; do
+while getopts "vH:h" flag; do
   case "${flag}" in
     v) set -x ;;
-    f)
-        if ! [[ "${OPTARG}" =~ ^[134]$ ]]; then
-            echo "Valid optionsare 1, 3 or 4"
+    H)
+        case "${OPTARG}" in 
+        "penguin")
+            echo "Penguin Line Clear enabled"
+            compile_flags+=("-D PENGUIN")
+            ;;
+        "wallhack2")
+            echo "Wallhack2 enabled"
+            compile_flags+=("-D WALLHACK2")
+            ;;
+        "anydas")
+            echo "Anydas enabled"
+            compile_flags+=("-D ANYDAS")
+            ;;
+        *)
+            echo "${OPTARG} is an invalid hack"
             exit 1
-        fi
-        compile_flags+=("-D OPTION_FLAG=${OPTARG}")
-        echo "OPTION_FLAG set to ${OPTARG}"  ;;
+            ;;
+        esac
+        ;;
     F)
         compile_flags+=("-D PLAIN_FLAG")
         echo "PLAIN_FLAG enabled"  ;;
@@ -104,19 +127,27 @@ else
     echo "clean.nes not found.  Skipping patch creation."
 fi
 
-# show some stats
-if command -v sha1sum &>/dev/null; then
-    sha1sum -c tetris.sha1
-    # sha1sum tetris.nes
-elif command -v shasum &>/dev/null; then
-    # mac support
-    shasum -c tetris.sha1
+
+# Validate if making clean version
+if [ ${#compile_flags[@]} -eq 0 ]; then
+    echo "Validating sha1sum"
+    if command -v sha1sum &>/dev/null; then
+        sha1sum -c tetris.sha1
+        # sha1sum tetris.nes
+    elif command -v shasum &>/dev/null; then
+        # mac support
+        shasum -c tetris.sha1
+    else
+        echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
+    fi
 else
-    echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
+    echo "Hacked version has been compiled.  sha1sum will not match"
 fi
 
-sed -n '23,27p' < tetris.map
 
+
+# show some stats
+sed -n '23,27p' < tetris.map
 if [[ -f tetris.bps ]]; then
     # mac support
     if [[ $(uname) == "Darwin" ]]; then
