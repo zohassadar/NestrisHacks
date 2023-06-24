@@ -11,7 +11,11 @@ returnFromAnydasRender:
         lda     #$00
         sta     oamStagingLength
 .endif
+.ifdef SPS
+        jsr     renderSeedIfNecessary
+.else
         jsr     render
+.endif
         dec     sleepCounter
         lda     sleepCounter
         cmp     #$FF

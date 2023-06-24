@@ -28,7 +28,11 @@ gameModeState_initGameBackground:
         jsr     twoDigsToPPU
         lda     highScoreScoresA+2
         jsr     twoDigsToPPU
+.ifdef SPS
+        jmp     drawSeedOnBackground
+.else
         jmp     gameModeState_initGameBackground_finish
+.endif
 
 @typeB: lda     #$0B
         sta     PPUDATA
@@ -148,7 +152,11 @@ gameModeState_initGameState:
         lda     #$A0
         sta     player1_autorepeatY
         sta     player2_autorepeatY
+.ifdef SPS
+        jsr     resetSetSeedandChooseNextTetrimino
+.else
         jsr     chooseNextTetrimino
+.endif
         sta     player1_currentPiece
         sta     player2_currentPiece
         jsr     incrementPieceStat

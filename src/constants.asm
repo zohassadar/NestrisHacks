@@ -29,6 +29,15 @@ SND_CHN         := $4015
 JOY1            := $4016
 JOY2_APUFC      := $4017                        ; read: bits 0-4 joy data lines (bit 0 being normal controller), bits 6-7 are FC inhibit and mode
 
+BUTTON_RIGHT := $1
+BUTTON_LEFT := $2
+BUTTON_DOWN := $4
+BUTTON_UP := $8
+BUTTON_START := $10
+BUTTON_SELECT := $20
+BUTTON_B := $40
+BUTTON_A := $80
+
 MMC1_CHR0       := $BFFF
 MMC1_CHR1       := $DFFF
 

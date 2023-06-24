@@ -6,6 +6,7 @@ compile_flags=()
 hacks=(
     "anydas"
     "penguin"
+    "sps"
     "wallhack2"
     )
 
@@ -43,6 +44,11 @@ while getopts "vH:Bh" flag; do
             echo "Penguin Line Clear enabled"
             compile_flags+=("-D PENGUIN")
             ;;
+        "sps")
+            echo "Same Piece Sets enabled"
+            omit_ud1
+            compile_flags+=("-D SPS")
+            ;;
         "wallhack2")
             echo "Wallhack2 enabled"
             omit_ud1
@@ -71,8 +77,10 @@ else
     scriptTime=$(stat -c "%X" "$0")
 fi
 
-# Title can be different, so always rebuild
-touch src/nametables/title_screen_nametable.py
+# Rebuild all nametables that are dependent on buildflags
+grep -l "in buildflags:" src/nametables/*.py | while read nametable; do
+    touch $nametable
+done
 
 nametableCount=$(ls src/nametables/*nametable.bin 2>/dev/null | wc -l | xargs)
 

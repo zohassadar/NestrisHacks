@@ -85,10 +85,18 @@ chooseNextTetrimino:
         rts
 
 pickRandomTetrimino:
+.ifdef SPS
+        jsr     pickTetriminoSeed
+.else
         jsr     @realStart
+.endif
         rts
 
+.ifdef SPS
+pickNormalRNG:
+.else
 @realStart:
+.endif
         inc     spawnCount
         lda     rng_seed
         clc

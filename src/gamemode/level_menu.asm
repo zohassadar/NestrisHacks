@@ -54,7 +54,11 @@ gameMode_levelMenu_processPlayer1Navigation:
         sta     selectingLevelOrHeight
         lda     newlyPressedButtons_player1
         sta     newlyPressedButtons
+.ifdef SPS
+        jsr     samePieceSetMenu
+.else
         jsr     gameMode_levelMenu_handleLevelHeightNavigation
+.endif
         lda     startLevel
         sta     player1_startLevel
         lda     startHeight

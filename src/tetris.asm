@@ -20,7 +20,7 @@ INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 
 
 .segment "CHR"
-.ifdef ANYDAS
+.if .defined(ANYDAS) | .defined(SPS)
 .incbin "gfx/title_menu_tileset_anydas_seed.chr"
 .else
 .incbin "gfx/title_menu_tileset.chr"

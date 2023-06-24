@@ -35,6 +35,17 @@ The line clearing animation has been replaced with a penguin that clears the blo
     build.sh -H penguin
 
 
+## Same Piece Sets
+
+![SamePieceSets](./assets/SamePieceSets.png)
+
+Credit to [Kirjava](https://kirjava.xyz/)
+
+Provides an option to enter a seed value that determines the piece sequence.  100% compatible with [TetrisGYM](https://github.com/kirjavascript/TetrisGYM)
+
+    build.sh -H sps
+
+
 ## Wallhack 2
 
 ![Wallhack2](./assets/Wallhack2.gif)

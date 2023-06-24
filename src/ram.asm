@@ -18,7 +18,11 @@ anydasDASValue: .res $1             ; $000D
 anydasARRValue: .res $1             ; $000E
 anydasARECharge: .res $1            ; $000F
 
-.res $13
+; SPS
+set_seed_input: .res $3          ; $0010
+set_seed: .res $3                ; $0013
+
+.res $0D
 
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034
@@ -182,7 +186,14 @@ playfieldForSecondPlayer:	.res $C8	; $0500
 
 ; Area for romhacks
 
-.res $80
+; SPS Variables
+sps_menu: .res $1                ; $0600
+menuSeedCursorIndex: .res 1      ; $0601
+menuMoveThrottle: .res 1         ; $0602
+menuThrottleTmp: .res 1          ; $0603
+seedVersion: .res 1              ; $0604
+
+.res $7B
 
 ; End romhacks
 

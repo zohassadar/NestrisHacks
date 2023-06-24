@@ -121,6 +121,10 @@ unreferenced_data1:
         .include "hacks/wallhack2.asm"
 .endif
 
+.ifdef SPS
+        .include "hacks/same_piece_sets.asm"
+.endif
+
 .ifndef OMIT_UD1
         .incbin "data/unreferenced_data1.bin"
 .endif
