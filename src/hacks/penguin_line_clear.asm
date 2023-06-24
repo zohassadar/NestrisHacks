@@ -40,7 +40,7 @@ updateLineClearingAnimation:
         lda     rowY
         and     #$01
         clc
-        adc     #$54
+        adc     #$0F
         sta     spriteIndexInOamContentLookup
 
 

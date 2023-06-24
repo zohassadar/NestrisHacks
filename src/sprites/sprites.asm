@@ -14,8 +14,13 @@ oamContentLookup:
         .addr   sprite0CIPiece
         .addr   sprite0EHighScoreNameCursor
         .addr   sprite0EHighScoreNameCursor
+.ifdef PENGUIN
+        .addr   sprite0FPenguineLineClear1
+        .addr   sprite10PenguineLineClear2
+.else
         .addr   sprite0FTPieceOffset
         .addr   sprite10SPieceOffset
+.endif
         .addr   sprite11ZPieceOffset
         .addr   sprite12JPieceOffset
         .addr   sprite13LPieceOffset
@@ -138,6 +143,40 @@ sprite0CIPiece:
         .byte   $FF
 sprite0EHighScoreNameCursor:
         .byte   $00,$FC,$21,$00,$FF
+.ifdef PENGUIN
+; Penguins used for line clear are modified from ending screen penguin
+; Priority and palette are changed from $21 to $03
+; https://www.nesdev.org/wiki/PPU_OAM
+
+sprite0FPenguineLineClear1:
+        .byte   $E8,$A9,$03,$00,$E8,$AA,$03,$08
+        .byte   $F0,$B8,$03,$F8,$F0,$B9,$03,$00
+        .byte   $F0,$BA,$03,$08,$F8,$C9,$03,$00
+        .byte   $F8,$CA,$03,$08,$F8,$CB,$03,$10
+        .byte   $00,$D9,$03,$00,$00,$DA,$03,$08
+        .byte   $FF
+sprite10PenguineLineClear2:
+        .byte   $E8,$AD,$03,$00,$E8,$AE,$03,$08
+        .byte   $F0,$BC,$03,$F8,$F0,$BD,$03,$00
+        .byte   $F0,$BE,$03,$08,$F8,$CD,$03,$00
+        .byte   $F8,$CE,$03,$08,$F8,$CF,$03,$10
+        .byte   $00,$DD,$03,$00,$00,$DE,$03,$08
+        .byte   $FF
+
+        ;Pad with the appropriate number of bytes
+        .byte  $00,$00,$00,$00,$00,$00,$00,$00
+        .byte  $00,$00,$00,$00,$00,$00,$00,$00
+        .byte  $00,$00,$00,$00,$00,$00,$00,$00
+        .byte  $00,$00,$00,$00,$00,$00,$00,$00
+        .byte  $00,$00,$00,$00,$00
+
+; maintain same number of labels to account for constants in offsets
+sprite11ZPieceOffset:
+sprite12JPieceOffset:
+sprite13LPieceOffset:
+sprite14OPieceOffset:
+sprite15IPieceOffset:
+.else
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite0FTPieceOffset:
         .byte   $02,$7B,$02,$FC,$02,$7B,$02,$04
@@ -173,6 +212,7 @@ sprite15IPieceOffset:
         .byte   $08,$7B,$02,$F8,$08,$7B,$02,$00
         .byte   $08,$7B,$02,$08,$08,$7B,$02,$10
         .byte   $FF
+.endif
 sprite16KidIcarus1:
         .byte   $F0,$95,$01,$10,$F8,$A3,$01,$00
         .byte   $F8,$A4,$01,$08,$F8,$A5,$01,$10
@@ -472,22 +512,6 @@ sprite52CathedralDomeRocketJet2:
 sprite53MusicTypeCursor:
         .byte   $00,$27,$00,$00,$00,$27,$40,$4A
         .byte   $FF
-.ifdef PENGUIN
-sprite54Penguin1:
-        .byte   $E8,$A9,$03,$00,$E8,$AA,$03,$08
-        .byte   $F0,$B8,$03,$F8,$F0,$B9,$03,$00
-        .byte   $F0,$BA,$03,$08,$F8,$C9,$03,$00
-        .byte   $F8,$CA,$03,$08,$F8,$CB,$03,$10
-        .byte   $00,$D9,$03,$00,$00,$DA,$03,$08
-        .byte   $FF
-sprite55Penguin2:
-        .byte   $E8,$AD,$03,$00,$E8,$AE,$03,$08
-        .byte   $F0,$BC,$03,$F8,$F0,$BD,$03,$00
-        .byte   $F0,$BE,$03,$08,$F8,$CD,$03,$00
-        .byte   $F8,$CE,$03,$08,$F8,$CF,$03,$10
-        .byte   $00,$DD,$03,$00,$00,$DE,$03,$08
-        .byte   $FF
-.else
 sprite54Penguin1:
         .byte   $E8,$A9,$21,$00,$E8,$AA,$21,$08
         .byte   $F0,$B8,$21,$F8,$F0,$B9,$21,$00
@@ -502,4 +526,3 @@ sprite55Penguin2:
         .byte   $F8,$CE,$21,$08,$F8,$CF,$21,$10
         .byte   $00,$DD,$21,$00,$00,$DE,$21,$08
         .byte   $FF
-.endif
