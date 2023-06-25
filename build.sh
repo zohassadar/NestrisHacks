@@ -344,7 +344,7 @@ fi
 
 ls src/nametables/*nametable.py | while read nametable; do
     nametableTime=$(get_stat $nametable)
-    if [[ "$nametableTime" -gt "$scriptTime" ]]; then
+    if [[ "$nametableTime" -ge "$scriptTime" ]]; then
         set -e
         echo "Building $nametable"
         verbose=$verbose python $nametable ${build_flags[*]}
@@ -359,15 +359,15 @@ fi
 
 ls src/gfx/*.png | while read png; do
     pngTime=$(get_stat $png)
-    if [ "$pngTime" -gt "$scriptTime" ]; then
+    if [ "$pngTime" -ge "$scriptTime" ]; then
         echo "Converting $png"
         python tools/nes-util/nes_chr_encode.py $png ${png%.png}.chr
     fi
 done
 
 # touch this file to store the last modified / checked date
-touch src/gfx/*.png
-touch src/nametables/*nametable.py
+# touch src/gfx/*.png
+# touch src/nametables/*nametable.py
 touch "$0"
 
 output_file=$(IFS=""; printf "${output_name[*]}"; unset IFS)
