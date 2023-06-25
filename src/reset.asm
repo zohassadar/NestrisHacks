@@ -14,12 +14,9 @@ reset:  cld
         inc     reset
 .ifdef CNROM
         ; ff19
-        nop
-        nop
-        nop
-        nop
-        nop
-        lda     #$00
+        lda     #CNROM_BANK0
+        ldy     #CNROM_BG0
+        ldx     #CNROM_SPRITE0
         jsr     changeCHRBank0
         nop
         nop
@@ -29,7 +26,9 @@ reset:  cld
         nop
         nop
         nop
-        lda     #$00
+        nop
+        nop
+        nop
 .else
         lda     #$10
         jsr     setMMC1Control

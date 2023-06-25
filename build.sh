@@ -84,6 +84,7 @@ get_labels () {
         "memset_page"
         "soundEffectSlot1_rotateTetrimino_ret"
         "unreferenced_data4"
+        "unreferenced_data5"
         )
 
     IFS="|"

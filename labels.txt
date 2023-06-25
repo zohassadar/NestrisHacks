@@ -15,3 +15,4 @@ al 00AC6A .memset_page
 al 00ACF3 .game_palette
 al 00E3D0 .soundEffectSlot1_rotateTetrimino_ret
 al 00F9EB .unreferenced_data4
+al 00FF30 .unreferenced_data5
