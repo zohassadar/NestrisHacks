@@ -6,6 +6,7 @@ OAMDATA         := $2004
 PPUSCROLL       := $2005
 PPUADDR         := $2006
 PPUDATA         := $2007
+
 SQ1_VOL         := $4000
 SQ1_SWEEP       := $4001
 SQ1_LO          := $4002
@@ -29,6 +30,8 @@ SND_CHN         := $4015
 JOY1            := $4016
 JOY2_APUFC      := $4017                        ; read: bits 0-4 joy data lines (bit 0 being normal controller), bits 6-7 are FC inhibit and mode
 
+FFFF := $FFFF
+
 BUTTON_RIGHT := $1
 BUTTON_LEFT := $2
 BUTTON_DOWN := $4
@@ -41,5 +44,15 @@ BUTTON_A := $80
 MMC1_CHR0       := $BFFF
 MMC1_CHR1       := $DFFF
 
+; https://www.nesdev.org/wiki/CNROM
+; 2 8k banks, each with two tilesets
+CNROM_BANK0 := $00
+CNROM_BANK1 := $01
 
-FFFF := $FFFF
+; PPU Background tileset
+CNROM_BG0 := $00
+CNROM_BG1 := $10
+
+; PPU OAM tileset
+CNROM_SPRITE0 := $00
+CNROM_SPRITE1 := $08

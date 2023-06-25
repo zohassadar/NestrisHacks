@@ -522,10 +522,19 @@ unreferenced_data6:
         .byte   $FC
 LA926:  jsr     updateAudioWaitForNmiAndDisablePpuRendering
         jsr     disableNmi
+.ifdef CNROM
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK1
+        ldy     #CNROM_BG0
+        ldx     #CNROM_SPRITE0
+        jsr     changeCHRBank0
+        ; a936
+.else
         lda     #$02
         jsr     changeCHRBank0
         lda     #$02
         jsr     changeCHRBank1
+.endif
         jsr     bulkCopyToPpu
         .addr   type_a_ending_nametable
         jsr     bulkCopyToPpu

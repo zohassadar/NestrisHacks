@@ -33,25 +33,50 @@ L9E49:  ldx     player1_levelNumber
         lda     levelNumber
         cmp     #$09
         bne     L9E88
+.ifdef CNROM
+        ; 9e76
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK0
+        ldy     #CNROM_BG1
+        ldx     #CNROM_SPRITE1
+        jsr     changeCHRBank0
+        ; 9e80
+.else
         lda     #$01
         jsr     changeCHRBank0
         lda     #$01
         jsr     changeCHRBank1
+.endif
         jsr     bulkCopyToPpu
         .addr   type_b_lvl9_ending_nametable
         jmp     L9EA4
 
+.ifdef CNROM
+L9E88:  ldx     #CNROM_SPRITE1
+.else
 L9E88:  ldx     #$03
+.endif
         lda     levelNumber
         cmp     #$02
         beq     L9E96
         cmp     #$06
         beq     L9E96
+.ifdef CNROM
+        ldx     #CNROM_SPRITE0
+L9E96:
+        nop     ; padded out for GG codes & mods
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK1
+        ldy     #CNROM_BG0
+; 9e9f
+        jsr     changeCHRBank0
+.else
         ldx     #$02
 L9E96:  txa
         jsr     changeCHRBank0
         lda     #$02
         jsr     changeCHRBank1
+.endif
         jsr     bulkCopyToPpu
         .addr   type_b_ending_nametable
 L9EA4:  jsr     bulkCopyToPpu

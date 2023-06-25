@@ -15,10 +15,16 @@ switch_s_plus_2a:
         stx     tmp1
         jmp     (tmp1)
 
+; unused code fragment
         sei
         inc     initRam
         lda     #$1A
+.ifdef CNROM
+        ; padding purposes
+        .byte $00,$00,$00
+.else
         jsr     setMMC1Control
+.endif
         rts
 
-        rts
+        rts  ; aca2

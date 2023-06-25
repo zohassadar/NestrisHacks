@@ -2,10 +2,23 @@
 gameModeState_initGameBackground:
         jsr     updateAudioWaitForNmiAndDisablePpuRendering
         jsr     disableNmi
+
+
+.ifdef CNROM
+                ; 85f6
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK1
+        ldy     #CNROM_BG1
+        ldx     #CNROM_SPRITE1
+        jsr     changeCHRBank0
+        ; 8600
+.else
         lda     #$03
         jsr     changeCHRBank0
         lda     #$03
         jsr     changeCHRBank1
+.endif
+
         jsr     bulkCopyToPpu
         .addr   game_palette
         jsr     bulkCopyToPpu

@@ -18,9 +18,10 @@ hacks=(
     )
 
 help () {
-    echo "Usage: $0 [-v] [-H <hackname>] [-B] [-h]"
+    echo "Usage: $0 [-v] [-H <hackname>] [-B] [-M <1|3>] [-h]"
     echo "-v  verbose"
     echo "-H  <hackname>"
+    echo "-M  <mapper> (1: MMC1 or 3: CNROM)"
     echo "-L  Skippable legalscreen"
     echo "-B  B-Type debug"
     echo "-h  you are here"
@@ -31,9 +32,12 @@ help () {
     done
 }
 
-while getopts "vH:LBh" flag; do
+while getopts "vH:M:LBh" flag; do
   case "${flag}" in
-    v) set -x ;;
+    v) 
+        set -x 
+        verbose=1
+        ;;
     H)
         case "${OPTARG}" in 
         "anydas")
@@ -57,6 +61,21 @@ while getopts "vH:LBh" flag; do
             ;;
         *)
             echo "${OPTARG} is an invalid hack"
+            exit 1
+            ;;
+        esac
+        ;;
+    M)
+        case "${OPTARG}" in 
+        1)
+            echo "Default MMC1 selected"
+            ;;
+        3)
+            echo "CNROM (Mapper 3) enabled"
+            compile_flags+=("-D CNROM")
+            ;;
+        *)
+            echo "Invalid flag ${OPTARG} selected"
             exit 1
             ;;
         esac

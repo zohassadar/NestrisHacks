@@ -263,19 +263,40 @@ highScoreIndexToHighScoreNamesOffset:
 highScoreIndexToHighScoreScoresOffset:
         .byte   $00,$03,$06,$09,$0C,$0F,$12,$15
 highScoreEntryScreen:
+.ifdef CNROM
+        ; a201
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        ; a209
+.else
         inc     initRam
         lda     #$10
         jsr     setMMC1Control
+.endif
         lda     #$09
         jsr     setMusicTrack
         lda     #$02
         sta     renderMode
         jsr     updateAudioWaitForNmiAndDisablePpuRendering
         jsr     disableNmi
+.ifdef CNROM
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK0
+        ldy     #CNROM_BG0
+        ldx     #CNROM_SPRITE0
+        jsr     changeCHRBank0
+.else
         lda     #$00
         jsr     changeCHRBank0
         lda     #$00
         jsr     changeCHRBank1
+.endif
         jsr     bulkCopyToPpu
         .addr   menu_palette
         jsr     bulkCopyToPpu

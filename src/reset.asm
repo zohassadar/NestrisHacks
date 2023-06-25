@@ -12,6 +12,25 @@ reset:  cld
         dex
         txs
         inc     reset
+.ifdef CNROM
+        ; ff19
+        nop
+        nop
+        nop
+        nop
+        nop
+        lda     #$00
+        jsr     changeCHRBank0
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        lda     #$00
+.else
         lda     #$10
         jsr     setMMC1Control
         lda     #$00
@@ -20,4 +39,5 @@ reset:  cld
         jsr     changeCHRBank1
         lda     #$00
         jsr     changePRGBank
-        jmp     initRam
+.endif
+        jmp     initRam     ;ff2d

@@ -4,10 +4,20 @@ gameMode_legalScreen:
         sta     renderMode
         jsr     updateAudioWaitForNmiAndDisablePpuRendering
         jsr     disableNmi
+.ifdef CNROM
+        ; 820d
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK0
+        ldy     #CNROM_BG0
+        ldx     #CNROM_SPRITE0
+        jsr     changeCHRBank0
+        ; 8217
+.else
         lda     #$00
         jsr     changeCHRBank0
         lda     #$00
         jsr     changeCHRBank1
+.endif
         jsr     bulkCopyToPpu
         .addr   legal_screen_palette
         jsr     bulkCopyToPpu

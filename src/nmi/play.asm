@@ -205,12 +205,26 @@ render_mode_play_and_demo:
         sta     soundEffectSlot1Init
 @setPaletteColor:
         stx     PPUDATA
+.ifdef CNROM
+        ; 969b
+        ; Very important to reset PPUCTRL
+        ; Relevant conversation in NESDEV discord
+        ; https://discord.com/channels/352252932953079811/745626657439744011/1106210182125592666
+        lda     currentPpuCtrl
+        sta     PPUCTRL
+        ldy     #$00
+        sty     PPUSCROLL
+        sty     PPUSCROLL
+        nop
+        ; 96a9
+.else
         ldy     #$00
         sty     ppuScrollX
         sty     PPUSCROLL
         ldy     #$00
         sty     ppuScrollY
         sty     PPUSCROLL
+.endif
         rts
 
 pieceToPpuStatAddr:

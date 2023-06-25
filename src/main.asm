@@ -76,7 +76,11 @@ playState_noop:
 .include "nmi/poll_controller.asm"
 .include "util/memset.asm"
 .include "util/switch.asm"
+.ifdef CNROM
+.include "hacks/cnrom.asm"
+.else
 .include "util/mmc1.asm"
+.endif
 .include "data/palettes.asm"
 .include "data/highscores.asm"
 

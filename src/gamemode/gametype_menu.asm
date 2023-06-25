@@ -1,7 +1,20 @@
 gameMode_gameTypeMenu:
+.ifdef CNROM
+        ; 82d1
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        ; 82d9
+.else
         inc     initRam
         lda     #$10
         jsr     setMMC1Control
+.endif
         lda     #$01
         sta     renderMode
         jsr     updateAudioWaitForNmiAndDisablePpuRendering
@@ -10,10 +23,20 @@ gameMode_gameTypeMenu:
         .addr   menu_palette
         jsr     bulkCopyToPpu
         .addr   game_type_menu_nametable
+.ifdef CNROM
+        ; 82ed
+        nop     ; padded out for GG codes & mods
+        lda     #CNROM_BANK0
+        ldy     #CNROM_BG0
+        ldx     #CNROM_SPRITE0
+        jsr     changeCHRBank0
+        ; 82f7
+.else
         lda     #$00
         jsr     changeCHRBank0
         lda     #$00
         jsr     changeCHRBank1
+.endif
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering
