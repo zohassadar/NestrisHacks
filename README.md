@@ -58,7 +58,7 @@ Provides a wraparound experience similar to the vertical levels of Super Mario B
 ## Thanks
 [CelestialAmber](https://github.com/CelestialAmber/TetrisNESDisasm) Repo from which this is derived
 
-[ejona86](https://github.com/ejona86/taus) Repo from which above repo is derived
+[ejona86](https://github.com/ejona86/taus) Repo from which above repo is derived and info file
 
 [qalle2](https://github.com/qalle2/nes-util) CHR tools
 
