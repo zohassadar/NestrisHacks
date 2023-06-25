@@ -6,6 +6,7 @@ labels=(
     "rotate_tetrimino"
     "drop_tetrimino"
     "isPositionValid"
+    "game_palette"
     "gameModeState_initGameBackground"
     "playState_playerControlsActiveTetrimino"
     "render_mode_legal_and_title_screens"
