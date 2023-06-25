@@ -4,6 +4,6 @@ src/nametables/*.bin
 *.chr
 *.pyc
 *.map
-tetris.lst
-tetris.lbl
-tetris.dbg
+*.lst
+*.lbl
+*.dbg

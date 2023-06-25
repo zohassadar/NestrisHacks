@@ -1,21 +1,16 @@
 #!/bin/bash
 set -e
 
-compile_flags=()
 
-omit_ud1 () {
-    # Add flag if it hasn't been added already
-    if ! [[ ${compile_flags[*]} == *"-D OMIT_UD1"* ]]; then
-        compile_flags+=("-D OMIT_UD1")
-    fi
-    }
-
+build_flags=()
+output_name=("Tetris")
 hacks=(
     "anydas"
     "penguin"
     "sps"
     "wallhack2"
     )
+
 
 help () {
     echo "Usage: $0 [-v] [-H <hackname>] [-B] [-M <1|3>] [-h]"
@@ -24,6 +19,7 @@ help () {
     echo "-M  <mapper> (1: MMC1 or 3: CNROM)"
     echo "-L  Skippable legalscreen"
     echo "-B  B-Type debug"
+    echo "-S  Set SHA-1"
     echo "-h  you are here"
     echo ""
     echo "Valid hacks:"
@@ -32,66 +28,176 @@ help () {
     done
 }
 
-while getopts "vH:M:LBh" flag; do
-  case "${flag}" in
-    v) 
-        set -x 
-        verbose=1
-        ;;
-    H)
-        case "${OPTARG}" in 
-        "anydas")
-            echo "Anydas enabled"
-            omit_ud1
-            compile_flags+=("-D ANYDAS")
+get_labels (){
+labels=(
+    "@playStateNotDisplayLineClearingAnimation"
+    "shift_tetrimino"
+    "rotate_tetrimino"
+    "drop_tetrimino"
+    "isPositionValid"
+    "game_palette"
+    "gameModeState_initGameBackground"
+    "playState_playerControlsActiveTetrimino"
+    "render_mode_legal_and_title_screens"
+    "render_mode_menu_screens"
+    "render_mode_congratulations_screen"
+    "pollControllerButtons"
+    "nmi"
+    "memset_page"
+    "soundEffectSlot1_rotateTetrimino_ret"
+    "unreferenced_data4"
+    )
+    IFS="|"
+    grep -E "${labels[*]}" $1 | sort
+    unset IFS
+}
+
+
+
+clean_nes () {
+    echo "Cleaning nes files"
+    set +e
+    rm build/*.nes 2>/dev/null
+    set -e
+    }
+
+clean_debug () {
+    echo "Cleaning debug files"
+    set +e
+    rm build/*.lbl 2>/dev/null
+    rm build/*.map 2>/dev/null
+    rm build/*.lst 2>/dev/null
+    rm build/*.dbg 2>/dev/null
+    rm build/*.o 2>/dev/null
+    set -e
+    }
+
+clean_all () {
+    echo "Cleaning all"
+    clean_debug
+    clean_nes
+    set +e
+    rm build/*.bps 2>/dev/null
+    set -e
+    }
+
+
+omit_ud1 () {
+    # Add flag if it hasn't been added already
+    if ! [[ ${build_flags[*]} == *"-D OMIT_UD1"* ]]; then
+        build_flags+=("-D OMIT_UD1")
+    fi
+    }
+
+get_flag_opts (){
+    while getopts "vH:M:LBh" flag; do
+    case "${flag}" in
+        v) 
+            set -x 
+            verbose=1
             ;;
-        "penguin")
-            echo "Penguin Line Clear enabled"
-            compile_flags+=("-D PENGUIN")
+        H)
+            case "${OPTARG}" in 
+            "anydas")
+                echo "Anydas enabled"
+                omit_ud1
+                build_flags+=("-D ANYDAS")
+                output_name+=("Ad")
+                ;;
+            "penguin")
+                echo "Penguin Line Clear enabled"
+                build_flags+=("-D PENGUIN")
+                output_name+=("Plc")
+                ;;
+            "sps")
+                echo "Same Piece Sets enabled"
+                omit_ud1
+                build_flags+=("-D SPS")
+                output_name+=("Sps")
+                ;;
+            "wallhack2")
+                echo "Wallhack2 enabled"
+                omit_ud1
+                build_flags+=("-D WALLHACK2")
+                output_name+=("Wh2")
+                ;;
+            *)
+                echo "${OPTARG} is an invalid hack"
+                exit 1
+                ;;
+            esac
             ;;
-        "sps")
-            echo "Same Piece Sets enabled"
-            omit_ud1
-            compile_flags+=("-D SPS")
+        M)
+            case "${OPTARG}" in 
+            1)
+                echo "Default MMC1 selected"
+                ;;
+            3)
+                echo "CNROM (Mapper 3) enabled"
+                build_flags+=("-D CNROM")
+                output_name+=("Cnrom")
+                ;;
+            *)
+                echo "Invalid flag ${OPTARG} selected"
+                exit 1
+                ;;
+            esac
             ;;
-        "wallhack2")
-            echo "Wallhack2 enabled"
-            omit_ud1
-            compile_flags+=("-D WALLHACK2")
+        L)
+            build_flags+=("-D SKIPPABLE_LEGAL")
+            echo "Skippable Legal Screen enabled"
+            output_name+=("Cnrom")
             ;;
+        B)
+            build_flags+=("-D B_TYPE_DEBUG")
+            echo "B-Type debug enabled"
+            output_name+=("Bdebug")
+            ;;
+        B)
+            echo "Setting SHA-1 sum"
+            setsha1=1
+            ;;
+        h)
+            help; exit ;;
         *)
-            echo "${OPTARG} is an invalid hack"
-            exit 1
-            ;;
-        esac
+            help; exit 1 ;;
+    esac
+    done
+}
+
+case $1 in
+    clean)
+        case $2 in
+        debug)
+            clean_debug
+            exit
         ;;
-    M)
-        case "${OPTARG}" in 
-        1)
-            echo "Default MMC1 selected"
-            ;;
-        3)
-            echo "CNROM (Mapper 3) enabled"
-            compile_flags+=("-D CNROM")
-            ;;
+        nes)
+            clean_nes
+            exit
+        ;;
+        all)
+            clean_all
+            exit
+        ;;
+        "")
+            echo "Please choose:  debug, nes or all"
+            exit 1
+        ;;
         *)
-            echo "Invalid flag ${OPTARG} selected"
+            echo "Invalid clean option $2"
+            echo "Please choose:  debug, nes or all"
             exit 1
-            ;;
-        esac
         ;;
-    L)
-        compile_flags+=("-D SKIPPABLE_LEGAL")
-        echo "Skippable Legal Screen enabled"  ;;
-    B)
-        compile_flags+=("-D B_TYPE_DEBUG")
-        echo "B-Type debug enabled"  ;;
-    h)
-        help; exit ;;
+        esac
+    ;;
     *)
-        help; exit 1 ;;
-  esac
-done
+        get_flag_opts
+    ;;
+
+esac
+
+
 
 if [[ $(uname) == "Darwin" ]]; then
     # mac support
@@ -121,7 +227,7 @@ ls src/nametables/*nametable.py | while read nametable; do
     fi
     if [ "$nametableTime" -gt "$scriptTime" ]; then
         printf "Building %s\n" $nametable
-        python $nametable ${compile_flags[*]}
+        python $nametable ${build_flags[*]}
     fi
 done
 
@@ -153,13 +259,20 @@ touch src/gfx/*.png
 touch src/nametables/*nametable.py
 touch "$0"
 
+mkdir -p build
+output=$(IFS=""; printf "build/${output_name[*]}"; unset IFS)
+
 # build object files
-ca65 ${compile_flags[*]} -g src/tetris.asm -o header.o
-ca65 ${compile_flags[*]} -l tetris.lst -g src/main.asm -o main.o
+ca65 ${build_flags[*]} -g src/tetris.asm -o build/header.o
+ca65 ${build_flags[*]} -l ${output}.lst -g src/main.asm -o build/main.o
 
 # link object files
 
-ld65 -m tetris.map -Ln tetris.lbl --dbgfile tetris.dbg -o tetris.nes -C src/tetris.nes.cfg main.o header.o
+ld65 -m ${output}.map \
+    -Ln ${output}.lbl \
+    --dbgfile ${output}.dbg \
+    -o ${output}.nes \
+    -C src/tetris.nes.cfg build/main.o build/header.o
 
 # create patch
 if [[ -f clean.nes ]] && [[ $(uname) == "Darwin" ]]; then
@@ -171,15 +284,27 @@ else
 fi
 
 
+
 # Validate if making clean version
-if [ ${#compile_flags[@]} -eq 0 ]; then
-    echo "Validating sha1sum"
+if [[ -n $setsha1 ]]; then
+    echo "Setting sha1sum"
     if command -v sha1sum &>/dev/null; then
-        sha1sum -c tetris.sha1
+        sha1sum ${output}.nes > sha1files/${output}.sha1 
         # sha1sum tetris.nes
     elif command -v shasum &>/dev/null; then
         # mac support
-        shasum -c tetris.sha1
+        shasum -c  ${output}.nes > sha1files/${output}.sha1
+    else
+        echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
+    fi
+elif [ ${#build_flags[@]} -eq 0 ]; then
+    echo "Validating sha1sum"
+    if command -v sha1sum &>/dev/null; then
+        sha1sum -c sha1files/${output}.sha1 
+        # sha1sum tetris.nes
+    elif command -v shasum &>/dev/null; then
+        # mac support
+        shasum -c  sha1files/${output}.sha1
     else
         echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
     fi
@@ -187,13 +312,13 @@ else
     echo "Hacked version has been compiled.  sha1sum will not match.  Validating label placement instead"
     # Validate label placement
     expected=$(cat labels.txt)
-    current=$(bash tools/select_labels.sh)
+    current=$(get_labels ${output}.lbl)
 
     if [[ $expected = $current ]]; then
         echo "Labels line up"
     else
         echo "Labels do not line up!"
-        diff -y labels.txt <(bash tools/select_labels.sh)
+        diff -y labels.txt <(get_labels ${output}.lbl)
     fi
 fi
 
