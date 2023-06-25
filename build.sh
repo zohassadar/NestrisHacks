@@ -5,7 +5,7 @@ echo "Instantiated as $0 $@"
 output_path="build/"
 basename="Tetris"
 build_flags=()
-output_name=($basename)
+name_modifiers=()
 
 hacks=(
     "anydas"
@@ -16,18 +16,40 @@ hacks=(
 
 variations=(
     "-m 3"
+
+    "-l -m 3"
+
     "-l -H penguin"
+
     "-l -H penguin -H wallhack2"
     "-l -H penguin -H anydas"
     "-l -H penguin -H sps"
+
     "-l -H penguin -H anydas -H sps"
     "-l -H penguin -H anydas -H wallhack2"
-    # "-l -H penguin -H sps -H wallhack2"
-    # "-l -H penguin -H anydas -H sps -H wallhack2"
-    # "-l -H wallhack2"
-    # "-l -H wallhack2 -H anydas"
-    # "-l -H wallhack2 -H sps"
-    # "-l -H wallhack2 -H anydas -H sps"
+    "-l -H penguin -H sps -H wallhack2"
+    "-l -H penguin -H anydas -H sps -H wallhack2"
+
+    "-l -H wallhack2"
+    "-l -H wallhack2 -H anydas"
+    "-l -H wallhack2 -H sps"
+    "-l -H wallhack2 -H anydas -H sps"
+
+    "-l -m 3 -H penguin"
+
+    "-l -m 3 -H penguin -H wallhack2"
+    "-l -m 3 -H penguin -H anydas"
+    "-l -m 3 -H penguin -H sps"
+
+    "-l -m 3 -H penguin -H anydas -H sps"
+    "-l -m 3 -H penguin -H anydas -H wallhack2"
+    "-l -m 3 -H penguin -H sps -H wallhack2"
+    "-l -m 3 -H penguin -H anydas -H sps -H wallhack2"
+    
+    "-l -m 3 -H wallhack2"
+    "-l -m 3 -H wallhack2 -H anydas"
+    "-l -m 3 -H wallhack2 -H sps"
+    "-l -m 3 -H wallhack2 -H anydas -H sps"
     )
 
 variation_list () {
@@ -100,17 +122,17 @@ get_flag_opts (){
             a)
                 build_flags+=("-D AEPPOZ")
                 echo "AEPPOZ debug enabled (not actually implemented yet)"
-                output_name+=("Aep")
+                name_modifiers+=("Aep")
                 ;;
             b)
                 build_flags+=("-D B_TYPE_DEBUG")
                 echo "B-Type debug enabled"
-                output_name+=("Bdb")
+                name_modifiers+=("Bdb")
                 ;;
             f)
                 build_flags+=("-D FLOATING_PIECE")
                 echo "Floating piece debug enabled (not actually implemented yet)"
-                output_name+=("Flt")
+                name_modifiers+=("Flt")
                 ;;
             h)
                 help
@@ -122,24 +144,24 @@ get_flag_opts (){
                     echo "Anydas enabled"
                     omit_ud1
                     build_flags+=("-D ANYDAS")
-                    output_name+=("Any")
+                    name_modifiers+=("Any")
                     ;;
                 "penguin")
                     echo "Penguin Line Clear enabled"
                     build_flags+=("-D PENGUIN")
-                    output_name+=("Plc")
+                    name_modifiers+=("Plc")
                     ;;
                 "sps")
                     echo "Same Piece Sets enabled"
                     omit_ud1
                     build_flags+=("-D SPS")
-                    output_name+=("Sps")
+                    name_modifiers+=("Sps")
                     ;;
                 "wallhack2")
                     echo "Wallhack2 enabled"
                     omit_ud1
                     build_flags+=("-D WALLHACK2")
-                    output_name+=("Wh2")
+                    name_modifiers+=("Wh2")
                     ;;
                 *)
                     echo "${OPTARG} is an invalid hack"
@@ -150,7 +172,7 @@ get_flag_opts (){
             l)
                 build_flags+=("-D SKIPPABLE_LEGAL")
                 echo "Skippable Legal Screen enabled"
-                output_name+=("S")
+                name_modifiers+=("S")
                 ;;
             m)
                 case "${OPTARG}" in 
@@ -160,7 +182,7 @@ get_flag_opts (){
                 3)
                     echo "CNROM (Mapper 3) enabled"
                     build_flags+=("-D CNROM")
-                    output_name+=("Cnrom")
+                    name_modifiers+=("Cnrom")
                     ;;
                 *)
                     echo "Invalid flag ${OPTARG} selected"
@@ -370,7 +392,8 @@ done
 # touch src/nametables/*nametable.py
 touch "$0"
 
-output_file=$(IFS=""; printf "${output_name[*]}"; unset IFS)
+sorted_modifiers=($(echo ${name_modifiers[@]} | tr " " "\n" | sort))
+output_file=$(IFS=""; printf "${basename}${sorted_modifiers[*]}"; unset IFS)
 mkdir -p "$output_path"
 output="${output_path}${output_file}"
 
