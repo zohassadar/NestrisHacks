@@ -1,9 +1,11 @@
-src/nametables/*.bin
+*.bin
+*.bps
+*.chr
+*.dbg
+*.ips
+*.lbl
+*.lst
+*.map
 *.nes
 *.o
-*.chr
 *.pyc
-*.map
-*.lst
-*.lbl
-*.dbg

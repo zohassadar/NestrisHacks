@@ -12,6 +12,6 @@ al 009522 .@playStateNotDisplayLineClearingAnimation
 al 009D51 .pollControllerButtons
 al 00A344 .render_mode_congratulations_screen
 al 00AC6A .memset_page
-al 00ACE9 .game_palette
+al 00ACF3 .game_palette
 al 00E3D0 .soundEffectSlot1_rotateTetrimino_ret
 al 00F9EB .unreferenced_data4

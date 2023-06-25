@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
-
+output_path="build/"
+basename="Tetris"
 build_flags=()
-output_name=("Tetris")
+output_name=($basename)
+
 hacks=(
     "anydas"
     "penguin"
@@ -11,48 +13,179 @@ hacks=(
     "wallhack2"
     )
 
+variations=(
+    "-l -H penguin"
+    "-l -H penguin -H wallhack2"
+
+    "-l -H penguin -H anydas"
+    "-l -H penguin -H sps"
+    "-l -H penguin -H anydas -H sps"
+
+    "-l -H penguin -H anydas -H wallhack2"
+    "-l -H penguin -H sps -H wallhack2"
+    "-l -H penguin -H anydas -H sps -H wallhack2"
+
+    "-l -H wallhack2"
+
+    "-l -H wallhack2 -H anydas"
+    "-l -H wallhack2 -H sps"
+    "-l -H wallhack2 -H anydas -H sps"
+
+    )
+
+variation_list () {
+    for variation in "${variations[@]}"; do
+        echo "  $variation"
+    done
+    }
+
+subcommands=(
+    "list:\n show variation list\n"
+    "all:\n build variation list\n"
+    "clean <debug|nes|all>:\n remove build files\n"
+    "set-labels:\n update labels.txt\n"
+    "bps2ips:\n Apply bps and create ips\n"
+    )
+
+get_labels () {
+    # labels to spot check
+    labels=(
+        "@playStateNotDisplayLineClearingAnimation"
+        "shift_tetrimino"
+        "rotate_tetrimino"
+        "drop_tetrimino"
+        "isPositionValid"
+        "game_palette"
+        "gameModeState_initGameBackground"
+        "playState_playerControlsActiveTetrimino"
+        "render_mode_legal_and_title_screens"
+        "render_mode_menu_screens"
+        "render_mode_congratulations_screen"
+        "pollControllerButtons"
+        "nmi"
+        "memset_page"
+        "soundEffectSlot1_rotateTetrimino_ret"
+        "unreferenced_data4"
+        )
+
+    IFS="|"
+    grep -E "${labels[*]}" "$1" | sort
+    unset IFS
+}
 
 help () {
-    echo "Usage: $0 [-v] [-H <hackname>] [-B] [-M <1|3>] [-h]"
-    echo "-v  verbose"
-    echo "-H  <hackname>"
-    echo "-M  <mapper> (1: MMC1 or 3: CNROM)"
-    echo "-L  Skippable legalscreen"
-    echo "-B  B-Type debug"
-    echo "-S  Set SHA-1"
+    echo "Usage: $0 [-h] [-v] [-a] [-b] [-f] [-H <hackname>] [-l] [-m <1|3>] [-s]"
+    echo "-a  faster aeppoz + press select to end game"
+    echo "-b  debug b-type"
+    echo "-f  floating piece for debugging"
     echo "-h  you are here"
+    echo "-H  <hack>"
+    echo "-l  skip legal"
+    echo "-m  <mapper>"
+    echo "-s  set sha1file"
+    echo "-v  verbose"
     echo ""
     echo "Valid hacks:"
     for hack in "${hacks[@]}"; do
         echo "  $hack"
     done
+    echo ""
+    echo "Alternative subcommands:"
+    echo ""
+    for sc in "${subcommands[@]}"; do
+        printf "$sc\n"
+    done
 }
 
-get_labels (){
-labels=(
-    "@playStateNotDisplayLineClearingAnimation"
-    "shift_tetrimino"
-    "rotate_tetrimino"
-    "drop_tetrimino"
-    "isPositionValid"
-    "game_palette"
-    "gameModeState_initGameBackground"
-    "playState_playerControlsActiveTetrimino"
-    "render_mode_legal_and_title_screens"
-    "render_mode_menu_screens"
-    "render_mode_congratulations_screen"
-    "pollControllerButtons"
-    "nmi"
-    "memset_page"
-    "soundEffectSlot1_rotateTetrimino_ret"
-    "unreferenced_data4"
-    )
-    IFS="|"
-    grep -E "${labels[*]}" $1 | sort
-    unset IFS
+get_flag_opts (){
+    while getopts "abhH:lm:sv" flag; do
+        case "${flag}" in
+            a)
+                build_flags+=("-D AEPPOZ")
+                echo "AEPPOZ debug enabled (not actually implemented yet)"
+                output_name+=("Aep")
+                ;;
+            b)
+                build_flags+=("-D B_TYPE_DEBUG")
+                echo "B-Type debug enabled"
+                output_name+=("Bdb")
+                ;;
+            f)
+                build_flags+=("-D FLOATING_PIECE")
+                echo "Floating piece debug enabled (not actually implemented yet)"
+                output_name+=("Flt")
+                ;;
+            h)
+                help
+                exit
+                ;;
+            H)
+                case "${OPTARG}" in 
+                "anydas")
+                    echo "Anydas enabled"
+                    omit_ud1
+                    build_flags+=("-D ANYDAS")
+                    output_name+=("Any")
+                    ;;
+                "penguin")
+                    echo "Penguin Line Clear enabled"
+                    build_flags+=("-D PENGUIN")
+                    output_name+=("Plc")
+                    ;;
+                "sps")
+                    echo "Same Piece Sets enabled"
+                    omit_ud1
+                    build_flags+=("-D SPS")
+                    output_name+=("Sps")
+                    ;;
+                "wallhack2")
+                    echo "Wallhack2 enabled"
+                    omit_ud1
+                    build_flags+=("-D WALLHACK2")
+                    output_name+=("Wh2")
+                    ;;
+                *)
+                    echo "${OPTARG} is an invalid hack"
+                    exit 1
+                    ;;
+                esac
+                ;;
+            l)
+                build_flags+=("-D SKIPPABLE_LEGAL")
+                echo "Skippable Legal Screen enabled"
+                output_name+=("S")
+                ;;
+            m)
+                case "${OPTARG}" in 
+                1)
+                    echo "Default MMC1 selected"
+                    ;;
+                3)
+                    echo "CNROM (Mapper 3) enabled"
+                    build_flags+=("-D CNROM")
+                    output_name+=("Cnrom")
+                    ;;
+                *)
+                    echo "Invalid flag ${OPTARG} selected"
+                    exit 1
+                    ;;
+                esac
+                ;;
+            s)
+                echo "Setting SHA-1 sum"
+                setsha1=1
+                ;;
+            v) 
+                set -x 
+                verbose=1
+                ;;
+            *)
+                help
+                exit 1 
+                ;;
+        esac
+    done
 }
-
-
 
 clean_nes () {
     echo "Cleaning nes files"
@@ -81,89 +214,41 @@ clean_all () {
     set -e
     }
 
+create_patch () {
+    echo "Creating ${1%.nes}.bps using $1"
+    flips --create "${output_path}${basename}.nes" "$1" "${1%.nes}.bps"
+    }
+
+set_labels () {
+    echo "Setting labels.txt using ${output_path}${basename}.lbl"
+    get_labels "${output_path}${basename}.lbl" > labels.txt
+    }
+
+bps2ips () {
+    echo "Converting $1 to ${1%.bps}.ips"
+    flips --apply "$1" "${output_path}${basename}.nes" "${1%bps}.nes"
+    flips --create --ips "${output_path}${basename}.nes" "${1%bps}.nes" "${1%.bps}.ips"
+    }
+
+build_all () {
+    for variation in "${variations[@]}"; do
+        echo "Building $variation"
+        if "./$0" ${@:2} $variation; then
+            echo "Successfully built $variation"
+        else
+            echo "Failed to build $variation"
+            exit 1
+        fi
+    done
+    }
 
 omit_ud1 () {
     # Add flag if it hasn't been added already
     if ! [[ ${build_flags[*]} == *"-D OMIT_UD1"* ]]; then
         build_flags+=("-D OMIT_UD1")
     fi
+    # When specified, unreferenced_data1.bin not included
     }
-
-get_flag_opts (){
-    while getopts "vH:M:LBh" flag; do
-    case "${flag}" in
-        v) 
-            set -x 
-            verbose=1
-            ;;
-        H)
-            case "${OPTARG}" in 
-            "anydas")
-                echo "Anydas enabled"
-                omit_ud1
-                build_flags+=("-D ANYDAS")
-                output_name+=("Ad")
-                ;;
-            "penguin")
-                echo "Penguin Line Clear enabled"
-                build_flags+=("-D PENGUIN")
-                output_name+=("Plc")
-                ;;
-            "sps")
-                echo "Same Piece Sets enabled"
-                omit_ud1
-                build_flags+=("-D SPS")
-                output_name+=("Sps")
-                ;;
-            "wallhack2")
-                echo "Wallhack2 enabled"
-                omit_ud1
-                build_flags+=("-D WALLHACK2")
-                output_name+=("Wh2")
-                ;;
-            *)
-                echo "${OPTARG} is an invalid hack"
-                exit 1
-                ;;
-            esac
-            ;;
-        M)
-            case "${OPTARG}" in 
-            1)
-                echo "Default MMC1 selected"
-                ;;
-            3)
-                echo "CNROM (Mapper 3) enabled"
-                build_flags+=("-D CNROM")
-                output_name+=("Cnrom")
-                ;;
-            *)
-                echo "Invalid flag ${OPTARG} selected"
-                exit 1
-                ;;
-            esac
-            ;;
-        L)
-            build_flags+=("-D SKIPPABLE_LEGAL")
-            echo "Skippable Legal Screen enabled"
-            output_name+=("Cnrom")
-            ;;
-        B)
-            build_flags+=("-D B_TYPE_DEBUG")
-            echo "B-Type debug enabled"
-            output_name+=("Bdebug")
-            ;;
-        B)
-            echo "Setting SHA-1 sum"
-            setsha1=1
-            ;;
-        h)
-            help; exit ;;
-        *)
-            help; exit 1 ;;
-    esac
-    done
-}
 
 case $1 in
     clean)
@@ -191,19 +276,58 @@ case $1 in
         ;;
         esac
     ;;
+
+    bps2sps)
+        bps2ips $@
+        exit
+    ;;
+    set-labels)
+        set_labels
+        exit
+    ;;
+    all)
+        build_all $0 ${@:2}
+        exit
+    ;;
+    list)
+        variation_list
+        exit
+    ;;
     *)
-        get_flag_opts
+        get_flag_opts $@
     ;;
 
 esac
 
-
-
 if [[ $(uname) == "Darwin" ]]; then
     # mac support
-    scriptTime=$(stat -f "%m" "$0")
+    get_stat () {
+        stat -f "%m" "$1"
+        }
+    get_size () {
+        stat -f %z "$1"
+        }
+    sha1check () {
+        shasum -c "$1"
+        }
+    sha1set () {
+        shasum "$1" > "$2"
+        }
+    scriptTime=$(get_stat "$0")
 else
-    scriptTime=$(stat -c "%X" "$0")
+    get_stat () {
+        stat -c "%Y" "$1"
+        }
+    get_size () {
+        stat -c %s "$1"
+        }
+    sha1check () {
+        sha1sum -c "$1"
+        }
+    sha1set () {
+        sha1sum "$1" > "$2"
+        }
+    scriptTime=$(get_stat "$0")
 fi
 
 # Rebuild all nametables that are dependent on buildflags
@@ -219,19 +343,13 @@ if ! [ "$(ls src/nametables/*nametable.py 2>/dev/null | wc -l | xargs)" = $namet
 fi
 
 ls src/nametables/*nametable.py | while read nametable; do
-    if [[ $(uname) == "Darwin" ]]; then
-        # mac support
-        nametableTime=$(stat -f "%m" $nametable)
-    else
-        nametableTime=$(stat -c "%Y" $nametable)
-    fi
-    if [ "$nametableTime" -gt "$scriptTime" ]; then
-        printf "Building %s\n" $nametable
-        python $nametable ${build_flags[*]}
+    nametableTime=$(get_stat $nametable)
+    if [[ "$nametableTime" -gt "$scriptTime" ]]; then
+        set -e
+        echo "Building $nametable"
+        verbose=$verbose python $nametable ${build_flags[*]}
     fi
 done
-
-
 chrCount=$(ls src/gfx/*.chr 2>/dev/null | wc -l | xargs)
 
 if ! [ "$(ls src/gfx/*.png 2>/dev/null | wc -l | xargs)" = $chrCount ]; then
@@ -240,30 +358,25 @@ if ! [ "$(ls src/gfx/*.png 2>/dev/null | wc -l | xargs)" = $chrCount ]; then
 fi
 
 ls src/gfx/*.png | while read png; do
-    if [[ $(uname) == "Darwin" ]]; then
-        # mac support
-        pngTime=$(stat -f "%m" $png)
-    else
-        pngTime=$(stat -c "%Y" $png)
-    fi
+    pngTime=$(get_stat $png)
     if [ "$pngTime" -gt "$scriptTime" ]; then
-        printf "Converting %s\n" $png
+        echo "Converting $png"
         python tools/nes-util/nes_chr_encode.py $png ${png%.png}.chr
     fi
 done
 
-
 # touch this file to store the last modified / checked date
-
 touch src/gfx/*.png
 touch src/nametables/*nametable.py
 touch "$0"
 
-mkdir -p build
-output=$(IFS=""; printf "build/${output_name[*]}"; unset IFS)
+output_file=$(IFS=""; printf "${output_name[*]}"; unset IFS)
+mkdir -p "$output_path"
+output="${output_path}${output_file}"
+
 
 # build object files
-ca65 ${build_flags[*]} -g src/tetris.asm -o build/header.o
+ca65 ${build_flags[*]} -g src/header.asm -o build/header.o
 ca65 ${build_flags[*]} -l ${output}.lst -g src/main.asm -o build/main.o
 
 # link object files
@@ -274,63 +387,45 @@ ld65 -m ${output}.map \
     -o ${output}.nes \
     -C src/tetris.nes.cfg build/main.o build/header.o
 
-# create patch
-if [[ -f clean.nes ]] && [[ $(uname) == "Darwin" ]]; then
-    echo "Unable to create patch on mac"
-elif [[ -f clean.nes ]]; then
-    ./tools/flips-linux --create clean.nes tetris.nes tetris.bps
+# Validate labels
+expected=$(cat labels.txt)
+current=$(get_labels "${output}.lbl")
+if [[ "$expected" = "$current" ]]; then
+    echo "Labels line up"
 else
-    echo "clean.nes not found.  Skipping patch creation."
+    echo "Labels do not line up!"
+    diff -y labels.txt <(get_labels "${output}.lbl")
+    exit 1
 fi
 
-
-
-# Validate if making clean version
+# Validate against sha1sum
 if [[ -n $setsha1 ]]; then
-    echo "Setting sha1sum"
-    if command -v sha1sum &>/dev/null; then
-        sha1sum ${output}.nes > sha1files/${output}.sha1 
-        # sha1sum tetris.nes
-    elif command -v shasum &>/dev/null; then
-        # mac support
-        shasum -c  ${output}.nes > sha1files/${output}.sha1
-    else
-        echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
-    fi
-elif [ ${#build_flags[@]} -eq 0 ]; then
-    echo "Validating sha1sum"
-    if command -v sha1sum &>/dev/null; then
-        sha1sum -c sha1files/${output}.sha1 
-        # sha1sum tetris.nes
-    elif command -v shasum &>/dev/null; then
-        # mac support
-        shasum -c  sha1files/${output}.sha1
-    else
-        echo "sha1sum or shasum not found.  Unable to get SHA-1 hash of tetris.nes."
-    fi
+    echo "Setting sha1sum for ${output}.nes"
+    sha1set "${output}.nes" "sha1files/${output_file}.sha1"
 else
-    echo "Hacked version has been compiled.  sha1sum will not match.  Validating label placement instead"
-    # Validate label placement
-    expected=$(cat labels.txt)
-    current=$(get_labels ${output}.lbl)
-
-    if [[ $expected = $current ]]; then
-        echo "Labels line up"
+    if [[ -f "sha1files/${output_file}.sha1" ]]; then
+        echo "Validating sha1sum for ${output}.nes"
+        sha1check "sha1files/${output_file}.sha1"
     else
-        echo "Labels do not line up!"
-        diff -y labels.txt <(get_labels ${output}.lbl)
+        echo "sha1files/${output_file}.sha1 not created"
+        exit 1
     fi
 fi
-
-
 
 # show some stats
-sed -n '23,27p' < tetris.map
-if [[ -f tetris.bps ]]; then
-    # mac support
-    if [[ $(uname) == "Darwin" ]]; then
-        stat -f %z tetris.bps
-    else
-        stat -c %s tetris.bps
-    fi
+sed -n '23,27p' < "${output}.map"
+
+# create patch
+if [[ $output == "${output_path}${basename}" ]]; then
+    exit 1
+elif sha1check "sha1files/${basename}.sha1" 2>/dev/null; then
+    create_patch "${output}.nes"
+else
+    echo "Base file not yet built or is invalid"
+    exit 1
+fi
+
+# show patch size
+if [[ -f "${output}.bps" ]]; then
+    echo Patch size: $(get_size "${output}.bps")
 fi

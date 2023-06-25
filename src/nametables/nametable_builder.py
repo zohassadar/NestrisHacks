@@ -1,13 +1,15 @@
 import argparse
 import hashlib
 import logging
+import os
 import pprint
 import re
 import sys
 from collections import Counter
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+verbose=os.getenv("verbose")
+logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
 
 BUILD_HEADER = '''
@@ -76,7 +78,7 @@ def extract_bytes_from_nametable(
     nametable = open(nametable_filename, "rb").read()
     logger.debug(f"Original file length is {len(nametable)}")
     original_sha1sum = hashlib.sha1(nametable).hexdigest()
-    logger.info(f"Original sha1sum is {original_sha1sum}")
+    logger.debug(f"Original sha1sum is {original_sha1sum}")
 
     with open(nametable_filename, "rb") as file:
         while True:
@@ -276,7 +278,7 @@ def build_nametable(
     if sha1sum != original_sha1sum:
         logger.warning(f"Warning! {sha1sum} does not match original {original_sha1sum}")
     else:
-        logger.info(f"Original nametable being rebuilt")
+        logger.debug(f"Original nametable being rebuilt")
     with open(output, "wb") as file:
         file.write(output_data)
 
