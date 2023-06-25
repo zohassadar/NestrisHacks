@@ -16,7 +16,7 @@ hacks=(
 
 variations=(
     "-m 3"
-    # "-l -H penguin"
+    "-l -H penguin"
     # "-l -H penguin -H wallhack2"
     # "-l -H penguin -H anydas"
     # "-l -H penguin -H sps"
