@@ -415,7 +415,7 @@ if [[ "$expected" = "$current" ]]; then
     echo "Labels line up"
 else
     echo "Labels do not line up!"
-    diff -y labels.txt <(get_labels "${output}.lbl")
+    diff labels.txt <(get_labels "${output}.lbl")
     exit 1
 fi
 
