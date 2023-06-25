@@ -12,7 +12,7 @@ Run:
 |             |`Tetris.nes`| Vanilla                |
 | `-a`        | `Aep`      | Debug mode.  Every drop is a tetris.  Select to end game.  (Not yet implemented) |
 | `-b`        | `Bdb`      | Debug mode.  B-Game requires no lines to win |
-| `-f`        | `Flt`      | Debug mode.  Piece floats unless select is pressed |
+| `-f`        | `Flt`      | Debug mode.  Piece floats unless select is pressed (Not yet implemented) |
 | `-H anydas` | `Any`      | HydrantDude's [Anydas](#anydas) |
 | `-H penguin`| `Plc`      | [Penguin Line Clear](#penguin-line-clear) |
 | `-H sps`    | `Sps`      | Kirjava's [Same Piece Sets](#same-piece-sets) |
