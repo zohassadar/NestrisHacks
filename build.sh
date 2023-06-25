@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 output_path="build/"
@@ -244,8 +244,8 @@ set_labels () {
 
 bps2ips () {
     echo "Converting $1 to ${1%.bps}.ips"
-    flips --apply "$1" "${output_path}${basename}.nes" "${1%bps}.nes"
-    flips --create --ips "${output_path}${basename}.nes" "${1%bps}.nes" "${1%.bps}.ips"
+    flips --apply "$1" "${output_path}${basename}.nes" "${1%.bps}.nes"
+    flips --create --ips "${output_path}${basename}.nes" "${1%.bps}.nes" "${1%.bps}.ips"
     }
 
 omit_ud1 () {
@@ -283,8 +283,8 @@ case $1 in
         esac
     ;;
 
-    bps2sps)
-        bps2ips $@
+    bps2ips)
+        bps2ips $2
         exit
     ;;
     set-labels)
