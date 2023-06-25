@@ -3,6 +3,13 @@ set -e
 
 compile_flags=()
 
+omit_ud1 () {
+    # Add flag if it hasn't been added already
+    if ! [[ ${compile_flags[*]} == *"-D OMIT_UD1"* ]]; then
+        compile_flags+=("-D OMIT_UD1")
+    fi
+    }
+
 hacks=(
     "anydas"
     "penguin"
@@ -14,6 +21,7 @@ help () {
     echo "Usage: $0 [-v] [-H <hackname>] [-B] [-h]"
     echo "-v  verbose"
     echo "-H  <hackname>"
+    echo "-L  Skippable legalscreen"
     echo "-B  B-Type debug"
     echo "-h  you are here"
     echo ""
@@ -23,14 +31,7 @@ help () {
     done
 }
 
-omit_ud1 () {
-    # Add flag if it hasn't been added already
-    if ! [[ ${compile_flags[*]} == *"-D OMIT_UD1"* ]]; then
-        compile_flags+=("-D OMIT_UD1")
-    fi
-    }
-
-while getopts "vH:Bh" flag; do
+while getopts "vH:LBh" flag; do
   case "${flag}" in
     v) set -x ;;
     H)
@@ -60,6 +61,9 @@ while getopts "vH:Bh" flag; do
             ;;
         esac
         ;;
+    L)
+        compile_flags+=("-D SKIPPABLE_LEGAL")
+        echo "Skippable Legal Screen enabled"  ;;
     B)
         compile_flags+=("-D B_TYPE_DEBUG")
         echo "B-Type debug enabled"  ;;
