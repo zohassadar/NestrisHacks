@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
-echo "Instantiated as $0 $@"
 
 output_path="build/"
 basename="Tetris"
-build_flags=()
+buildflags=()
 name_modifiers=()
 
 hacks=(
@@ -120,17 +119,17 @@ get_flag_opts (){
     while getopts "abhH:lm:sv" flag; do
         case "${flag}" in
             a)
-                build_flags+=("-D AEPPOZ")
+                buildflags+=("-D AEPPOZ")
                 echo "AEPPOZ debug enabled (not actually implemented yet)"
                 name_modifiers+=("Aep")
                 ;;
             b)
-                build_flags+=("-D B_TYPE_DEBUG")
+                buildflags+=("-D B_TYPE_DEBUG")
                 echo "B-Type debug enabled"
                 name_modifiers+=("Bdb")
                 ;;
             f)
-                build_flags+=("-D FLOATING_PIECE")
+                buildflags+=("-D FLOATING_PIECE")
                 echo "Floating piece debug enabled (not actually implemented yet)"
                 name_modifiers+=("Flt")
                 ;;
@@ -143,24 +142,24 @@ get_flag_opts (){
                 "anydas")
                     echo "Anydas enabled"
                     omit_ud1
-                    build_flags+=("-D ANYDAS")
+                    buildflags+=("-D ANYDAS")
                     name_modifiers+=("Any")
                     ;;
                 "penguin")
                     echo "Penguin Line Clear enabled"
-                    build_flags+=("-D PENGUIN")
+                    buildflags+=("-D PENGUIN")
                     name_modifiers+=("Plc")
                     ;;
                 "sps")
                     echo "Same Piece Sets enabled"
                     omit_ud1
-                    build_flags+=("-D SPS")
+                    buildflags+=("-D SPS")
                     name_modifiers+=("Sps")
                     ;;
                 "wallhack2")
                     echo "Wallhack2 enabled"
                     omit_ud1
-                    build_flags+=("-D WALLHACK2")
+                    buildflags+=("-D WALLHACK2")
                     name_modifiers+=("Wh2")
                     ;;
                 *)
@@ -170,7 +169,7 @@ get_flag_opts (){
                 esac
                 ;;
             l)
-                build_flags+=("-D SKIPPABLE_LEGAL")
+                buildflags+=("-D SKIPPABLE_LEGAL")
                 echo "Skippable Legal Screen enabled"
                 name_modifiers+=("S")
                 ;;
@@ -181,7 +180,7 @@ get_flag_opts (){
                     ;;
                 3)
                     echo "CNROM (Mapper 3) enabled"
-                    build_flags+=("-D CNROM")
+                    buildflags+=("-D CNROM")
                     name_modifiers+=("Cnrom")
                     ;;
                 *)
@@ -250,8 +249,8 @@ bps2ips () {
 
 omit_ud1 () {
     # Add flag if it hasn't been added already
-    if ! [[ ${build_flags[*]} == *"-D OMIT_UD1"* ]]; then
-        build_flags+=("-D OMIT_UD1")
+    if ! [[ ${buildflags[*]} == *"-D OMIT_UD1"* ]]; then
+        buildflags+=("-D OMIT_UD1")
     fi
     # When specified, unreferenced_data1.bin not included
     }
@@ -369,7 +368,7 @@ ls src/nametables/*nametable.py | while read nametable; do
     if [[ "$nametableTime" -ge "$scriptTime" ]]; then
         set -e
         echo "Building $nametable"
-        verbose=$verbose python $nametable ${build_flags[*]}
+        verbose=$verbose python $nametable ${buildflags[*]}
     fi
 done
 chrCount=$(ls src/gfx/*.chr 2>/dev/null | wc -l | xargs)
@@ -397,8 +396,8 @@ output="${output_path}${output_file}"
 
 
 # build object files
-ca65 ${build_flags[*]} -g src/header.asm -o build/header.o
-ca65 ${build_flags[*]} -l ${output}.lst -g src/main.asm -o build/main.o
+ca65 ${buildflags[*]} -g src/header.asm -o build/header.o
+ca65 ${buildflags[*]} -l ${output}.lst -g src/main.asm -o build/main.o
 
 # link object files
 
@@ -440,7 +439,7 @@ if [[ $output == "${output_path}${basename}" ]]; then
 elif sha1check "sha1files/${basename}.sha1" 2>/dev/null; then
     create_patch "${output}.nes"
 else
-    echo "Base file not yet built or is invalid"
+    echo "sha1files/${basename}.sha1 not built or invalid"
     exit 1
 fi
 
