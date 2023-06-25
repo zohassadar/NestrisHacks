@@ -9,3 +9,5 @@
 *.nes
 *.o
 *.pyc
+
+ips/*.asm
