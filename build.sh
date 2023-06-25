@@ -388,8 +388,6 @@ ls src/gfx/*.png | while read png; do
 done
 
 # touch this file to store the last modified / checked date
-# touch src/gfx/*.png
-# touch src/nametables/*nametable.py
 touch "$0"
 
 sorted_modifiers=($(echo ${name_modifiers[@]} | tr " " "\n" | sort))
