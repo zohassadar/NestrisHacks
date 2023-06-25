@@ -7,4 +7,5 @@
 * Penguin Line Clear
 * Wallhack 2
 * SPS
-* CNROM
+* CNROM (Does not yet work correctly)
+
