@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+echo "Instantiated as $0 $@"
 
 output_path="build/"
 basename="Tetris"
@@ -14,23 +15,19 @@ hacks=(
     )
 
 variations=(
-    "-l -H penguin"
-    "-l -H penguin -H wallhack2"
-
-    "-l -H penguin -H anydas"
-    "-l -H penguin -H sps"
-    "-l -H penguin -H anydas -H sps"
-
-    "-l -H penguin -H anydas -H wallhack2"
-    "-l -H penguin -H sps -H wallhack2"
-    "-l -H penguin -H anydas -H sps -H wallhack2"
-
-    "-l -H wallhack2"
-
-    "-l -H wallhack2 -H anydas"
-    "-l -H wallhack2 -H sps"
-    "-l -H wallhack2 -H anydas -H sps"
-
+    "-m 3"
+    # "-l -H penguin"
+    # "-l -H penguin -H wallhack2"
+    # "-l -H penguin -H anydas"
+    # "-l -H penguin -H sps"
+    # "-l -H penguin -H anydas -H sps"
+    # "-l -H penguin -H anydas -H wallhack2"
+    # "-l -H penguin -H sps -H wallhack2"
+    # "-l -H penguin -H anydas -H sps -H wallhack2"
+    # "-l -H wallhack2"
+    # "-l -H wallhack2 -H anydas"
+    # "-l -H wallhack2 -H sps"
+    # "-l -H wallhack2 -H anydas -H sps"
     )
 
 variation_list () {
@@ -172,7 +169,6 @@ get_flag_opts (){
                 esac
                 ;;
             s)
-                echo "Setting SHA-1 sum"
                 setsha1=1
                 ;;
             v) 
@@ -230,18 +226,6 @@ bps2ips () {
     flips --create --ips "${output_path}${basename}.nes" "${1%bps}.nes" "${1%.bps}.ips"
     }
 
-build_all () {
-    for variation in "${variations[@]}"; do
-        echo "Building $variation"
-        if "./$0" ${@:2} $variation; then
-            echo "Successfully built $variation"
-        else
-            echo "Failed to build $variation"
-            exit 1
-        fi
-    done
-    }
-
 omit_ud1 () {
     # Add flag if it hasn't been added already
     if ! [[ ${build_flags[*]} == *"-D OMIT_UD1"* ]]; then
@@ -286,7 +270,16 @@ case $1 in
         exit
     ;;
     all)
-        build_all $0 ${@:2}
+        for variation in "${variations[@]}"; do
+            echo "Building $variation"
+            "./$0" ${@:2} $variation
+            if [[ $? -eq 0 ]]; then
+                echo "Successfully built $variation"
+            else
+                echo "Failed to build $variation"
+                exit 1
+            fi
+        done
         exit
     ;;
     list)
@@ -308,25 +301,32 @@ if [[ $(uname) == "Darwin" ]]; then
         stat -f %z "$1"
         }
     sha1check () {
+        echo "Checking sha1sum for $1"
         shasum -c "$1"
         }
     sha1set () {
-        shasum "$1" > "$2"
+        sha=$(shasum "$1")
+        printf "Setting sha1sum for $1 to $2: $sha"
+        echo "$sha" > "$2"
         }
     scriptTime=$(get_stat "$0")
 else
-    get_stat () {
+    function get_stat () {
         stat -c "%Y" "$1"
         }
     get_size () {
         stat -c %s "$1"
         }
     sha1check () {
+        echo "Checking sha1sum for $1"
         sha1sum -c "$1"
         }
     sha1set () {
-        sha1sum "$1" > "$2"
+        sha=$(sha1sum "$1")
+        printf "Setting sha1sum for $1 to $2: $sha\n"
+        echo "$sha" > "$2"
         }
+
     scriptTime=$(get_stat "$0")
 fi
 
@@ -400,11 +400,9 @@ fi
 
 # Validate against sha1sum
 if [[ -n $setsha1 ]]; then
-    echo "Setting sha1sum for ${output}.nes"
     sha1set "${output}.nes" "sha1files/${output_file}.sha1"
 else
     if [[ -f "sha1files/${output_file}.sha1" ]]; then
-        echo "Validating sha1sum for ${output}.nes"
         sha1check "sha1files/${output_file}.sha1"
     else
         echo "sha1files/${output_file}.sha1 not created"
