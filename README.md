@@ -19,7 +19,7 @@ Run:
 | `-H scrolltris`| `Scr`   | Kirjava's [Scrolltris](#scrolltris) |
 | `-H sps`    | `Sps`      | Kirjava's [Same Piece Sets](#same-piece-sets) |
 | `-H wallhack2`| `Wh2`    | [Wall Hack 2](#wallhack-2) |
-| `-H warp7`  | `W7`       | [Warp7](#warp7) |
+| `-H warp7`  | `W7`       | [Warp7](#warp-7) |
 | `-l`        | `S`        | Skippable legal screen |
 | `-m 3`      | `Cnrom`    | Use CNROM INES Mapper  |
 
