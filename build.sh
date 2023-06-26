@@ -105,6 +105,7 @@ help () {
     echo "-H  <hack>"
     echo "-l  skip legal"
     echo "-m  <mapper>"
+    echo "-p  patch if sha1 file missing"
     echo "-s  set sha1file"
     echo "-v  verbose"
     echo ""
@@ -121,7 +122,7 @@ help () {
 }
 
 get_flag_opts (){
-    while getopts "abhH:lm:sv" flag; do
+    while getopts "abhH:lm:psv" flag; do
         case "${flag}" in
             a)
                 buildflags+=("-D AEPPOZ")
@@ -203,6 +204,9 @@ get_flag_opts (){
                     exit 1
                     ;;
                 esac
+                ;;
+            p)
+                patchanyway=1
                 ;;
             s)
                 setsha1=1
@@ -441,7 +445,9 @@ else
         sha1check "sha1files/${output_file}.sha1"
     else
         echo "sha1files/${output_file}.sha1 not created"
-        exit 1
+        if [[ -z $patchanyway ]]; then
+            exit 1
+        fi
     fi
 fi
 
