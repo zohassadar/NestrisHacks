@@ -10,7 +10,7 @@ Run:
 | Flag        | Filename    | Description            | 
 | ----------- | ----------- |------------------------|
 |             |`Tetris.nes`| Vanilla                |
-| `-a`        | `Aep`      | Debug mode.  Every drop is a tetris.  Select to end game.  (Not yet implemented) |
+| `-a`        | `Aep`      | Debug mode.  Every drop is a tetris.  Hold select to cause topout |
 | `-b`        | `Bdb`      | Debug mode.  B-Game requires no lines to win |
 | `-f`        | `Flt`      | Debug mode.  Piece floats unless select is pressed (Not yet implemented) |
 | `-H anydas` | `Any`      | HydrantDude's [Anydas](#anydas) |

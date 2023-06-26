@@ -94,7 +94,7 @@ get_labels () {
 
 help () {
     echo "Usage: $0 [-h] [-v] [-a] [-b] [-f] [-H <hackname>] [-l] [-m <1|3>] [-s]"
-    echo "-a  faster aeppoz + press select to end game"
+    echo "-a  aeppoz + hold select to top out"
     echo "-b  debug b-type"
     echo "-f  floating piece for debugging"
     echo "-h  you are here"
@@ -121,7 +121,7 @@ get_flag_opts (){
         case "${flag}" in
             a)
                 buildflags+=("-D AEPPOZ")
-                echo "AEPPOZ debug enabled (not actually implemented yet)"
+                echo "AEPPOZ debug enabled"
                 name_modifiers+=("Aep")
                 ;;
             b)

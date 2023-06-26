@@ -30,7 +30,7 @@ gameMode_legalScreen:
         ldx     #$02
         ldy     #$02
         jsr     memset_page
-.ifdef SKIPPABLE_LEGAL
+.if .defined(SKIPPABLE_LEGAL) | .defined(AEPPOZ) | .defined(B_TYPE_DEBUG)
         lda     #$00
 .else
         lda     #$FF

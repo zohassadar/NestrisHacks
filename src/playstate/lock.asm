@@ -1,6 +1,10 @@
 
 playState_lockTetrimino:
+.ifdef AEPPOZ
+        jsr     checkPositionAndMaybeEndGame
+.else
         jsr     isPositionValid
+.endif
         beq     @notGameOver
         lda     #$02
         sta     soundEffectSlot0Init
@@ -187,7 +191,12 @@ playState_checkForCompletedRows:
 @checkIfRowComplete:
         lda     (playfieldAddr),y
         cmp     #$EF
+.ifdef AEPPOZ
+        beq     @keepGoingAnyway
+@keepGoingAnyway:
+.else
         beq     @rowNotComplete
+.endif
         iny
         dex
         bne     @checkIfRowComplete

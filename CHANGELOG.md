@@ -8,5 +8,5 @@
 * Wallhack 2
 * SPS
 * CNROM (Not fully tested)
-
+* Add AEPPOZ debug flag
 
