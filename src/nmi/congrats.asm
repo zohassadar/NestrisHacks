@@ -23,9 +23,22 @@ render_mode_congratulations_screen:
         lda     highScoreCharToTile,x
         sta     PPUDATA
         lda     #$00
+.ifdef SCROLLTRIS
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         sta     ppuScrollX
         sta     PPUSCROLL
         sta     ppuScrollY
         sta     PPUSCROLL
+.endif
         sta     outOfDateRenderFlags
 @ret:   rts

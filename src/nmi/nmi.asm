@@ -33,11 +33,24 @@ returnFromAnydasRender:
         ldx     #$17
         ldy     #$02
         jsr     generateNextPseudorandomNumber
+.ifdef SCROLLTRIS
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        jsr     incrementScroll
+.else
         lda     #$00
         sta     ppuScrollX
         sta     PPUSCROLL
         sta     ppuScrollY
         sta     PPUSCROLL
+.endif
         lda     #$01
         sta     verticalBlankingInterval
 .ifdef ANYDAS

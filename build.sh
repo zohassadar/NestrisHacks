@@ -10,6 +10,7 @@ hacks=(
     "anydas"
     "penguin"
     "rando"
+    "scrolltris"
     "sps"
     "wallhack2"
     )
@@ -158,6 +159,11 @@ get_flag_opts (){
                     echo "Random Orientation enabled"
                     buildflags+=("-D RANDO")
                     name_modifiers+=("Ro")
+                    ;;
+                "scrolltris")
+                    echo "Scrolltris enabled"
+                    buildflags+=("-D SCROLLTRIS")
+                    name_modifiers+=("Scr")
                     ;;
                 "sps")
                     echo "Same Piece Sets enabled"

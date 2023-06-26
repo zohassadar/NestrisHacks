@@ -16,6 +16,7 @@ Run:
 | `-H anydas` | `Any`      | HydrantDude's [Anydas](#anydas) |
 | `-H penguin`| `Plc`      | [Penguin Line Clear](#penguin-line-clear) |
 | `-H rando`  | `Ro`       | [Random Spawn Orientation](#random-spawn-orientation) |
+| `-H scrolltris`| `Scr`   | Kirjava's [Scrolltris](#scrolltris) |
 | `-H sps`    | `Sps`      | Kirjava's [Same Piece Sets](#same-piece-sets) |
 | `-H wallhack2`| `Wh2`    | [Wall Hack 2](#wallhack-2) |
 | `-l`        | `S`        | Skippable legal screen |
@@ -46,6 +47,9 @@ The line clearing animation has been replaced with a penguin that clears the blo
 
     -H penguin
 
+Incompatible with:
+* Scrolltris
+
 ## Random Spawn Orientation
 
 ![RandomOrientation](./assets/RandomOrientation.png)
@@ -54,6 +58,18 @@ The 7 tetriminoes normally spawn the exact same way.  This variation will spawn 
 
     -H rando
 
+## Scrolltris
+
+![Scrolltris](./assets/Scrolltris.gif)
+
+Credit to [Kirjava](https://kirjava.xyz/)
+
+The screen contents move leftward and upward.
+
+    -H scrolltris
+
+Incompatible with:
+* Penguin Line Clear
 
 ## Same Piece Sets
 

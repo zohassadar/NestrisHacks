@@ -213,17 +213,42 @@ render_mode_play_and_demo:
         lda     currentPpuCtrl
         sta     PPUCTRL
         ldy     #$00
+.ifdef SCROLLTRIS
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         sty     PPUSCROLL
         sty     PPUSCROLL
+.endif
         nop
         ; 96a9
 .else
         ldy     #$00
+.ifdef SCROLLTRIS
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         sty     ppuScrollX
         sty     PPUSCROLL
         ldy     #$00
         sty     ppuScrollY
         sty     PPUSCROLL
+.endif
+
 .endif
         rts
 

@@ -1,6 +1,10 @@
 ; canon is waitForVerticalBlankingInterval
 updateAudioWaitForNmiAndResetOamStaging:
+.ifdef SCROLLTRIS
+        jsr     shiftSpritesThenUpdateAudio
+.else
         jsr     updateAudio_jmp
+.endif
         lda     #$00
         sta     verticalBlankingInterval
         nop
