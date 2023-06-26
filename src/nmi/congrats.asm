@@ -24,16 +24,10 @@ render_mode_congratulations_screen:
         sta     PPUDATA
         lda     #$00
 .ifdef SCROLLTRIS
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+        lda     ppuScrollX
+        sta     PPUSCROLL
+        lda     ppuScrollY
+        sta     PPUSCROLL
 .else
         sta     ppuScrollX
         sta     PPUSCROLL

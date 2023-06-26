@@ -214,6 +214,7 @@ render_mode_play_and_demo:
         sta     PPUCTRL
         ldy     #$00
 .ifdef SCROLLTRIS
+; scrolltris doesn't work with CNROM, but this is here to keep things lined up anyway
         nop
         nop
         nop
@@ -229,18 +230,12 @@ render_mode_play_and_demo:
 .else
         ldy     #$00
 .ifdef SCROLLTRIS
+        ldy     ppuScrollX
+        sty     PPUSCROLL
         nop
         nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+        ldy     ppuScrollY
+        sty     PPUSCROLL
 .else
         sty     ppuScrollX
         sty     PPUSCROLL

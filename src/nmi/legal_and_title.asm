@@ -4,16 +4,10 @@ render_mode_legal_and_title_screens:
         sta     currentPpuCtrl
         lda     #$00
 .ifdef SCROLLTRIS
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
+        lda     ppuScrollX
+        sta     PPUSCROLL
+        lda     ppuScrollY
+        sta     PPUSCROLL
 .else
         sta     ppuScrollX
         sta     PPUSCROLL

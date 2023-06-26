@@ -69,6 +69,7 @@ The screen contents move leftward and upward.
     -H scrolltris
 
 Incompatible with:
+* CNROM
 * Penguin Line Clear
 
 ## Same Piece Sets
