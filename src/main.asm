@@ -1,5 +1,6 @@
         .setcpu "6502"
 
+.include "compat.asm"
 .include "constants.asm"
 .include "charmap.asm"
 .include "ram.asm"

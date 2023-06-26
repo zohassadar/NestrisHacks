@@ -213,18 +213,8 @@ render_mode_play_and_demo:
         lda     currentPpuCtrl
         sta     PPUCTRL
         ldy     #$00
-.ifdef SCROLLTRIS
-; scrolltris doesn't work with CNROM, but this is here to keep things lined up anyway
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-.else
         sty     PPUSCROLL
         sty     PPUSCROLL
-.endif
         nop
         ; 96a9
 .else
