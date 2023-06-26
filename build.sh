@@ -9,6 +9,7 @@ name_modifiers=()
 hacks=(
     "anydas"
     "penguin"
+    "rando"
     "sps"
     "wallhack2"
     )
@@ -85,6 +86,8 @@ get_labels () {
         "soundEffectSlot1_rotateTetrimino_ret"
         "unreferenced_data4"
         "unreferenced_data5"
+        "orientationToSpriteTable"
+        "MMC1_PRG"
         )
 
     IFS="|"
@@ -150,6 +153,11 @@ get_flag_opts (){
                     echo "Penguin Line Clear enabled"
                     buildflags+=("-D PENGUIN")
                     name_modifiers+=("Plc")
+                    ;;
+                "rando")
+                    echo "Random Orientation enabled"
+                    buildflags+=("-D RANDO")
+                    name_modifiers+=("Ro")
                     ;;
                 "sps")
                     echo "Same Piece Sets enabled"

@@ -15,6 +15,7 @@ Run:
 | `-f`        | `Flt`      | Debug mode.  Piece floats unless select is pressed (Not yet implemented) |
 | `-H anydas` | `Any`      | HydrantDude's [Anydas](#anydas) |
 | `-H penguin`| `Plc`      | [Penguin Line Clear](#penguin-line-clear) |
+| `-H rando`  | `Ro`       | [Random Spawn Orientation](#random-spawn-orientation) |
 | `-H sps`    | `Sps`      | Kirjava's [Same Piece Sets](#same-piece-sets) |
 | `-H wallhack2`| `Wh2`    | [Wall Hack 2](#wallhack-2) |
 | `-l`        | `S`        | Skippable legal screen |
@@ -44,6 +45,14 @@ See [this page](https://tetris.fandom.com/wiki/ARE) for an explanation of ARE.
 The line clearing animation has been replaced with a penguin that clears the blocks for you.
 
     -H penguin
+
+## Random Spawn Orientation
+
+![RandomOrientation](./assets/RandomOrientation.png)
+
+The 7 tetriminoes normally spawn the exact same way.  This variation will spawn all possible orientations.  The next box reflects the orientation that will spawn.
+
+    -H rando
 
 
 ## Same Piece Sets

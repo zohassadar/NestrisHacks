@@ -167,6 +167,8 @@ gameModeState_initGameState:
         sta     player2_autorepeatY
 .ifdef SPS
         jsr     resetSetSeedandChooseNextTetrimino
+.elseif .defined(RANDO)
+        jsr     chooseNextAndRandomizeOrientation
 .else
         jsr     chooseNextTetrimino
 .endif
@@ -176,7 +178,11 @@ gameModeState_initGameState:
         ldx     #$17
         ldy     #$02
         jsr     generateNextPseudorandomNumber
+.ifdef RANDO
+        jsr     chooseNextAndRandomizeOrientation
+.else
         jsr     chooseNextTetrimino
+.endif
         sta     nextPiece
         sta     twoPlayerPieceDelayPiece
         lda     gameType

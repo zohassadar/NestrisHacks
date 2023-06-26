@@ -402,4 +402,8 @@ resetSetSeedandChooseNextTetrimino:
         sta set_seed+1
         lda set_seed_input+2
         sta set_seed+2
-        jmp chooseNextTetrimino
+.ifdef RANDO
+        jmp     chooseNextAndRandomizeOrientation
+.else
+        jmp     chooseNextTetrimino
+.endif

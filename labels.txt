@@ -7,6 +7,8 @@ al 008693 .gameModeState_initGameBackground_finish
 al 0088AB .rotate_tetrimino
 al 008914 .drop_tetrimino
 al 0089AE .shift_tetrimino
+al 008BE5 .orientationToSpriteTable
+al 008BF8 .unreferenced_orientationToSpriteTable
 al 00948B .isPositionValid
 al 009522 .@playStateNotDisplayLineClearingAnimation
 al 009D51 .pollControllerButtons
@@ -16,3 +18,4 @@ al 00ACF3 .game_palette
 al 00E3D0 .soundEffectSlot1_rotateTetrimino_ret
 al 00F9EB .unreferenced_data4
 al 00FF30 .unreferenced_data5
+al 00FFF0 .MMC1_PRG

@@ -9,4 +9,6 @@
 * SPS
 * CNROM (Not fully tested)
 * Add AEPPOZ debug flag
+* Random spawn orientation
+
 

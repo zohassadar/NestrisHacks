@@ -36,8 +36,15 @@ playState_spawnNextTetrimino:
         lda     #$05
 .endif
         sta     tetriminoX
+.ifdef RANDO
+        nop
+        nop
+        nop
+        lda     nextPiece
+.else
         ldx     nextPiece
         lda     spawnOrientationFromOrientation,x
+.endif
         sta     currentPiece
         jsr     incrementPieceStat
 .ifdef ANYDAS
@@ -61,7 +68,11 @@ playState_spawnNextTetrimino:
 .endif
 
 @onePlayerPieceSelection:
+.ifdef RANDO
+        jsr     chooseNextAndRandomizeOrientation
+.else
         jsr     chooseNextTetrimino
+.endif
         sta     nextPiece
 @resetDownHold:
         lda     #$00

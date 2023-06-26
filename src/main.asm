@@ -22,7 +22,11 @@
 .include "playstate/shift.asm"
 .include "sprites/current.asm"
 .include "data/otable.asm"
+.ifdef RANDO
+.include "hacks/random_orientation.asm"
+.else
 .include "sprites/next.asm"
+.endif
 .include "data/orientation_to_sprite.asm"
 .include "data/unreferenced_data2.asm"
 .include "sprites/load.asm"
