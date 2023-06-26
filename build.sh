@@ -66,6 +66,7 @@ subcommands=(
     "clean <debug|nes|all>:\n remove build files\n"
     "set-labels:\n update labels.txt\n"
     "bps2ips:\n Apply bps and create ips\n"
+    "disips:\n Disassemble IPS patch\n"
     )
 
 get_labels () {
@@ -330,6 +331,10 @@ case $1 in
     ;;
     list)
         variation_list
+        exit
+    ;;
+    disips)
+        python tools/ips_disasm.py $2
         exit
     ;;
     *)
