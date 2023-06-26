@@ -3,13 +3,13 @@ shift_tetrimino:
         lda     tetriminoX
         sta     originalY
         lda     heldButtons
-        and     #$04
+        and     #BUTTON_DOWN
         bne     @ret
         lda     newlyPressedButtons
-        and     #$03
+        and     #BUTTON_RIGHT+BUTTON_LEFT
         bne     @resetAutorepeatX
         lda     heldButtons
-        and     #$03
+        and     #BUTTON_RIGHT+BUTTON_LEFT
         beq     @ret
 .ifdef ANYDAS
         dec     autorepeatX
@@ -44,7 +44,11 @@ shift_tetrimino:
         sta     autorepeatX
 @buttonHeldDown:
         lda     heldButtons
-        and     #$01
+.ifdef UPSIDEDOWN
+        and     #BUTTON_LEFT
+.else           
+        and     #BUTTON_RIGHT
+.endif
         beq     @notPressingRight
         inc     tetriminoX
 .ifdef WALLHACK2
@@ -59,7 +63,11 @@ shift_tetrimino:
 
 @notPressingRight:
         lda     heldButtons
-        and     #$02
+.ifdef UPSIDEDOWN
+        and     #BUTTON_RIGHT
+.else           
+        and     #BUTTON_LEFT
+.endif     
         beq     @ret
         dec     tetriminoX
 .ifdef WALLHACK2

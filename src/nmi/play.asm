@@ -274,14 +274,33 @@ copyPlayfieldRowToVRAM:
         cpx     #$15
         bpl     @ret
         lda     multBy10Table,x
+.ifdef UPSIDEDOWN
+        clc
+        adc     #$9
+.endif
         tay
         txa
+.ifdef UPSIDEDOWN
+        lda      #$13
+        sec
+        sbc     vramRow
+.endif
         asl     a
         tax
+.ifdef  UPSIDEDOWN
+        ; this nonsense is to shave a few cycles
+        lda     vramPlayfieldRows+1,x
+.else
         inx
         lda     vramPlayfieldRows,x
+.endif
         sta     PPUADDR
+.ifdef UPSIDEDOWN
+        ; this nonsense is also to shave a few cycles
+        jmp @onePlayer
+.else
         dex
+.endif
         lda     numberOfPlayers
         cmp     #$01
         beq     @onePlayer
@@ -295,11 +314,13 @@ copyPlayfieldRowToVRAM:
         jmp     @copyRow
 
 @playerTwo:
+.ifndef UPSIDEDOWN
         lda     vramPlayfieldRows,x
         clc
         adc     #$0C
         sta     PPUADDR
         jmp     @copyRow
+.endif
 
 @onePlayer:
         lda     vramPlayfieldRows,x
@@ -311,7 +332,11 @@ copyPlayfieldRowToVRAM:
 @copyByte:
         lda     (playfieldAddr),y
         sta     PPUDATA
+.ifdef UPSIDEDOWN
+        dey
+.else
         iny
+.endif
         dex
         bne     @copyByte
         inc     vramRow
@@ -321,6 +346,10 @@ copyPlayfieldRowToVRAM:
         lda     #$20
         sta     vramRow
 @ret:   rts
+
+.ifdef UPSIDEDOWN
+        .byte $00,$00,$00
+.endif
 
 .ifdef PENGUIN
         .include "../hacks/penguin_line_clear.asm"

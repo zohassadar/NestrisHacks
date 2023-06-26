@@ -18,6 +18,7 @@ Run:
 | `-H rando`  | `Ro`       | [Random Spawn Orientation](#random-spawn-orientation) |
 | `-H scrolltris`| `Scr`   | Kirjava's [Scrolltris](#scrolltris) |
 | `-H sps`    | `Sps`      | Kirjava's [Same Piece Sets](#same-piece-sets) |
+| `-H upsidedown`| `180`   | [Upside Down](#upside-down) |
 | `-H wallhack2`| `Wh2`    | [Wall Hack 2](#wallhack-2) |
 | `-H warp7`  | `W7`       | [Warp7](#warp-7) |
 | `-l`        | `S`        | Skippable legal screen |
@@ -50,6 +51,7 @@ The line clearing animation has been replaced with a penguin that clears the blo
 
 Incompatible with:
 * Scrolltris
+* Upside Down
 
 ## Random Spawn Orientation
 
@@ -83,6 +85,17 @@ Provides an option to enter a seed value that determines the piece sequence.  10
 
     -H sps
 
+
+## Upside Down
+
+![UpsideDown](./assets/UpsideDown.png)
+
+The playfield and pieces have been rotated 180 degrees.  Push up for soft float. 
+
+    -H upsidedown
+
+Incompatible with:
+* Penguin Line Clear
 
 ## Wallhack 2
 

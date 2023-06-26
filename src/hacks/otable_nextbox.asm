@@ -1,6 +1,6 @@
 stageSpriteForNextPiece:
         lda     displayNextPiece
-        bne     @ret
+        bne     retInNextStaging
         lda     #$CC
         ldx     nextPiece
         clc
@@ -10,25 +10,30 @@ stageSpriteForNextPiece:
         clc
         adc     orientationToNextOffsetTableY,x
         sta     generalCounter4
-        clc
         txa
-        rol     a
-        rol     a
+        asl     a
+        asl     a
         sta     generalCounter
-        rol     a
+        asl     a       
         clc
         adc     generalCounter
         tax ; x contains index into orientation table
         ldy     oamStagingLength
         lda     #$04
         sta     generalCounter2 ; iterate through all four minos
-@stageMino:
+stageMinoInNextStaging:
         lda     orientationTable,x
         asl     a
         asl     a
         asl     a
         clc
         adc     generalCounter4
+.ifdef UPSIDEDOWN
+        sta     generalCounter5
+        lda     #$F6
+        sec
+        sbc     generalCounter5
+.endif
         sta     oamStaging,y ; stage y coordinate of mino
         iny
         inx
@@ -45,13 +50,31 @@ stageSpriteForNextPiece:
         asl     a
         clc
         adc     generalCounter3
+.ifdef UPSIDEDOWN
+        sta     generalCounter5
+        lda     #$98
+        jmp     unreferenced_orientationToSpriteTable
+; This ugliness keeps this table lined up
+orientationToSpriteTable:
+        .byte   $00,$00,$06,$00,$00,$00,$00,$09
+        .byte   $08,$00,$0B,$07,$00,$00,$0A,$00
+        .byte   $00,$00,$0C
+unreferenced_orientationToSpriteTable:
+        sec
+        sbc generalCounter5
+.endif
         sta     oamStaging,y ; stage actual x coordinate
 @finishLoop:
         iny
         inx
         dec     generalCounter2
-        bne     @stageMino
-        tya
-        sta     oamStagingLength
-@ret:   rts
-
+        bne     stageMinoInNextStaging
+        sty     oamStagingLength
+retInNextStaging:   
+        rts
+        nop
+        nop
+.ifdef UPSIDEDOWN
+        nop
+        nop
+.endif

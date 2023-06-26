@@ -6,9 +6,13 @@ stageSpriteForCurrentPiece:
         asl     a
         adc     #$60
         sta     generalCounter3 ; x position of center block
+.ifdef UPSIDEDOWN
+        bne     @calculateYPixel
+.else
         lda     numberOfPlayers
         cmp     #$01
         beq     @calculateYPixel
+.endif
 .ifndef WALLHACK2
         ; omit bytes to account for the extra bytes below
         lda     generalCounter3
@@ -18,10 +22,12 @@ stageSpriteForCurrentPiece:
         lda     activePlayer
         cmp     #$01
 .endif
+.ifndef UPSIDEDOWN
         beq     @calculateYPixel
         lda     generalCounter3
         adc     #$6F
         sta     generalCounter3 ; and player 2's field is more to the right
+.endif
 @calculateYPixel:
         clc
         lda     tetriminoY
@@ -31,9 +37,15 @@ stageSpriteForCurrentPiece:
         adc     #$2F
         sta     generalCounter4 ; y position of center block
         lda     currentPiece
+.ifndef UPSIDEDOWN
         sta     generalCounter5
         clc
         lda     generalCounter5
+.else   
+        nop
+        nop
+        clc
+.endif
         rol     a
         rol     a
         sta     generalCounter
@@ -50,6 +62,12 @@ stageSpriteForCurrentPiece:
         asl     a
         clc
         adc     generalCounter4
+.ifdef UPSIDEDOWN
+        sta     generalCounter5
+        lda     #$F6
+        sec
+        sbc     generalCounter5
+.endif
         sta     oamStaging,y ; stage y coordinate of mino
         sta     originalY
         inc     oamStagingLength
@@ -63,8 +81,13 @@ stageSpriteForCurrentPiece:
         lda     #$02
         sta     oamStaging,y ; stage palette/front priority
         lda     originalY
+.ifdef UPSIDEDOWN
+        cmp #$C8 ; Maximum value in upside down mode
+        bcc @validYCoordinate
+.else
         cmp     #$2F ; compares with smallest allowed y position on the screen, not the field
         bcs     @validYCoordinate
+.endif
         inc     oamStagingLength
         dey
         lda     #$FF
@@ -98,6 +121,12 @@ stageSpriteForCurrentPiece:
         asl     a
         clc
         adc     generalCounter3
+.endif
+.ifdef UPSIDEDOWN
+        sta     generalCounter5
+        lda     #$08
+        sec
+        sbc     generalCounter5
 .endif
         sta     oamStaging,y ; stage actual x coordinate
 @finishLoop:

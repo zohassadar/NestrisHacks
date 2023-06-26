@@ -23,8 +23,8 @@
 .include "playstate/shift.asm"
 .include "sprites/current.asm"
 .include "data/otable.asm"
-.ifdef RANDO
-.include "hacks/random_orientation.asm"
+.if .defined(RANDO) | .defined(UPSIDEDOWN)
+.include "hacks/otable_nextbox.asm"
 .else
 .include "sprites/next.asm"
 .endif

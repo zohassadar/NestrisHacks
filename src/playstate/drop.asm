@@ -3,7 +3,11 @@ drop_tetrimino:
         lda     autorepeatY
         bpl     @notBeginningOfGame
         lda     newlyPressedButtons
-        and     #$04
+.ifdef UPSIDEDOWN
+        and     #BUTTON_UP
+.else
+        and     #BUTTON_DOWN
+.endif
         beq     @incrementAutorepeatY
         lda     #$00
         sta     autorepeatY
@@ -15,7 +19,11 @@ drop_tetrimino:
         bne     @lookupDropSpeed
         lda     newlyPressedButtons
         and     #$0F
-        cmp     #$04
+.ifdef UPSIDEDOWN
+        cmp     #BUTTON_UP
+.else
+        cmp     #BUTTON_DOWN
+.endif
         bne     @lookupDropSpeed
         lda     #$01
         sta     autorepeatY
@@ -24,7 +32,11 @@ drop_tetrimino:
 @autorepeating:
         lda     heldButtons
         and     #$0F
-        cmp     #$04
+.ifdef UPSIDEDOWN
+        cmp     #BUTTON_UP
+.else
+        cmp     #BUTTON_DOWN
+.endif
         beq     @downPressed
         lda     #$00
         sta     autorepeatY

@@ -157,8 +157,12 @@ unreferenced_data4:
 warp7ButtonHeldDown:
         lda     #$07
         sta     generalCounter5
-        lda     heldButtons                     
+        lda     heldButtons
+.ifdef UPSIDEDOWN
+        and     #BUTTON_LEFT
+.else           
         and     #BUTTON_RIGHT                      
+.endif
         beq     rightNotPressed                      
 rightLoop:
         lda     tetriminoX
@@ -177,7 +181,11 @@ rightLoop:
         jmp     resetAutorepeatX
 rightNotPressed:
         lda     heldButtons                     
-        and     #BUTTON_LEFT                  
+.ifdef UPSIDEDOWN
+        and     #BUTTON_RIGHT                      
+.else           
+        and     #BUTTON_LEFT
+.endif                 
         beq     leftNotPressed                           
 leftLoop:
         lda     tetriminoX
