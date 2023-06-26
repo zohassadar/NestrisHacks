@@ -24,26 +24,28 @@ updateLineClearingAnimation:
 @nextRowToCheck:
         lda     completedRow,x
         beq     @decrementX    
-        jmp     @foundRow
+        bne     @foundRow
 @decrementX:
         dex
-        cpx     #$FF
-        bne     @nextRowToCheck
-
+        bpl     @nextRowToCheck
 @foundRow:
-        rol
-        rol
-        rol
+        asl
+        asl
+        asl
         clc     
         adc     #$2C
+.ifdef UPSIDEDOWN
+        sta     generalCounter5
+        lda     #$F6
+        sec
+        sbc     generalCounter5
+.endif
         sta     spriteYOffset
         lda     rowY
         and     #$01
         clc
         adc     #$0F
         sta     spriteIndexInOamContentLookup
-
-
         ; I still don't think this is appropriate to do here, but it keeps the modification contained
         jsr     loadSpriteIntoOamStaging
 
@@ -53,19 +55,21 @@ updateLineClearingAnimation:
         bne     @skipBlockClear
         sta     generalCounter3 ; Countup through all four rows (0,1,2,3)
 @whileCounter3LessThan4:
-
         ldy     generalCounter3
         lda     completedRow,y
         beq     @nextRow       ; Skip row if no line clear
+.ifdef UPSIDEDOWN
+        lda     #$13
+        sec
+        sbc     completedRow,y
+.endif
         asl                    ; Multiply by 2 to get second byte of address from table
         tay
-        iny
-        lda     vramPlayfieldRows,y  ; first byte of PPU address
+        lda     vramPlayfieldRows+1,y  ; first byte of PPU address
         sta     PPUADDR
         lda     rowY           ; Divide by 2 to get row to clear
         ror
         clc
-        dey
         adc     vramPlayfieldRows,y  ; Add to get 2nd byte of PPU address
         adc     #$05                 ; Offset to line up with 1 player screen
 
@@ -86,11 +90,18 @@ updateLineClearingAnimation:
         inc     playState
 @ret:   rts
 
+
+.ifndef UPSIDEDOWN
 padding:
         .byte   $00,$00,$00,$00 ; This keeps the above modification contained so game genie codes work for the rest of the game
+        .byte   $00,$00,$00,$00 ; This keeps the above modification contained so game genie codes work for the rest of the game
+        .byte   $00
 
 ; No longer necessary, removed for padding purposes
 ; leftColumns:
 ;         .byte   $04,$03,$02,$01,$00
 rightColumns:
         .byte   $05,$06,$07,$08,$09
+.else
+        .byte   $00
+.endif

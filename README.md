@@ -51,7 +51,6 @@ The line clearing animation has been replaced with a penguin that clears the blo
 
 Incompatible with:
 * Scrolltris
-* Upside Down
 
 ## Random Spawn Orientation
 
@@ -93,9 +92,6 @@ Provides an option to enter a seed value that determines the piece sequence.  10
 The playfield and pieces have been rotated 180 degrees.  Push up for soft float. 
 
     -H upsidedown
-
-Incompatible with:
-* Penguin Line Clear
 
 ## Wallhack 2
 

@@ -148,6 +148,32 @@ sprite0EHighScoreNameCursor:
 ; Priority and palette are changed from $21 to $03
 ; https://www.nesdev.org/wiki/PPU_OAM
 
+.ifdef UPSIDEDOWN
+sprite0FPenguineLineClear1:
+        .byte   $18,$A9,$83,$00
+        .byte   $18,$AA,$83,$08
+        .byte   $10,$B8,$83,$F8
+        .byte   $10,$B9,$83,$00
+        .byte   $10,$BA,$83,$08
+        .byte   $08,$C9,$83,$00
+        .byte   $08,$CA,$83,$08
+        .byte   $08,$CB,$83,$10
+        .byte   $00,$D9,$83,$00
+        .byte   $00,$DA,$83,$08
+        .byte   $FF
+sprite10PenguineLineClear2:
+        .byte   $18,$AD,$83,$00
+        .byte   $18,$AE,$83,$08
+        .byte   $10,$BC,$83,$F8
+        .byte   $10,$BD,$83,$00
+        .byte   $10,$BE,$83,$08
+        .byte   $08,$CD,$83,$00
+        .byte   $08,$CE,$83,$08
+        .byte   $08,$CF,$83,$10
+        .byte   $00,$DD,$83,$00
+        .byte   $00,$DE,$83,$08
+        .byte   $FF
+.else
 sprite0FPenguineLineClear1:
         .byte   $E8,$A9,$03,$00,$E8,$AA,$03,$08
         .byte   $F0,$B8,$03,$F8,$F0,$B9,$03,$00
@@ -162,13 +188,14 @@ sprite10PenguineLineClear2:
         .byte   $F8,$CE,$03,$08,$F8,$CF,$03,$10
         .byte   $00,$DD,$03,$00,$00,$DE,$03,$08
         .byte   $FF
-
+.endif
         ;Pad with the appropriate number of bytes
         .byte  $00,$00,$00,$00,$00,$00,$00,$00
         .byte  $00,$00,$00,$00,$00,$00,$00,$00
         .byte  $00,$00,$00,$00,$00,$00,$00,$00
         .byte  $00,$00,$00,$00,$00,$00,$00,$00
         .byte  $00,$00,$00,$00,$00
+
 
 ; maintain same number of labels to account for constants in offsets
 sprite11ZPieceOffset:
