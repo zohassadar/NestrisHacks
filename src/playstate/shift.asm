@@ -18,7 +18,11 @@ shift_tetrimino:
         bpl     @ret
         lda     anydasARRValue
         sta     autorepeatX
+.ifdef WARP7
+        jmp     warp7ButtonHeldDown
+.else
         jmp     @buttonHeldDown
+.endif
 @resetAutorepeatX:
         lda     anydasDASValue
 .else
@@ -28,7 +32,11 @@ shift_tetrimino:
         bmi     @ret
         lda     #$0A
         sta     autorepeatX
+.ifdef WARP7
+        jmp     warp7ButtonHeldDown
+.else
         jmp     @buttonHeldDown
+.endif
 
 @resetAutorepeatX:
         lda     #$00

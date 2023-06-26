@@ -13,6 +13,7 @@ hacks=(
     "scrolltris"
     "sps"
     "wallhack2"
+    "warp7"
     )
 
 variations=(
@@ -177,6 +178,11 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D WALLHACK2")
                     name_modifiers+=("Wh2")
+                    ;;
+                "warp7")
+                    echo "Warp 7 Enabled"
+                    buildflags+=("-D WARP7")
+                    name_modifiers+=("W7")
                     ;;
                 *)
                     echo "${OPTARG} is an invalid hack"

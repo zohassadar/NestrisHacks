@@ -19,6 +19,7 @@ Run:
 | `-H scrolltris`| `Scr`   | Kirjava's [Scrolltris](#scrolltris) |
 | `-H sps`    | `Sps`      | Kirjava's [Same Piece Sets](#same-piece-sets) |
 | `-H wallhack2`| `Wh2`    | [Wall Hack 2](#wallhack-2) |
+| `-H warp7`  | `W7`       | [Warp7](#warp7) |
 | `-l`        | `S`        | Skippable legal screen |
 | `-m 3`      | `Cnrom`    | Use CNROM INES Mapper  |
 
@@ -90,6 +91,13 @@ Provides an option to enter a seed value that determines the piece sequence.  10
 Provides a wraparound experience similar to the vertical levels of Super Mario Bros. 2.  
 
     -H wallhack2
+
+
+## Warp 7
+
+Based on a hack by [Kirby703](https://github.com/Kirby703), this shifts the Tetrimino up to 7 spaces at a time.
+
+    -H warp7
 
 
 ## Thanks

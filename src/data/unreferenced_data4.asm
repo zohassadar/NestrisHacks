@@ -152,6 +152,67 @@ unreferenced_data4:
         .byte   $FF,$BF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+
+.ifdef WARP7
+warp7ButtonHeldDown:
+        lda     #$07
+        sta     generalCounter5
+        lda     heldButtons                     
+        and     #BUTTON_RIGHT                      
+        beq     rightNotPressed                      
+rightLoop:
+        lda     tetriminoX
+        sta     tmp3
+        inc     tetriminoX
+.ifdef WALLHACK2
+        jsr     testRightShiftAndValidate
+.else
+        jsr     isPositionValid                 
+.endif
+        bne     restoreTetriminoX                           
+        lda     #$03                      
+        sta     soundEffectSlot1Init
+        dec     generalCounter5
+        bne     rightLoop
+        jmp     resetAutorepeatX
+rightNotPressed:
+        lda     heldButtons                     
+        and     #BUTTON_LEFT                  
+        beq     leftNotPressed                           
+leftLoop:
+        lda     tetriminoX
+        sta     tmp3
+        dec     tetriminoX                      
+.ifdef WALLHACK2
+        jsr     testLeftShiftAndValidate
+.else
+        jsr     isPositionValid                 
+.endif               
+        bne     restoreTetriminoX                      
+        lda     #$03                            
+        sta     soundEffectSlot1Init            
+        dec     generalCounter5
+        bne     leftLoop
+        jmp     resetAutorepeatX
+restoreTetriminoX:
+        lda     tmp3
+        sta     tetriminoX
+resetAutorepeatX:            
+.ifdef ANYDAS
+        lda     #$01
+.else
+        lda     #$10
+.endif                       
+        sta     autorepeatX                     
+leftNotPressed:
+        rts                                     
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$FF,$BF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$EF
@@ -163,3 +224,4 @@ unreferenced_data4:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00
         .byte   $00
+.endif

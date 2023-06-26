@@ -11,5 +11,7 @@
 * Add AEPPOZ debug flag
 * Random spawn orientation
 * Scrolltris
+* Warp7
+
 
 
