@@ -175,18 +175,28 @@ sprite10PenguineLineClear2:
         .byte   $FF
 .else
 sprite0FPenguineLineClear1:
-        .byte   $E8,$A9,$03,$00,$E8,$AA,$03,$08
-        .byte   $F0,$B8,$03,$F8,$F0,$B9,$03,$00
-        .byte   $F0,$BA,$03,$08,$F8,$C9,$03,$00
-        .byte   $F8,$CA,$03,$08,$F8,$CB,$03,$10
-        .byte   $00,$D9,$03,$00,$00,$DA,$03,$08
+        .byte   $E8,$A9,$03,$00
+        .byte   $E8,$AA,$03,$08
+        .byte   $F0,$B8,$03,$F8
+        .byte   $F0,$B9,$03,$00
+        .byte   $F0,$BA,$03,$08
+        .byte   $F8,$C9,$03,$00
+        .byte   $F8,$CA,$03,$08
+        .byte   $F8,$CB,$03,$10
+        .byte   $00,$D9,$03,$00
+        .byte   $00,$DA,$03,$08
         .byte   $FF
 sprite10PenguineLineClear2:
-        .byte   $E8,$AD,$03,$00,$E8,$AE,$03,$08
-        .byte   $F0,$BC,$03,$F8,$F0,$BD,$03,$00
-        .byte   $F0,$BE,$03,$08,$F8,$CD,$03,$00
-        .byte   $F8,$CE,$03,$08,$F8,$CF,$03,$10
-        .byte   $00,$DD,$03,$00,$00,$DE,$03,$08
+        .byte   $E8,$AD,$03,$00
+        .byte   $E8,$AE,$03,$08
+        .byte   $F0,$BC,$03,$F8
+        .byte   $F0,$BD,$03,$00
+        .byte   $F0,$BE,$03,$08
+        .byte   $F8,$CD,$03,$00
+        .byte   $F8,$CE,$03,$08
+        .byte   $F8,$CF,$03,$10
+        .byte   $00,$DD,$03,$00
+        .byte   $00,$DE,$03,$08
         .byte   $FF
 .endif
         ;Pad with the appropriate number of bytes
