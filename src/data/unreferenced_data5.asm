@@ -12,7 +12,7 @@ unreferenced_data5:
 
 shiftSpritesThenUpdateAudio:
         ldx     #$00
-        ldy     #$10
+        ldy     #$20
 loopThroughSprites:
 ; y offset
         lda     oamStaging,x

@@ -148,10 +148,28 @@ unreferenced_data4:
         .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FD,$FE,$F7,$FF,$FF,$BF,$FF,$DF
+
+.ifdef PENGUIN
+loadPenguinThenShiftSprites:
+        lda     penguinIndex
+        beq     @ret
+        sta     spriteIndexInOamContentLookup     
+        lda     penguinX
+        sta     spriteXOffset
+        lda     penguinY
+        sta     spriteYOffset
+        jsr     loadSpriteIntoOamStaging
+        lda     #$00
+        sta     penguinIndex
+@ret:
+        jsr     shiftSpritesThenUpdateAudio
+        rts
+.else
         .byte   $FF,$FF,$BF,$FF,$FF,$FF,$FD,$DF
         .byte   $FF,$BF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+.endif
 
 .ifdef WARP7
 warp7ButtonHeldDown:

@@ -1,7 +1,13 @@
 ; canon is waitForVerticalBlankingInterval
 updateAudioWaitForNmiAndResetOamStaging:
 .ifdef SCROLLTRIS
+; ------ 
+.ifdef PENGUIN
+        jsr     loadPenguinThenShiftSprites
+.else
         jsr     shiftSpritesThenUpdateAudio
+.endif
+; ------ 
 .else
         jsr     updateAudio_jmp
 .endif

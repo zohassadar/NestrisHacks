@@ -10,14 +10,14 @@ penguinXOffset:   ; First byte not used and serves as offset only
 updateLineClearingAnimation:
         ;   Load 16 or 32 into oamStagingLength based on next box display
         ;   This prevents the next box from disappearing without calling stageSpriteForNextPiece
-        ldy     displayNextPiece
-        lda     oamStagingLengthBasedOnNextBox,y
-        sta     oamStagingLength
+        ; ldy     displayNextPiece
+        ; lda     oamStagingLengthBasedOnNextBox,y
+        ; sta     oamStagingLength
 
         ;  Load Y offset based on table
         ldx     rowY
         lda     penguinXOffset,x
-        sta     spriteXOffset
+        sta     penguinX
 
         ; Figure out lowest row cleared and put penguin there. 
         ldx     #$03                     
@@ -40,14 +40,14 @@ updateLineClearingAnimation:
         sec
         sbc     generalCounter5
 .endif
-        sta     spriteYOffset
+        sta     penguinY
         lda     rowY
         and     #$01
         clc
         adc     #$0F
-        sta     spriteIndexInOamContentLookup
+        sta     penguinIndex
         ; I still don't think this is appropriate to do here, but it keeps the modification contained
-        jsr     loadSpriteIntoOamStaging
+        ; jsr     loadSpriteIntoOamStaging
 
 ; Clear block
         lda     rowY

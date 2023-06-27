@@ -193,7 +193,11 @@ menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
 seedVersion: .res 1              ; $0604
 
-.res $7B
+penguinX: .res $1                ; $0605
+penguinY: .res $1                ; $0606
+penguinIndex: .res $1            ; $0607
+
+.res $78
 
 ; End romhacks
 
