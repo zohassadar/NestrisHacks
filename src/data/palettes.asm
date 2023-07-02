@@ -1,4 +1,5 @@
 game_palette:
+; todo: make penguin and dasmeter work together
 .ifdef PENGUIN
         .byte   $3F,$00,$20
         .byte   $0F,$30,$12,$16
@@ -10,12 +11,30 @@ game_palette:
         .byte   $0F,$2C,$16,$29
         .byte   $0F,$0F,$20,$27  ; color for penguin
         .byte   $FF
+.elseif .defined (DASMETER)
+        .byte   $3F,$00,$20
+        .byte   $0F,$30,$12,$16
+        .byte   $0F,$3C,$00,$16
+        .byte   $0F,$2C,$16,$29
+        .byte   $0F,$3C,$00,$30
+
+        .byte   $0F,$35,$15,$22
+        .byte   $0F,$35,$29,$26
+        .byte   $0F,$2C,$16,$29
+        .byte   $0F,$3C,$00,$30
+        .byte   $FF
 .else
-        .byte   $3F,$00,$20,$0F,$30,$12,$16,$0F
-        .byte   $20,$12,$18,$0F,$2C,$16,$29,$0F
-        .byte   $3C,$00,$30,$0F,$35,$15,$22,$0F
-        .byte   $35,$29,$26,$0F,$2C,$16,$29,$0F
-        .byte   $3C,$00,$30,$FF
+        .byte   $3F,$00,$20
+        .byte   $0F,$30,$12,$16
+        .byte   $0F,$20,$12,$18
+        .byte   $0F,$2C,$16,$29
+        .byte   $0F,$3C,$00,$30
+
+        .byte   $0F,$35,$15,$22
+        .byte   $0F,$35,$29,$26
+        .byte   $0F,$2C,$16,$29
+        .byte   $0F,$3C,$00,$30
+        .byte   $FF
 .endif
 legal_screen_palette:
         .byte   $3F,$00,$10,$0F,$27,$2A,$2B,$0F

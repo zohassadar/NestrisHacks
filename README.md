@@ -7,13 +7,14 @@ These are various romhacks of the NES game Tetris.
 Run:
 `./build.sh`
 
-| Flag        | Filename    | Description            | 
+| Flag        | Filename    | Description            |
 | ----------- | ----------- |------------------------|
 |             |`Tetris.nes`| Vanilla                |
 | `-a`        | `Aep`      | Debug mode.  Every drop is a tetris.  Hold select to cause topout |
 | `-b`        | `Bdb`      | Debug mode.  B-Game requires no lines to win |
 | `-f`        | `Flt`      | Debug mode.  Piece floats unless select is pressed (Not yet implemented) |
 | `-H anydas` | `Any`      | HydrantDude's [Anydas](#anydas) |
+| `-H dasmeter`|`Dm`       | [DAS Meter](#das-meter) |
 | `-H penguin`| `Plc`      | [Penguin Line Clear](#penguin-line-clear) |
 | `-H rando`  | `Ro`       | [Random Spawn Orientation](#random-spawn-orientation) |
 | `-H scrolltris`| `Scr`   | Kirjava's [Scrolltris](#scrolltris) |
@@ -34,12 +35,26 @@ Multiple hacks are compatible unless otherwise noted, for example to build Pengu
 
 Credit to [HydrantDude](https://www.youtube.com/@hydrantdude3642)
 
-Anydas skips the legal screen and provides a menu that allows for a customized Delayed Auto Shift (DAS) experience.  The DAS setting, presented in hexadecimal, controls the initial delay in number of frames.  The Auto Repeat Rate (ARR), also presented in hexadecimal, controls how many frames between shifts after the initial delay.   The ARE Charge setting when enabled allows the DAS charge to occur during entry delay.   
+Anydas skips the legal screen and provides a menu that allows for a customized Delayed Auto Shift (DAS) experience.  The DAS setting, presented in hexadecimal, controls the initial delay in number of frames.  The Auto Repeat Rate (ARR), also presented in hexadecimal, controls how many frames between shifts after the initial delay.   The ARE Charge setting when enabled allows the DAS charge to occur during entry delay.
 
 See [this page](https://tetris.fandom.com/wiki/ARE) for an explanation of ARE.
 
     -H anydas
 
+Incompatible with:
+
+* DAS Meter
+
+## DAS Meter
+
+Very simple modification that displays the Delayed Auto Shift (DAS) value as a meter below the playfield.
+
+    -H dasmeter
+
+Incompatible with:
+
+* Anydas
+* Penguin Line Clear
 
 ## Penguin Line Clear
 
@@ -50,6 +65,8 @@ The line clearing animation has been replaced with a penguin that clears the blo
     -H penguin
 
 Incompatible with:
+
+* DAS Meter
 * Scrolltris
 
 ## Random Spawn Orientation
@@ -71,6 +88,7 @@ The screen contents move leftward and upward.
     -H scrolltris
 
 Incompatible with:
+
 * CNROM
 * Penguin Line Clear
 
@@ -84,12 +102,11 @@ Provides an option to enter a seed value that determines the piece sequence.  10
 
     -H sps
 
-
 ## Upside Down
 
 ![UpsideDown](./assets/UpsideDown.png)
 
-The playfield and pieces have been rotated 180 degrees.  Push up for soft float. 
+The playfield and pieces have been rotated 180 degrees.  Push up for soft float.
 
     -H upsidedown
 
@@ -101,13 +118,11 @@ Provides a wraparound experience similar to the vertical levels of Super Mario B
 
     -H wallhack2
 
-
 ## Warp 7
 
 Based on a hack by [Kirby703](https://github.com/Kirby703), this shifts the Tetrimino up to 7 spaces at a time.
 
     -H warp7
-
 
 ## Thanks
 
@@ -118,4 +133,3 @@ Based on a hack by [Kirby703](https://github.com/Kirby703), this shifts the Tetr
 [qalle2](https://github.com/qalle2/nes-util) CHR tools
 
 [kirjavascript](https://github.com/kirjavascript/TetrisGYM) borrowed bits
-

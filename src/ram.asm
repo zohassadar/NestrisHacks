@@ -194,9 +194,10 @@ menuThrottleTmp: .res 1          ; $0603
 seedVersion: .res 1              ; $0604
 
 ;dasmeter
-dasValue: .res $1               ; $0605
+dasValue: .res $1                ; $0605
+dasMeterTile: .res $1            ; $0606
 
-.res $7a
+.res $79
 
 ; End romhacks
 

@@ -4,6 +4,14 @@ shiftTetriminoAndPopulateDasValues:
     sec
     sbc autorepeatX
     sta dasValue
+    lda #$FE
+    sta dasMeterTile
+    lda autorepeatX
+    cmp #$0A
+    bcs @ret
+    dec dasMeterTile
+    dec dasMeterTile
+@ret:
     rts
 
 render_mode_play_and_demo_then_dasmeter:
@@ -13,7 +21,7 @@ render_mode_play_and_demo_then_dasmeter:
     sta PPUADDR
     ldx autorepeatX
     beq @ret
-    lda #$FE
+    lda dasMeterTile
 @drawDas:
     sta PPUDATA
     dex
