@@ -167,7 +167,12 @@ render_mode_play_and_demo:
         lda     #$00
         sta     tmpCurrentPiece
 @renderPieceStat:
+.ifdef DASMETER
+        ldx     currentPiece
+        lda     tetriminoTypeFromOrientation,x
+.else
         lda     tmpCurrentPiece
+.endif
         asl     a
         tax
         lda     pieceToPpuStatAddr,x
@@ -178,12 +183,24 @@ render_mode_play_and_demo:
         sta     PPUDATA
         lda     statsByType,x
         jsr     twoDigsToPPU
+.ifdef DASMETER
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         inc     tmpCurrentPiece
         lda     tmpCurrentPiece
         cmp     #$07
         bne     @renderPieceStat
+.endif
         lda     outOfDateRenderFlags
+.ifdef DASMETER
+        and     #$FF
+.else
         and     #$BF
+.endif
         sta     outOfDateRenderFlags
 @renderTetrisFlashAndSound:
         lda     #$3F

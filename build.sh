@@ -8,6 +8,7 @@ name_modifiers=()
 
 hacks=(
     "anydas"
+    "dasmeter"
     "penguin"
     "rando"
     "scrolltris"
@@ -153,6 +154,11 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D ANYDAS")
                     name_modifiers+=("Any")
+                    ;;
+                "dasmeter")
+                    echo "DAS Meter enabled"
+                    buildflags+=("-D DASMETER")
+                    name_modifiers+=("Dm")
                     ;;
                 "penguin")
                     echo "Penguin Line Clear enabled"

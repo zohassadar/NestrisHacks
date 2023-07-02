@@ -143,6 +143,9 @@ unreferenced_data4:
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+.ifdef DASMETER
+.include "../hacks/dasmeter.asm"
+.else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
@@ -152,6 +155,7 @@ unreferenced_data4:
         .byte   $FF,$BF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+.endif
 
 .ifdef WARP7
 warp7ButtonHeldDown:

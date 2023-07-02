@@ -193,7 +193,10 @@ menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
 seedVersion: .res 1              ; $0604
 
-.res $7B
+;dasmeter
+dasValue: .res $1               ; $0605
+
+.res $7a
 
 ; End romhacks
 

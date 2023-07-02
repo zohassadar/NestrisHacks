@@ -16,7 +16,11 @@ branchOnPlayStatePlayer1:
         .addr   playState_updateGameOverCurtain
         .addr   playState_incrementPlayState
 playState_playerControlsActiveTetrimino:
+.ifdef DASMETER
+        jsr     shiftTetriminoAndPopulateDasValues
+.else
         jsr     shift_tetrimino
+.endif
         jsr     rotate_tetrimino
         jsr     drop_tetrimino
         rts
