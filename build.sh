@@ -151,12 +151,13 @@ get_flag_opts (){
                 case "${OPTARG}" in 
                 "anydas")
                     echo "Anydas enabled"
-                    omit_ud1
+                    common_flag OMIT_UD1
                     buildflags+=("-D ANYDAS")
                     name_modifiers+=("Any")
                     ;;
                 "dasmeter")
                     echo "DAS Meter enabled"
+                    common_flag EFFICIENT_STATS
                     buildflags+=("-D DASMETER")
                     name_modifiers+=("Dm")
                     ;;
@@ -177,7 +178,7 @@ get_flag_opts (){
                     ;;
                 "sps")
                     echo "Same Piece Sets enabled"
-                    omit_ud1
+                    common_flag OMIT_UD1
                     buildflags+=("-D SPS")
                     name_modifiers+=("Sps")
                     ;;
@@ -188,7 +189,7 @@ get_flag_opts (){
                     ;;
                 "wallhack2")
                     echo "Wallhack2 enabled"
-                    omit_ud1
+                    common_flag OMIT_UD1
                     buildflags+=("-D WALLHACK2")
                     name_modifiers+=("Wh2")
                     ;;
@@ -285,12 +286,12 @@ bps2ips () {
     flips --create --ips "${output_path}${basename}.nes" "${1%.bps}.nes" "${1%.bps}.ips"
     }
 
-omit_ud1 () {
+common_flag () {
+    echo "Enabling flag $1"
     # Add flag if it hasn't been added already
-    if ! [[ ${buildflags[*]} == *"-D OMIT_UD1"* ]]; then
-        buildflags+=("-D OMIT_UD1")
+    if ! [[ ${buildflags[*]} == *"-D $1"* ]]; then
+        buildflags+=("-D $1")
     fi
-    # When specified, unreferenced_data1.bin not included
     }
 
 case $1 in

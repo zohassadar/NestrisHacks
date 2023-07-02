@@ -167,8 +167,8 @@ render_mode_play_and_demo:
         lda     #$00
         sta     tmpCurrentPiece
 @renderPieceStat:
-.ifdef DASMETER
-        ldx     currentPiece
+.ifdef EFFICIENT_STATS
+        ldx     player1_currentPiece
         lda     tetriminoTypeFromOrientation,x
 .else
         lda     tmpCurrentPiece
@@ -183,7 +183,7 @@ render_mode_play_and_demo:
         sta     PPUDATA
         lda     statsByType,x
         jsr     twoDigsToPPU
-.ifdef DASMETER
+.ifdef EFFICIENT_STATS
         nop
         nop
         nop
@@ -196,11 +196,7 @@ render_mode_play_and_demo:
         bne     @renderPieceStat
 .endif
         lda     outOfDateRenderFlags
-.ifdef DASMETER
-        and     #$FF
-.else
         and     #$BF
-.endif
         sta     outOfDateRenderFlags
 @renderTetrisFlashAndSound:
         lda     #$3F
