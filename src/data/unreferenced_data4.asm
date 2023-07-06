@@ -143,6 +143,41 @@ unreferenced_data4:
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+.ifdef SOON
+gameModeState_initGameBackground_finish:
+        lda #$21
+        sta PPUADDR
+        lda #$B8
+        sta PPUADDR
+        lda #$1C
+        sta PPUDATA
+        lda #$18
+        sta PPUDATA
+        sta PPUDATA
+        lda #$17
+        sta PPUDATA
+        jmp actualFinishBackground
+
+chooseInitialTetrimino:
+        jsr chooseNextTetrimino
+        jsr chooseNextTetrimino
+        jsr chooseNextTetrimino
+        jsr chooseNextTetrimino
+        jsr chooseNextTetrimino
+chooseNextTetrimino:
+        lda soon+4
+        pha
+        ldx #$03
+@loop:
+        lda soon,x
+        sta soon+1,x
+        dex
+        bpl @loop
+        jsr actualChooseNextTetrimino
+        sta soon
+        pla
+        rts
+.else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
@@ -152,7 +187,7 @@ unreferenced_data4:
         .byte   $FF,$BF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
+.endif
 .ifdef WARP7
 warp7ButtonHeldDown:
         lda     #$07

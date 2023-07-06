@@ -11,6 +11,7 @@ hacks=(
     "penguin"
     "rando"
     "scrolltris"
+    "soon"
     "sps"
     "upsidedown"
     "wallhack2"
@@ -168,6 +169,11 @@ get_flag_opts (){
                     echo "Scrolltris enabled"
                     buildflags+=("-D SCROLLTRIS")
                     name_modifiers+=("Scr")
+                    ;;
+                "soon")
+                    echo "Soon piece enabled"
+                    buildflags+=("-D SOON")
+                    name_modifiers+=("Sn")
                     ;;
                 "sps")
                     echo "Same Piece Sets enabled"

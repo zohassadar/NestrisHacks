@@ -3,8 +3,11 @@ tmp1:	.res $1	                    ; $0000
 tmp2:	.res $1	                    ; $0001
 tmp3:	.res $1	                    ; $0002
 .res $2                             ; $0003
-tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
-.res $E                             ; $0006
+tmpBulkCopyToPpuReturnAddr: .res $2 ; $0005
+
+soon: .res $5                       ; $0007 
+
+.res $8                             ; $000B
 patchToPpuAddr: .res $1             ; $0014
 .res $2                             ; $0015
 rng_seed: .res $2	                ; $0017

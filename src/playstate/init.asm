@@ -87,7 +87,11 @@ gameModeState_initGameBackground:
         sta     PPUDATA
         jmp     gameModeState_initGameBackground_finish
 
+.ifdef SOON
+actualFinishBackground:
+.else
 gameModeState_initGameBackground_finish:
+.endif
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering
@@ -170,7 +174,11 @@ gameModeState_initGameState:
 .elseif .defined(RANDO)
         jsr     chooseNextAndRandomizeOrientation
 .else
+        .ifdef SOON
+        jsr     chooseInitialTetrimino
+        .else
         jsr     chooseNextTetrimino
+        .endif
 .endif
         sta     player1_currentPiece
         sta     player2_currentPiece
