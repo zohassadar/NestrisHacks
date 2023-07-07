@@ -25,7 +25,11 @@ gameModeState_initGameBackground:
         .addr   game_nametable
         lda     #$20
         sta     PPUADDR
+.ifdef PIECES
+        lda     #$43
+.else
         lda     #$83
+.endif
         sta     PPUADDR
         lda     gameType
         bne     @typeB
@@ -33,7 +37,11 @@ gameModeState_initGameBackground:
         sta     PPUDATA
         lda     #$20
         sta     PPUADDR
+.ifdef PIECES
+        lda     #$98
+.else
         lda     #$B8
+.endif
         sta     PPUADDR
         lda     highScoreScoresA
         jsr     twoDigsToPPU
@@ -51,7 +59,11 @@ gameModeState_initGameBackground:
         sta     PPUDATA
         lda     #$20
         sta     PPUADDR
+.ifdef PIECES
+        lda     #$98
+.else
         lda     #$B8
+.endif
         sta     PPUADDR
         lda     highScoreScoresB
         jsr     twoDigsToPPU
@@ -78,20 +90,22 @@ gameModeState_initGameBackground:
         jmp     @nextPpuData
 
 @endOfPpuPatching:
+.ifdef PIECES
+        lda     #$20
+        sta     PPUADDR
+        lda     #$C8
+.else
         lda     #$23
         sta     PPUADDR
         lda     #$3B
+.endif
         sta     PPUADDR
         lda     startHeight
         and     #$0F
         sta     PPUDATA
         jmp     gameModeState_initGameBackground_finish
 
-.ifdef SOON
-actualFinishBackground:
-.else
 gameModeState_initGameBackground_finish:
-.endif
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering
@@ -107,7 +121,11 @@ gameModeState_initGameBackground_finish:
         rts
 
 game_typeb_nametable_patch:
+.ifdef PIECES
+        .byte   $20,$C7,$24,$FD,$39,$39,$39,$39
+.else
         .byte   $22,$F7,$38,$39,$39,$39,$39,$39
+.endif
         .byte   $39,$3A,$FE,$23,$17,$3B,$11,$0E
         .byte   $12,$10,$11,$1D,$3C,$FE,$23,$37
         .byte   $3B,$FF,$FF,$FF,$FF,$FF,$FF,$3C
@@ -174,7 +192,7 @@ gameModeState_initGameState:
 .elseif .defined(RANDO)
         jsr     chooseNextAndRandomizeOrientation
 .else
-        .ifdef SOON
+        .ifdef PIECES
         jsr     chooseInitialTetrimino
         .else
         jsr     chooseNextTetrimino

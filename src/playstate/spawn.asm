@@ -78,7 +78,7 @@ playState_spawnNextTetrimino:
         lda     #$00
         sta     autorepeatY
 @ret:   rts
-.ifdef SOON
+.ifdef PIECES
 actualChooseNextTetrimino:
 .else
 chooseNextTetrimino:

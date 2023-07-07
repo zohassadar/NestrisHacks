@@ -127,9 +127,15 @@ render_mode_play_and_demo:
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         sta     generalCounter
+.ifdef PIECES
+        lda     #$20
+        sta     PPUADDR
+        lda     #$C5
+.else
         lda     #$22
         sta     PPUADDR
         lda     #$BA
+.endif
         sta     PPUADDR
         lda     generalCounter
         jsr     twoDigsToPPU
@@ -144,9 +150,15 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$04
         beq     @renderStats
+.ifdef PIECES
+        lda     #$20
+        sta     PPUADDR
+        lda     #$F8
+.else
         lda     #$21
         sta     PPUADDR
         lda     #$18
+.endif
         sta     PPUADDR
         lda     player1_score+2
         jsr     twoDigsToPPU

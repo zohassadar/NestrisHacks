@@ -51,13 +51,13 @@ stageSpriteForNextPiece:
         bne     @ret
         lda     #$C8
         sta     spriteXOffset
-        lda     #$77
-        sta     spriteYOffset
-.ifdef SOON
-        ldx     soon
+.ifdef PIECES
+        lda     #$61
 .else
-        ldx     nextPiece
+        lda     #$77
 .endif
+        sta     spriteYOffset
+        ldx     nextPiece
         lda     orientationToSpriteTable,x
         sta     spriteIndexInOamContentLookup
         jmp     loadSpriteIntoOamStaging

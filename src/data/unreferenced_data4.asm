@@ -137,26 +137,53 @@ unreferenced_data4:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-.ifdef SOON
-gameModeState_initGameBackground_finish:
-        lda #$21
-        sta PPUADDR
-        lda #$B8
-        sta PPUADDR
-        lda #$1C
-        sta PPUDATA
-        lda #$18
-        sta PPUDATA
-        sta PPUDATA
-        lda #$17
-        sta PPUDATA
-        jmp actualFinishBackground
+.ifdef PIECES
+
+stageNextSprites:
+        jsr stageSpriteForNextPiece
+        lda soon+4
+        sta soonSprite
+        lda #$75
+        sta soonSpriteY
+        jsr stageSoonPieceSprite
+        lda soon+3
+        sta soonSprite
+        lda #$89
+        sta soonSpriteY
+        jsr stageSoonPieceSprite
+        lda soon+2
+        sta soonSprite
+        lda #$9d
+        sta soonSpriteY
+        jsr stageSoonPieceSprite
+        lda soon+1
+        sta soonSprite
+        lda #$b1
+        sta soonSpriteY
+        jsr stageSoonPieceSprite
+        lda soon
+        sta soonSprite
+        lda #$c5
+        sta soonSpriteY
+        jsr stageSoonPieceSprite
+        rts
+
+stageSoonPieceSprite:
+        lda     displayNextPiece
+        bne     @ret
+        lda     #$C8
+        sta     spriteXOffset
+        lda     soonSpriteY
+        sta     spriteYOffset
+        ldx     soonSprite
+        lda     orientationToSpriteTable,x
+        sta     spriteIndexInOamContentLookup
+        jmp     loadSpriteIntoOamStaging
+
+@ret:   rts
+
+
+
 
 chooseInitialTetrimino:
         jsr chooseNextTetrimino
@@ -178,6 +205,12 @@ chooseNextTetrimino:
         pla
         rts
 .else
+        .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF

@@ -18,7 +18,11 @@ gameModeState_updatePlayer1:
         jsr     branchOnPlayStatePlayer1
         jsr     stageSpriteForCurrentPiece
         jsr     savePlayer1State
+.ifdef PIECES
+        jsr     stageNextSprites
+.else
         jsr     stageSpriteForNextPiece
+.endif
         inc     gameModeState
         rts
 

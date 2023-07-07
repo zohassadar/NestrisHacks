@@ -5,9 +5,11 @@ tmp3:	.res $1	                    ; $0002
 .res $2                             ; $0003
 tmpBulkCopyToPpuReturnAddr: .res $2 ; $0005
 
-soon: .res $5                       ; $0007 
+soon: .res $5                       ; $0007
+soonSprite: .res $1                 ; $000C 
+soonSpriteY: .res $1                ; $000D 
 
-.res $8                             ; $000B
+.res $6                             ; $000E
 patchToPpuAddr: .res $1             ; $0014
 .res $2                             ; $0015
 rng_seed: .res $2	                ; $0017
