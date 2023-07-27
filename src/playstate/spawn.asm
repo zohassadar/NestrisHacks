@@ -1,8 +1,17 @@
 
 playState_spawnNextTetrimino:
+.ifdef MINIMAL_ARE
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         lda     vramRow
         cmp     #$20
         bmi     @ret
+.endif
         lda     numberOfPlayers
         cmp     #$01
         beq     @spawnPiece

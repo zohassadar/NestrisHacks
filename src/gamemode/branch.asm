@@ -13,7 +13,12 @@ branchOnGameMode:
         .addr   gameMode_playAndEndingHighScore_jmp
         .addr   gameMode_playAndEndingHighScore_jmp
         .addr   gameMode_startDemo
+
+.ifdef MINIMAL_ARE
+unusedGameModeState_updatePlayer1:
+.else
 gameModeState_updatePlayer1:
+.endif
         jsr     makePlayer1Active
         jsr     branchOnPlayStatePlayer1
         jsr     stageSpriteForCurrentPiece

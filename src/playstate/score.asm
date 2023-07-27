@@ -1,4 +1,8 @@
+.ifdef MINIMAL_ARE
+unusedPlayState_updateLinesAndStatistics:
+.else
 playState_updateLinesAndStatistics:
+.endif
         jsr     updateMusicSpeed
         lda     completedLines
         bne     @linesCleared

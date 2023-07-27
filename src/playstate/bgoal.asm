@@ -1,4 +1,8 @@
+.ifdef MINIMAL_ARE
+unusedPlayState_bTypeGoalCheck:
+.else
 playState_bTypeGoalCheck:
+.endif
         lda     gameType
         beq     @ret
         lda     lines

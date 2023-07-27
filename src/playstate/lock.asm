@@ -16,9 +16,16 @@ playState_lockTetrimino:
         rts
 
 @notGameOver:
+.ifdef MINIMAL_ARE
+        nop
+        nop
+        nop
+        nop
+.else
         lda     vramRow
         cmp     #$20
         bmi     @ret
+.endif
 .ifdef WALLHACK2
         jmp     @skipOverWallhack2Padding
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -107,7 +114,13 @@ playState_lockTetrimino:
         jsr     updatePlayfield
         jsr     updateMusicSpeed
         inc     playState
+.ifdef MINIMAL_ARE
+@ret:   
+        jmp      stageCurrentPieceForPPU
+        ; jsr     branchOnPlayStatePlayer1
+.else
 @ret:   rts
+.endif
 
 playState_updateGameOverCurtain:
         lda     curtainRow
@@ -163,7 +176,11 @@ playState_updateGameOverCurtain:
         sta     newlyPressedButtons_player1
 @ret2:  rts
 
+.ifdef MINIMAL_ARE
+unusedPlaystate_checkForCompletedRows:
+.else
 playState_checkForCompletedRows:
+.endif
         lda     vramRow
         cmp     #$20
         bpl     @updatePlayfieldComplete

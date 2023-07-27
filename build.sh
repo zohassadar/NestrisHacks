@@ -9,6 +9,7 @@ name_modifiers=()
 hacks=(
     "anydas"
     "penguin"
+    "quick_are"
     "rando"
     "scrolltris"
     "sps"
@@ -158,6 +159,12 @@ get_flag_opts (){
                     echo "Penguin Line Clear enabled"
                     buildflags+=("-D PENGUIN")
                     name_modifiers+=("Plc")
+                    ;;
+                "quick_are")
+                    echo "Quick ARE enabled"
+                    omit_ud1
+                    buildflags+=("-D MINIMAL_ARE")
+                    name_modifiers+=("Are")
                     ;;
                 "rando")
                     echo "Random Orientation enabled"

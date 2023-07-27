@@ -193,7 +193,11 @@ menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
 seedVersion: .res 1              ; $0604
 
-.res $7B
+;minimal_are staging
+minimalAreStaging: .res $C      ; $0605
+minimalAreToggle: .res $1       ; $0611
+
+.res $6E
 
 ; End romhacks
 

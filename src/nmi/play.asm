@@ -30,10 +30,24 @@ render_mode_play_and_demo:
         sta     vramRow
         lda     #$04
         sta     playfieldAddr+1
+.ifdef MINIMAL_ARE
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+@copyPlayfieldLoop:
+        jsr     efficientCopyPlayfieldRow
+.else
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
+.endif
         lda     vramRow
         sta     player1_vramRow
 @renderPlayer2Playfield:
@@ -164,10 +178,16 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$40
         beq     @renderTetrisFlashAndSound
+.ifdef MINIMAL_ARE
+        nop
+        ldx     player1_currentPiece
+        lda     tetriminoTypeFromOrientation,x
+.else
         lda     #$00
         sta     tmpCurrentPiece
 @renderPieceStat:
         lda     tmpCurrentPiece
+.endif
         asl     a
         tax
         lda     pieceToPpuStatAddr,x
@@ -178,10 +198,21 @@ render_mode_play_and_demo:
         sta     PPUDATA
         lda     statsByType,x
         jsr     twoDigsToPPU
+.ifdef MINIMAL_ARE
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         inc     tmpCurrentPiece
         lda     tmpCurrentPiece
         cmp     #$07
         bne     @renderPieceStat
+.endif
         lda     outOfDateRenderFlags
         and     #$BF
         sta     outOfDateRenderFlags

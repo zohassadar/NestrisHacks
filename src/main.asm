@@ -134,6 +134,11 @@ unreferenced_data1:
         .include "hacks/same_piece_sets.asm"
 .endif
 
+.ifdef MINIMAL_ARE
+        .include "hacks/minimal_are.asm"
+.endif
+
+
 .ifndef OMIT_UD1
         .incbin "data/unreferenced_data1.bin"
 .endif
