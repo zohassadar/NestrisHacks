@@ -30,24 +30,10 @@ render_mode_play_and_demo:
         sta     vramRow
         lda     #$04
         sta     playfieldAddr+1
-.ifdef MINIMAL_ARE
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-@copyPlayfieldLoop:
-        jsr     efficientCopyPlayfieldRow
-.else
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
-.endif
         lda     vramRow
         sta     player1_vramRow
 @renderPlayer2Playfield:

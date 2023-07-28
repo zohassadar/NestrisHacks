@@ -4,7 +4,7 @@ render: lda     renderMode
         .addr   render_mode_menu_screens
         .addr   render_mode_congratulations_screen
 .ifdef MINIMAL_ARE
-        .addr   renderPieceThenDoRegularRender
+        .addr   render_piece_then_render_mode_play_and_demo
 .else
         .addr   render_mode_play_and_demo
 .endif

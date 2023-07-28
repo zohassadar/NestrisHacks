@@ -3,9 +3,7 @@ playState_receiveGarbage:
         lda     numberOfPlayers
         cmp     #$01
         beq     @ret
-.ifndef MINIMAL_ARE
         ldy     pendingGarbage
-.endif
         beq     @ret
         lda     vramRow
         cmp     #$20
@@ -46,11 +44,7 @@ playState_receiveGarbage:
         sta     pendingGarbage
         sta     vramRow
 @ret:  inc     playState
-.ifdef MINIMAL_ARE
-@delay:  jmp   playState_spawnNextTetrimino
-.else
 @delay:  rts
-.endif
 
 garbageLines:
         .byte   $00,$00,$01,$02,$04

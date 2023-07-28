@@ -117,7 +117,6 @@ playState_lockTetrimino:
 .ifdef MINIMAL_ARE
 @ret:   
         jmp      stageCurrentPieceForPPU
-        ; jsr     branchOnPlayStatePlayer1
 .else
 @ret:   rts
 .endif
