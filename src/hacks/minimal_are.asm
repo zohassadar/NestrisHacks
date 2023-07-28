@@ -87,7 +87,6 @@ gameModeState_updatePlayer1:
         lda     playState
         cmp     #$06
         beq     @skipAhead2
-        lda     playState
         cmp     #$05
         bne     @skipAhead3
         jsr     branchOnPlayStatePlayer1
