@@ -91,8 +91,6 @@ twotrisInitialize:
         ; store renderVars
         lda     outOfDateRenderFlags
         pha
-        lda     vramRow
-        pha
 
         ; do last render so colors/score/lines/level show up
         jsr     render_mode_play_and_demo
@@ -116,6 +114,8 @@ twotrisInitialize:
 
         lda     #$00
         sta     twotrisPauseInitialized
+        sta     player1_vramRow
+        sta     vramRow
 
         lda     player1_autorepeatY
         sta     twotrisPreviousAutorepeatY
@@ -124,8 +124,7 @@ twotrisInitialize:
         jsr     initializeBoard
 
 ; restore render vars
-        pla
-        sta     vramRow
+
         pla
         sta     outOfDateRenderFlags
 
@@ -149,9 +148,6 @@ playstateRefreshing:
 
 playstatePaused:
         rts
-
-
-
 
 
 
