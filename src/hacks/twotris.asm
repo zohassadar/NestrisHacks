@@ -82,60 +82,22 @@ twoTrisNmiTail:
         rti
 
 
-initializePause:
-        ; disable nmi
-        lda     #$00
-        sta     PPUMASK
-        lda     #$00
-        sta     PPUCTRL
-
-        lda     #$00
-        sta     twotrisJump
-        lda     #$28
-        sta     twotrisJump+1
-        ldy     #$1E            ; 30 rows
-
-@blankRow:
-        ldx     #$20            ; 32 cols
-        lda     twotrisJump+1
-        sta     PPUADDR
-        lda     twotrisJump
-        sta     PPUADDR
-
-        lda     #$FD            ; blank tile
-@blankColumn:
-        sta     PPUDATA
-        dex
-        bne     @blankColumn
-
-        dey
-        beq     @waitForVBlankAndEnableNmi
-
-        lda     #$20
-        clc
-
-        adc     twotrisJump
-        sta     twotrisJump
-        lda     #$00
-        adc     twotrisJump+1
-        sta     twotrisJump+1
-
-        jmp     @blankRow
-
-        ; enable nmi
-@waitForVBlankAndEnableNmi:
-        bit     PPUSTATUS
-        bpl     @waitForVBlankAndEnableNmi
-        lda     #$80
-        sta     PPUCTRL
-        inc     twotrisPauseInitialized
-        jmp     waitPartOfUpdateAudioWaitForNmiAndResetOamStaging
 
 
 twotrisInitialize:
+        ; store renderVars
+        lda     outOfDateRenderFlags
+        pha
+        lda     vramRow
+        pha
 
         ; do last render so colors/score/lines/level show up
         jsr     render_mode_play_and_demo
+
+        ; clear the slate
+        ldx     #$05
+        ldy     #$05
+        jsr     memset_page
 
         ; set up variables here
         lda     #$01
@@ -153,6 +115,11 @@ twotrisInitialize:
 
         ; load initial render of flags/regs into queue
 
+; restore render vars
+        pla
+        sta     vramRow
+        pla
+        sta     outOfDateRenderFlags
 
         jmp     twoTrisNmiTail
 
@@ -178,37 +145,13 @@ playstatePaused:
 
 
 
-jumpToGamePlayState:
-        lda     twotrisState
-        jsr     switch_s_plus_2a
-        .addr   playstateInitializing
-        .addr   playstatePlaying
-        .addr   playstateChecking
-        .addr   playstateClearing
-        .addr   playstateRefreshing
-        .addr   playstatePaused
-
-
-setMmcControlAndRenderFlags:
-        inc     initRam
-        lda     twotrisMmcControl
-        jsr     setMMC1Control
-        lda     #$00
-        sta     PPUSCROLL
-        sta     PPUSCROLL
-        lda     twotrisPpuCtrl
-        sta     PPUCTRL
-        lda     twotrisPpuMask
-        sta     PPUMASK
-        rts
-
 
 
 fulfillRenderQueue:
         ldx     #$00
 @nextChunk:
         lda     twotrisRenderQueue,x
-        bmi     @ret
+        beq     @ret
         sta     PPUADDR
         inx
         lda     twotrisRenderQueue,x
@@ -229,7 +172,7 @@ fulfillRenderQueue:
 
 emptyRenderQueue:
         ldx     #$80
-        lda     #$EF
+        lda     #$00
 @emptyQueueLoop:
         sta     twotrisRenderQueue,x
         dex
@@ -281,4 +224,81 @@ menuThrottleNew:
 menuThrottleContinue:
         lda     #menuThrottleRepeat
         sta     menuMoveThrottle
+        rts
+
+
+
+initializePause:
+        ; disable nmi
+        lda     #$00
+        sta     PPUMASK
+        lda     #$00
+        sta     PPUCTRL
+
+        lda     #$00
+        sta     twotrisJump
+        lda     #$28
+        sta     twotrisJump+1
+        ldy     #$1E            ; 30 rows
+
+@blankRow:
+        ldx     #$20            ; 32 cols
+        lda     twotrisJump+1
+        sta     PPUADDR
+        lda     twotrisJump
+        sta     PPUADDR
+
+        lda     #$FD            ; blank tile
+@blankColumn:
+        sta     PPUDATA
+        dex
+        bne     @blankColumn
+
+        dey
+        beq     @waitForVBlankAndEnableNmi
+
+        lda     #$20
+        clc
+
+        adc     twotrisJump
+        sta     twotrisJump
+        lda     #$00
+        adc     twotrisJump+1
+        sta     twotrisJump+1
+
+        jmp     @blankRow
+
+        ; enable nmi
+@waitForVBlankAndEnableNmi:
+        bit     PPUSTATUS
+        bpl     @waitForVBlankAndEnableNmi
+        lda     #$80
+        sta     PPUCTRL
+        inc     twotrisPauseInitialized
+        jmp     waitPartOfUpdateAudioWaitForNmiAndResetOamStaging
+
+
+
+jumpToGamePlayState:
+        lda     twotrisState
+        jsr     switch_s_plus_2a
+        .addr   playstateInitializing
+        .addr   playstatePlaying
+        .addr   playstateChecking
+        .addr   playstateClearing
+        .addr   playstateRefreshing
+        .addr   playstatePaused
+
+
+setMmcControlAndRenderFlags:
+        inc     initRam
+        lda     twotrisMmcControl
+        jsr     setMMC1Control
+        lda     #$00
+        sta     PPUSCROLL
+        sta     PPUSCROLL
+        lda     twotrisPpuCtrl
+        sta     PPUCTRL
+        lda     twotrisPpuMask
+        sta     PPUMASK
         rts
