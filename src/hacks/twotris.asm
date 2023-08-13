@@ -205,7 +205,7 @@ checkForPause:
         sta     stack+5,x
         lda     #>initializePause
         sta     stack+6,x
-        jmp     twoTrisNmiTail       
+        jmp     twoTrisNmiTail
 @ret:
         rts
 
@@ -313,24 +313,24 @@ setMmcControlAndRenderFlags:
 
 
 initializeBoard:
-    ldx #$00
+        ldx     #$00
 @loopThroughInitialize:
-    lda boardInitializeData,x
-    cmp #$FE
-    beq @ret
-    sta twotrisRenderQueue,x
-    inx
-    jmp @loopThroughInitialize
+        lda     boardInitializeData,x
+        cmp     #$FE
+        beq     @ret
+        sta     twotrisRenderQueue,x
+        inx
+        jmp     @loopThroughInitialize
 @ret:
-    rts
+        rts
 
 
 boardInitializeData:
-    .byte $21,$86,$03,$0A,$00,$00 ;A in T spot
-    .byte $21,$C6,$03,$21,$00,$00 ;X in J spot
-    .byte $22,$06,$03,$22,$00,$00 ;Y in Z spot
-    .byte $22,$46,$03,$17,$FF,$00 ;N in O spot
-    .byte $22,$86,$03,$1F,$FF,$00 ;V in S spot
-    .byte $22,$C6,$03,$23,$FF,$00 ;Z in L spot
-    .byte $23,$06,$03,$0C,$FF,$00 ;C in I spot
-    .byte $FE ; end
+        .byte   $21,$86,$03,$0A,$00,$00;A in T spot
+        .byte   $21,$C6,$03,$21,$00,$00;X in J spot
+        .byte   $22,$06,$03,$22,$00,$00;Y in Z spot
+        .byte   $22,$46,$03,$17,$FF,$00;N in O spot
+        .byte   $22,$86,$03,$1F,$FF,$00;V in S spot
+        .byte   $22,$C6,$03,$23,$FF,$00;Z in L spot
+        .byte   $23,$06,$03,$0C,$FF,$00;C in I spot
+        .byte   $FE             ; end
