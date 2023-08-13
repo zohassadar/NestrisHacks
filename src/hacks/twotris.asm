@@ -91,13 +91,16 @@ twotrisInitialize:
         ; store renderVars
         lda     outOfDateRenderFlags
         pha
-
         ; do last render so colors/score/lines/level show up
         jsr     render_mode_play_and_demo
+; restore render vars
+        pla
+        sta     outOfDateRenderFlags
 
         ; clear the slate
         ldx     #$05
         ldy     #$05
+        lda     #$00
         jsr     memset_page
 
         ; set up variables here
@@ -123,10 +126,6 @@ twotrisInitialize:
         ; load initial render of flags/regs into queue
         jsr     initializeBoard
 
-; restore render vars
-
-        pla
-        sta     outOfDateRenderFlags
 
         jmp     twoTrisNmiTail
 
@@ -147,7 +146,183 @@ playstateRefreshing:
         rts
 
 playstatePaused:
+        lda     #BUTTON_RIGHT
+        jsr     menuThrottle
+        beq     @rightNotPressed
+        inc     twotrisPauseDigit
+        lda     twotrisPauseDigit
+        and     #$03
+        sta     twotrisPauseDigit
+        jmp     @finished
+@rightNotPressed:
+        lda     #BUTTON_LEFT
+        jsr     menuThrottle
+        beq     @leftNotPressed
+        dec     twotrisPauseDigit
+        lda     twotrisPauseDigit
+        and     #$03
+        sta     twotrisPauseDigit
+        jmp     @finished
+@leftNotPressed:
+        lda     #BUTTON_UP
+        jsr     menuThrottle
+        beq     @upNotPressed
+        ldx     twotrisPauseDigit
+        inc     twotrisPauseStartHigh0,x
+        lda     twotrisPauseStartHigh0,x
+        and     #$0F
+        sta     twotrisPauseStartHigh0,x
+        jsr     pauseIndividualToGroup
+        jmp     @finished
+@upNotPressed:
+        lda     #BUTTON_DOWN
+        jsr     menuThrottle
+        beq     @downNotPressed
+        ldx     twotrisPauseDigit
+        dec     twotrisPauseStartHigh0,x
+        lda     twotrisPauseStartHigh0,x
+        and     #$0F
+        sta     twotrisPauseStartHigh0,x
+        jsr     pauseIndividualToGroup
+        jmp     @finished
+@downNotPressed:
+        lda #BUTTON_A
+        jsr menuThrottle
+        beq @aNotPressed
+        lda twotrisPauseStartLow
+        clc
+        adc #$08
+        sta twotrisPauseStartLow
+        lda twotrisPauseStartHigh
+        adc #$00
+        sta twotrisPauseStartHigh
+        jsr pauseGroupToIndividual
+        jmp @finished
+@aNotPressed:
+        lda #BUTTON_B
+        jsr menuThrottle
+        beq @finished
+        lda twotrisPauseStartLow
+        sec
+        sbc #$08
+        sta twotrisPauseStartLow
+        lda twotrisPauseStartHigh
+        sbc #$00
+        sta twotrisPauseStartHigh
+        jsr pauseGroupToIndividual
+@finished:
+        jsr     pauseDrawRows
+        jsr     loadPauseAddressCursor
         rts
+
+
+pauseIndividualToGroup:
+        lda    twotrisPauseStartHigh0
+        asl
+        asl
+        asl
+        asl
+        ora    twotrisPauseStartHigh1
+        sta    twotrisPauseStartHigh
+        lda    twotrisPauseStartLow0
+        asl
+        asl
+        asl
+        asl
+        ora    twotrisPauseStartLow1
+        sta    twotrisPauseStartLow
+        rts
+
+pauseGroupToIndividual:
+        lda   twotrisPauseStartHigh
+        lsr
+        lsr
+        lsr
+        lsr
+        sta    twotrisPauseStartHigh0
+        lda   twotrisPauseStartHigh
+        and   #$0f
+        sta    twotrisPauseStartHigh1
+        lda   twotrisPauseStartLow
+        lsr
+        lsr
+        lsr
+        lsr
+        sta    twotrisPauseStartLow0
+        lda   twotrisPauseStartLow
+        and   #$0f
+        sta    twotrisPauseStartLow1
+        rts
+
+
+
+pauseDrawRows:
+    lda twotrisPauseStartLow
+    sta tmp1
+    lda twotrisPauseStartHigh
+    sta tmp2
+
+    ldy #$00
+    ldx #$00
+
+    lda #$29
+    sta twotrisRenderQueue,x
+    inx
+    lda #$84
+    sta twotrisRenderQueue,x
+    inx
+    lda #$18
+    sta twotrisRenderQueue,x
+    inx
+
+@nextByte:
+    lda (tmp1),y
+    sta twotrisTemp
+    lsr
+    lsr
+    lsr
+    lsr
+    sta twotrisRenderQueue,x
+    inx
+
+    lda twotrisTemp
+    and #$0F
+    sta twotrisRenderQueue,x
+    inx
+
+    lda #$FF
+    sta twotrisRenderQueue,x
+    inx
+    iny
+    cpy #$08
+    bne @nextByte
+
+    lda #$28
+    sta twotrisRenderQueue,x
+    inx 
+
+    lda #$CC
+    sta twotrisRenderQueue,x
+    inx 
+
+    lda #$04
+    sta twotrisRenderQueue,x
+    inx 
+
+    lda twotrisPauseStartHigh0
+    sta twotrisRenderQueue,x
+    inx 
+    lda twotrisPauseStartHigh1
+    sta twotrisRenderQueue,x
+    inx 
+    lda twotrisPauseStartLow0
+    sta twotrisRenderQueue,x
+    inx 
+    lda twotrisPauseStartLow1
+    sta twotrisRenderQueue,x
+    rts
+
+
 
 
 
@@ -184,7 +359,6 @@ emptyRenderQueue:
         rts
 
 
-
 checkForPause:
         lda     newlyPressedButtons_player1
         and     #BUTTON_START
@@ -192,6 +366,14 @@ checkForPause:
         lda     twotrisPpuCtrl
         eor     #$02
         sta     twotrisPpuCtrl
+        and     #$02
+        bne     @notPaused
+        lda     #STATE_PLAYING
+        jmp     @storeNewState
+@notPaused:
+        lda #STATE_PAUSED
+@storeNewState:
+        sta twotrisState
         lda     twotrisPauseInitialized
         bne     @ret
         pla
@@ -243,7 +425,7 @@ initializePause:
         sta     twotrisJump
         lda     #$28
         sta     twotrisJump+1
-        ldy     #$1E            ; 30 rows
+        ldy     #$20            ; 30 rows + attribute table
 
 @blankRow:
         ldx     #$20            ; 32 cols
@@ -252,7 +434,7 @@ initializePause:
         lda     twotrisJump
         sta     PPUADDR
 
-        lda     #$FD            ; blank tile
+        lda     #$FF            ; blank tile
 @blankColumn:
         sta     PPUDATA
         dex
@@ -271,9 +453,9 @@ initializePause:
         sta     twotrisJump+1
 
         jmp     @blankRow
-
         ; enable nmi
 @waitForVBlankAndEnableNmi:
+        jsr     pauseDrawRows
         bit     PPUSTATUS
         bpl     @waitForVBlankAndEnableNmi
         lda     #$80
@@ -286,12 +468,11 @@ initializePause:
 jumpToGamePlayState:
         lda     twotrisState
         jsr     switch_s_plus_2a
-        .addr   playstateInitializing
+        .addr   playstatePaused
         .addr   playstatePlaying
         .addr   playstateChecking
         .addr   playstateClearing
         .addr   playstateRefreshing
-        .addr   playstatePaused
 
 
 setMmcControlAndRenderFlags:
@@ -306,6 +487,34 @@ setMmcControlAndRenderFlags:
         lda     twotrisPpuMask
         sta     PPUMASK
         rts
+
+
+loadPauseAddressCursor:
+        lda frameCounter
+        and #$03
+        beq @ret
+        ldx twotrisOamIndex
+        lda #$28
+        sta oamStaging,x
+        inx
+        lda #$F6
+        sta oamStaging,x
+        inx
+        lda #$23
+        sta oamStaging,x
+        inx
+        lda twotrisPauseDigit
+        asl
+        asl
+        asl
+        clc
+        adc #$5F
+        sta oamStaging,x
+        inx
+        stx twotrisOamIndex
+@ret:   rts
+
+
 
 
 initializeBoard:

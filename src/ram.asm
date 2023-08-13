@@ -217,13 +217,15 @@ twotrisY: .res $01 ; $0502
 twotrisFlags: .res $01 ; $0503
 
 ; pause screen vars
+twotrisPauseStartLow: .res $01 ; $0506
+twotrisPauseStartHigh: .res $01 ; $0506
+
 twotrisPauseDigit: .res $01 ; $0506
-twotrisPauseStartLow0: .res $01 ; $0506
-twotrisPauseStartLow1: .res $01 ; $0506
+
 twotrisPauseStartHigh0: .res $01 ; $0506
 twotrisPauseStartHigh1: .res $01 ; $0506
-twotrisPauseStartHigh: .res $01 ; $0506
-twotrisPauseStartLow: .res $01 ; $0506
+twotrisPauseStartLow0: .res $01 ; $0506
+twotrisPauseStartLow1: .res $01 ; $0506
 
 ; What gets executed
 
