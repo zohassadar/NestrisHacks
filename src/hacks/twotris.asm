@@ -93,7 +93,7 @@ twotrisInitialize:
         pha
         ; do last render so colors/score/lines/level show up
         jsr     render_mode_play_and_demo
-; restore render vars
+        ; restore render vars
         pla
         sta     outOfDateRenderFlags
 
@@ -186,30 +186,30 @@ playstatePaused:
         jsr     pauseIndividualToGroup
         jmp     @finished
 @downNotPressed:
-        lda #BUTTON_A
-        jsr menuThrottle
-        beq @aNotPressed
-        lda twotrisPauseStartLow
+        lda     #BUTTON_A
+        jsr     menuThrottle
+        beq     @aNotPressed
+        lda     twotrisPauseStartLow
         clc
-        adc #$08
-        sta twotrisPauseStartLow
-        lda twotrisPauseStartHigh
-        adc #$00
-        sta twotrisPauseStartHigh
-        jsr pauseGroupToIndividual
-        jmp @finished
+        adc     #$08
+        sta     twotrisPauseStartLow
+        lda     twotrisPauseStartHigh
+        adc     #$00
+        sta     twotrisPauseStartHigh
+        jsr     pauseGroupToIndividual
+        jmp     @finished
 @aNotPressed:
-        lda #BUTTON_B
-        jsr menuThrottle
-        beq @finished
-        lda twotrisPauseStartLow
+        lda     #BUTTON_B
+        jsr     menuThrottle
+        beq     @finished
+        lda     twotrisPauseStartLow
         sec
-        sbc #$08
-        sta twotrisPauseStartLow
-        lda twotrisPauseStartHigh
-        sbc #$00
-        sta twotrisPauseStartHigh
-        jsr pauseGroupToIndividual
+        sbc     #$08
+        sta     twotrisPauseStartLow
+        lda     twotrisPauseStartHigh
+        sbc     #$00
+        sta     twotrisPauseStartHigh
+        jsr     pauseGroupToIndividual
 @finished:
         jsr     pauseDrawRows
         jsr     loadPauseAddressCursor
@@ -217,110 +217,110 @@ playstatePaused:
 
 
 pauseIndividualToGroup:
-        lda    twotrisPauseStartHigh0
+        lda     twotrisPauseStartHigh0
         asl
         asl
         asl
         asl
-        ora    twotrisPauseStartHigh1
-        sta    twotrisPauseStartHigh
-        lda    twotrisPauseStartLow0
+        ora     twotrisPauseStartHigh1
+        sta     twotrisPauseStartHigh
+        lda     twotrisPauseStartLow0
         asl
         asl
         asl
         asl
-        ora    twotrisPauseStartLow1
-        sta    twotrisPauseStartLow
+        ora     twotrisPauseStartLow1
+        sta     twotrisPauseStartLow
         rts
 
 pauseGroupToIndividual:
-        lda   twotrisPauseStartHigh
+        lda     twotrisPauseStartHigh
         lsr
         lsr
         lsr
         lsr
-        sta    twotrisPauseStartHigh0
-        lda   twotrisPauseStartHigh
-        and   #$0f
-        sta    twotrisPauseStartHigh1
-        lda   twotrisPauseStartLow
+        sta     twotrisPauseStartHigh0
+        lda     twotrisPauseStartHigh
+        and     #$0f
+        sta     twotrisPauseStartHigh1
+        lda     twotrisPauseStartLow
         lsr
         lsr
         lsr
         lsr
-        sta    twotrisPauseStartLow0
-        lda   twotrisPauseStartLow
-        and   #$0f
-        sta    twotrisPauseStartLow1
+        sta     twotrisPauseStartLow0
+        lda     twotrisPauseStartLow
+        and     #$0f
+        sta     twotrisPauseStartLow1
         rts
 
 
 
 pauseDrawRows:
-    lda twotrisPauseStartLow
-    sta tmp1
-    lda twotrisPauseStartHigh
-    sta tmp2
+        lda     twotrisPauseStartLow
+        sta     tmp1
+        lda     twotrisPauseStartHigh
+        sta     tmp2
 
-    ldy #$00
-    ldx #$00
+        ldy     #$00
+        ldx     #$00
 
-    lda #$29
-    sta twotrisRenderQueue,x
-    inx
-    lda #$84
-    sta twotrisRenderQueue,x
-    inx
-    lda #$18
-    sta twotrisRenderQueue,x
-    inx
+        lda     #$29
+        sta     twotrisRenderQueue,x
+        inx
+        lda     #$84
+        sta     twotrisRenderQueue,x
+        inx
+        lda     #$18
+        sta     twotrisRenderQueue,x
+        inx
 
 @nextByte:
-    lda (tmp1),y
-    sta twotrisTemp
-    lsr
-    lsr
-    lsr
-    lsr
-    sta twotrisRenderQueue,x
-    inx
+        lda     (tmp1),y
+        sta     twotrisTemp
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     twotrisRenderQueue,x
+        inx
 
-    lda twotrisTemp
-    and #$0F
-    sta twotrisRenderQueue,x
-    inx
+        lda     twotrisTemp
+        and     #$0F
+        sta     twotrisRenderQueue,x
+        inx
 
-    lda #$FF
-    sta twotrisRenderQueue,x
-    inx
-    iny
-    cpy #$08
-    bne @nextByte
+        lda     #$FF
+        sta     twotrisRenderQueue,x
+        inx
+        iny
+        cpy     #$08
+        bne     @nextByte
 
-    lda #$28
-    sta twotrisRenderQueue,x
-    inx 
+        lda     #$28
+        sta     twotrisRenderQueue,x
+        inx
 
-    lda #$CC
-    sta twotrisRenderQueue,x
-    inx 
+        lda     #$CC
+        sta     twotrisRenderQueue,x
+        inx
 
-    lda #$04
-    sta twotrisRenderQueue,x
-    inx 
+        lda     #$04
+        sta     twotrisRenderQueue,x
+        inx
 
-    lda twotrisPauseStartHigh0
-    sta twotrisRenderQueue,x
-    inx 
-    lda twotrisPauseStartHigh1
-    sta twotrisRenderQueue,x
-    inx 
-    lda twotrisPauseStartLow0
-    sta twotrisRenderQueue,x
-    inx 
-    lda twotrisPauseStartLow1
-    sta twotrisRenderQueue,x
-    rts
+        lda     twotrisPauseStartHigh0
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisPauseStartHigh1
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisPauseStartLow0
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisPauseStartLow1
+        sta     twotrisRenderQueue,x
+        rts
 
 
 
@@ -371,9 +371,9 @@ checkForPause:
         lda     #STATE_PLAYING
         jmp     @storeNewState
 @notPaused:
-        lda #STATE_PAUSED
+        lda     #STATE_PAUSED
 @storeNewState:
-        sta twotrisState
+        sta     twotrisState
         lda     twotrisPauseInitialized
         bne     @ret
         pla
@@ -490,28 +490,28 @@ setMmcControlAndRenderFlags:
 
 
 loadPauseAddressCursor:
-        lda frameCounter
-        and #$03
-        beq @ret
-        ldx twotrisOamIndex
-        lda #$28
-        sta oamStaging,x
+        lda     frameCounter
+        and     #$03
+        beq     @ret
+        ldx     twotrisOamIndex
+        lda     #$28
+        sta     oamStaging,x
         inx
-        lda #$F6
-        sta oamStaging,x
+        lda     #$F6
+        sta     oamStaging,x
         inx
-        lda #$23
-        sta oamStaging,x
+        lda     #$23
+        sta     oamStaging,x
         inx
-        lda twotrisPauseDigit
+        lda     twotrisPauseDigit
         asl
         asl
         asl
         clc
-        adc #$5F
-        sta oamStaging,x
+        adc     #$5F
+        sta     oamStaging,x
         inx
-        stx twotrisOamIndex
+        stx     twotrisOamIndex
 @ret:   rts
 
 
