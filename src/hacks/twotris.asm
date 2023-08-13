@@ -1,9 +1,8 @@
-STATE_INITIALIZE := $00
+STATE_PAUSED := $00
 STATE_PLAYING := $01
 STATE_CHECKING := $02
 STATE_CLEARING := $03
 STATE_REFRESHING := $04
-STATE_PAUSED := $05
 
 menuThrottleStart := $10
 menuThrottleRepeat := $4
@@ -44,33 +43,37 @@ twotris:
         lda     player1_autorepeatY
         cmp     #$A0
         beq     @newGameStarted
+        sta     twotrisPreviousAutorepeatY
+        inc     initRam
+        lda     #$10
+        jsr     setMMC1Control
         jmp     notPlayingTwotris
 @newGameStarted:
-        lda     twotrisState
-        cmp     #$EF
-        bne     @initialized
+        cmp     twotrisPreviousAutorepeatY
+        beq     @initialized
         jmp     twotrisInitialize
 @initialized:
         jsr     fulfillRenderQueue
         jsr     copyOamStagingToOam
         jsr     setMmcControlAndRenderFlags
         ; --------
-
         jsr     emptyRenderQueue
+
+        ldx     #$02
+        ldy     #$02
+        lda     #$FF
+        jsr     memset_page
 
         ; --------
         inc     frameCounter
         lda     #$00
-        sta     ppuScrollX
-        sta     PPUSCROLL
-        sta     ppuScrollY
-        sta     PPUSCROLL
+        sta     twotrisOamIndex
         ; --------
         ldx     #$17
         ldy     #$02
         jsr     generateNextPseudorandomNumber
         jsr     pollControllerButtons
-        ; jsr     jumpToGamePlayState
+        jsr     jumpToGamePlayState
         jsr     checkForPause
         jsr     updateAudio
 twoTrisNmiTail:
@@ -110,10 +113,15 @@ twotrisInitialize:
         sta     twotrisPpuMask
         lda     #$20
         sta     twotrisRts
+
         lda     #$00
         sta     twotrisPauseInitialized
 
+        lda     player1_autorepeatY
+        sta     twotrisPreviousAutorepeatY
+
         ; load initial render of flags/regs into queue
+        jsr     initializeBoard
 
 ; restore render vars
         pla
@@ -164,14 +172,14 @@ fulfillRenderQueue:
         sta     PPUDATA
         inx
         dey
-        bpl     @nextTile
+        bne     @nextTile
         jmp     @nextChunk
 @ret:
         rts
 
 
 emptyRenderQueue:
-        ldx     #$80
+        ldx     #$7F
         lda     #$00
 @emptyQueueLoop:
         sta     twotrisRenderQueue,x
@@ -302,3 +310,27 @@ setMmcControlAndRenderFlags:
         lda     twotrisPpuMask
         sta     PPUMASK
         rts
+
+
+initializeBoard:
+    ldx #$00
+@loopThroughInitialize:
+    lda boardInitializeData,x
+    cmp #$FE
+    beq @ret
+    sta twotrisRenderQueue,x
+    inx
+    jmp @loopThroughInitialize
+@ret:
+    rts
+
+
+boardInitializeData:
+    .byte $21,$86,$03,$0A,$00,$00 ;A in T spot
+    .byte $21,$C6,$03,$21,$00,$00 ;X in J spot
+    .byte $22,$06,$03,$22,$00,$00 ;Y in Z spot
+    .byte $22,$46,$03,$17,$FF,$00 ;N in O spot
+    .byte $22,$86,$03,$1F,$FF,$00 ;V in S spot
+    .byte $22,$C6,$03,$23,$FF,$00 ;Z in L spot
+    .byte $23,$06,$03,$0C,$FF,$00 ;C in I spot
+    .byte $FE ; end

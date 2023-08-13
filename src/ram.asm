@@ -195,6 +195,7 @@ twotrisMmcControl: .res $01 ; $0506
 twotrisVramRow: .res $01 ; $0506
 twotrisAnimationColumn: .res $01 ; $0506
 twotrisOamIndex: .res $01 ; $0505
+twotrisPreviousAutorepeatY: .res $01 ; $0505
 twotrisTemp: .res $04
 twotrisPauseInitialized: .res $01
 
@@ -232,10 +233,9 @@ twotrisRts: .res $01 ; $0506  needs to be set to RTS ($20)
 
 twotrisPlayfield: .res $28 ; $0506 stores instruction index and values
 
+.res $34
+
 twotrisRenderQueue: .res $80 ; address (2 bytes), length, content. $00 means done
-
-
-.res $37
 .endif
 
 ; Area for romhacks
@@ -246,6 +246,8 @@ menuSeedCursorIndex: .res 1      ; $0601
 .ifndef TWOTRIS
 menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
+.else
+.res $2
 .endif
 seedVersion: .res 1              ; $0604
 
