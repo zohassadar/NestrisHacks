@@ -3,6 +3,9 @@ nmi:    pha
         pha
         tya
         pha
+.ifdef TWOTRIS
+notPlayingTwotris:
+.endif
 .ifdef ANYDAS
         jmp     renderAnydasMenu
 returnFromAnydasRender:

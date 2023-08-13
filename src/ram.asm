@@ -181,16 +181,72 @@ statsByType:	.res $0E	; $03F0
 .res 2
 playfield:	.res $C8	; $0400
 .res $38
+
+.ifndef TWOTRIS
 playfieldForSecondPlayer:	.res $C8	; $0500
 .res $38
+.else
+playfieldForSecondPlayer:
+twotrisJump: .res $02
+twotrisState: .res $01 ; $0506
+twotrisPpuCtrl: .res $01 ; $0506
+twotrisPpuMask: .res $01 ; $0506
+twotrisMmcControl: .res $01 ; $0506
+twotrisVramRow: .res $01 ; $0506
+twotrisAnimationColumn: .res $01 ; $0506
+twotrisOamIndex: .res $01 ; $0505
+twotrisTemp: .res $04
+twotrisPauseInitialized: .res $01
+
+twotrisCurrentRow: .res $01 ; $0505
+
+menuMoveThrottle: .res $01 ; $0505
+menuThrottleTmp: .res $01 ; $0505
+
+twotrisCurrentPiece: .res $01 ; $0505
+twotrisCurrentDigit: .res $01 ; $0505
+
+twotrisNextPiece: .res $01 ; $0505
+twotrisNextDigit: .res $01 ; $0505
+
+; the state of the "vm"
+twotrisA: .res $01 ; $0500
+twotrisX: .res $01 ; $0501
+twotrisY: .res $01 ; $0502
+twotrisFlags: .res $01 ; $0503
+
+; pause screen vars
+twotrisPauseDigit: .res $01 ; $0506
+twotrisPauseStartLow0: .res $01 ; $0506
+twotrisPauseStartLow1: .res $01 ; $0506
+twotrisPauseStartHigh0: .res $01 ; $0506
+twotrisPauseStartHigh1: .res $01 ; $0506
+twotrisPauseStartHigh: .res $01 ; $0506
+twotrisPauseStartLow: .res $01 ; $0506
+
+; What gets executed
+
+twotrisInstruction: .res $02 ; $0506
+twotrisRts: .res $01 ; $0506  needs to be set to RTS ($20)
+
+
+twotrisPlayfield: .res $28 ; $0506 stores instruction index and values
+
+twotrisRenderQueue: .res $80 ; address (2 bytes), length, content. $00 means done
+
+
+.res $37
+.endif
 
 ; Area for romhacks
 
 ; SPS Variables
 sps_menu: .res $1                ; $0600
 menuSeedCursorIndex: .res 1      ; $0601
+.ifndef TWOTRIS
 menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
+.endif
 seedVersion: .res 1              ; $0604
 
 .res $7B

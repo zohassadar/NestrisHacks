@@ -12,6 +12,7 @@ hacks=(
     "rando"
     "scrolltris"
     "sps"
+    "twotris"
     "upsidedown"
     "wallhack2"
     "warp7"
@@ -174,6 +175,12 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D SPS")
                     name_modifiers+=("Sps")
+                    ;;
+                "twotris")
+                    echo "TWOTRIS Enabled"
+                    omit_ud1
+                    buildflags+=("-D TWOTRIS")
+                    name_modifiers+=("Two")
                     ;;
                 "upsidedown")
                     echo "Upside Down enabled"

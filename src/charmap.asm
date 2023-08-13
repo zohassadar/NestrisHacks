@@ -35,3 +35,11 @@
 .charmap '.', $2A
 .charmap ' ', $2B
 .charmap '-', $2C
+
+
+.ifdef TWOTRIS
+.charmap '[', $F7
+.charmap ']', $F8
+.charmap '$', $F9
+.charmap '#', $FA
+.endif

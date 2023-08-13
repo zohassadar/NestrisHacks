@@ -8,6 +8,9 @@ updateAudioWaitForNmiAndResetOamStaging:
         lda     #$00
         sta     verticalBlankingInterval
         nop
+.ifdef TWOTRIS
+waitPartOfUpdateAudioWaitForNmiAndResetOamStaging:
+.endif
 @checkForNmi:
         lda     verticalBlankingInterval
         beq     @checkForNmi
