@@ -31,4 +31,8 @@ INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 .endif
 .incbin "gfx/typeB_ending_tileset.chr"
 .incbin "gfx/typeA_ending_tileset.chr"
+.ifdef TWOTRIS
+.incbin "gfx/game_tileset_twotris.chr"
+.else
 .incbin "gfx/game_tileset.chr"
+.endif

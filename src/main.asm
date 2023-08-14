@@ -136,6 +136,7 @@ unreferenced_data1:
 
 .ifdef TWOTRIS
         .include "hacks/twotris.asm"
+        .include "hacks/twotris_tables.asm"
 .endif
 
 .ifndef OMIT_UD1

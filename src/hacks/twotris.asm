@@ -10,16 +10,6 @@ menuThrottleRepeat := $4
 
 INST_NOP :=     $EF
 
-instructionTable:
-        .byte   $00,$00         ; actual opcodes go here in an order
-instructionAddressing:
-        .byte   $00,$00         ; number corresponding to 0 - implied, 1 immediate, 2 zp, 3 zp,x, 4 (zp),y 5 (zp,x)
-
-instructionIdAPressed:
-        .byte   $00,$00         ; when currentPiece is incremented
-instructionIdBPressed:
-        .byte   $00,$00         ; decremented
-
 pauseByteRows:
         .word   $2000           ; pause row 0
         .word   $2000           ; pause row 1
@@ -29,8 +19,6 @@ pauseByteRows:
         .word   $2000           ; pause row 5
         .word   $2000           ; pause row 6
         .word   $2000           ; pause row 7
-
-
 
 twotris:
         pha
@@ -515,8 +503,6 @@ loadPauseAddressCursor:
 @ret:   rts
 
 
-
-
 initializeBoard:
         ldx     #$00
 @loopThroughInitialize:
@@ -539,3 +525,36 @@ boardInitializeData:
         .byte   $22,$C6,$03,$23,$FF,$00;Z in L spot
         .byte   $23,$06,$03,$0C,$FF,$00;C in I spot
         .byte   $FE             ; end
+
+
+
+
+
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00
+
