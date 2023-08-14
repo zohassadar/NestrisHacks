@@ -10,7 +10,7 @@ menuThrottleRepeat := $4
 SOUND_EFFECT_LOCK := $07
 SOUND_EFFECT_LINE_CLEAR := $0A
 
-PLANT_TIMER := $1F
+PLANT_TIMER :=  $1F
 
 INST_NOP :=     $EF
 
@@ -52,6 +52,7 @@ twotris:
         inc     frameCounter
         lda     #$00
         sta     twotrisOamIndex
+        sta     renderQueueIndex
         ; --------
         jsr     pollControllerButtons
         jsr     jumpToGamePlayState
@@ -67,15 +68,15 @@ twoTrisNmiTail:
         rti
 
 generateNumbers:
-        lda rng_seed+1
-        and #$0F
-        sta twotrisTemp
+        lda     rng_seed+1
+        and     #$0F
+        sta     twotrisTemp
 @reRoll:
         ldx     #$17
         ldy     #$02
         jsr     generateNextPseudorandomNumber
-        dec twotrisTemp
-        bne @reRoll
+        dec     twotrisTemp
+        bne     @reRoll
         rts
 
 
@@ -138,7 +139,7 @@ twotrisInitialize:
         jsr     generateNumbers
         lda     rng_seed
         sta     twotrisCurrentDigit
-        jsr     newNextInstruction      
+        jsr     newNextInstruction
 
         lda     player1_autorepeatY
         sta     twotrisPreviousAutorepeatY
@@ -158,6 +159,8 @@ newNextInstruction:
 
 
 playstatePlaying:
+        lda     twotrisCurrentRow
+        sta     twotrisPreviousRow
         lda     heldButtons_player1
         and     #BUTTON_LEFT
         beq     @leftNotHeld
@@ -171,26 +174,174 @@ playstatePlaying:
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
 @waitToPlant:
+        lda     #BUTTON_DOWN
+        jsr     menuThrottle
+        beq     @cantMoveDown
+        lda     #$01
+        sta     soundEffectSlot1Init
+        ldx     twotrisCurrentRow
+@nextRow:
+        inx
+        cpx     #$14
+        beq     @cantMoveDown
+        lda     twotrisPlayfield,x
+        bne     @nextRow
+        stx     twotrisCurrentRow
+
+@cantMoveDown:
+        lda     #BUTTON_UP
+        jsr     menuThrottle
+        beq     @cantMoveUp
+        lda     #$01
+        sta     soundEffectSlot1Init
+        ldx     twotrisCurrentRow
+@nextRow2:
+        dex
+        bmi     @cantMoveUp
+        lda     twotrisPlayfield,x
+        bne     @nextRow2
+        stx     twotrisCurrentRow
+@cantMoveUp:
+
         lda     #STATE_PLAYING
         cmp     twotrisState
         bne     @ret
-
         jsr     loadCurrentPieceCursor
+@ret:
+        lda     twotrisCurrentPiece
+        sta     twotrisTemp
+        lda     twotrisCurrentRow
+        jsr     drawRowByNumber
+        jsr     clearPreviousRow
+        rts
+
+
+
+drawRowByNumber:
+        asl
+        tay
+        ldx     renderQueueIndex
+        lda     vramPlayfieldRows+1,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     vramPlayfieldRows,y
+        clc
+        adc     #$06
+        sta     twotrisRenderQueue,x
+        inx
+        lda     #$03
+        sta     twotrisRenderQueue,x
+        inx
+
+        ldy     twotrisTemp
+        lda     twotrisInstructionGroups,y
+        sta     twotrisTemp+1
+        asl
+        clc
+        adc     twotrisTemp+1
+        tay
+        lda     twotrisInstructionStrings,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisInstructionStrings+1,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisInstructionStrings+2,y
+        sta     twotrisRenderQueue,x
+        inx
+        stx     renderQueueIndex
+
+
+clearPreviousRow:
+        lda     twotrisPreviousRow
+        cmp     twotrisCurrentRow
+        beq     @ret
+        asl
+        tay
+        ldx     renderQueueIndex
+        lda     vramPlayfieldRows+1,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     vramPlayfieldRows,y
+        clc
+        adc     #$06
+        sta     twotrisRenderQueue,x
+        inx
+        lda     #$0A
+        sta     twotrisRenderQueue,x
+        inx
+        ldy     #$0A
+        lda     #$EF
+@clearNextColumn:
+        sta     twotrisRenderQueue,x
+        inx
+        dey
+        bne     @clearNextColumn
+        stx     renderQueueIndex
 @ret:
         rts
 
 playstateChecking:
+
+@moveToClearing:
+        lda     #$13
+        sta     twotrisAnimationColumn
+        lda     #SOUND_EFFECT_LINE_CLEAR
+        sta     soundEffectSlot1Init
+        lda     #STATE_CLEARING
+        sta     twotrisState
         rts
 
 playstateClearing:
+        lda     twotrisAnimationColumn
+        and     #$01
+        sta     twotrisTemp
+        lda     #$FF
+        sec
+        sbc     twotrisTemp
+        sta     twotrisTemp     ; solid or black tile
+        lda     #$20
+        sta     twotrisRenderQueue
+        lda     twotrisAnimationColumn
+        lsr
+        clc
+        adc     #$CC
+        sta     twotrisRenderQueue+1
+        lda     #$01
+        sta     twotrisRenderQueue+2
+        lda     twotrisTemp
+        sta     twotrisRenderQueue+3
+        dec     twotrisAnimationColumn
+        bpl     @ret
+        lda     #$00
+        sta     twotrisVramRow
+        lda     #STATE_REFRESHING
+        sta     twotrisState
+@ret:
         rts
 
+
+
+
 playstateRefreshing:
-        lda nextPiece
-        sta currentPiece
-        lda twotrisNextDigit
-        sta twotrisCurrentDigit
-        jsr newNextInstruction
+        lda     #$04
+        sta     twotrisTemp+3
+@checkAgain:
+        lda     twotrisVramRow
+        cmp     #$14
+        bcc     @inClearState
+        lda     #STATE_PLAYING
+        sta     twotrisState
+        rts
+@inClearState:
+        ldx     twotrisVramRow
+        lda     twotrisCurrentPiece
+        sta     twotrisTemp
+        lda     twotrisVramRow
+        jsr     drawRowByNumber
+        inc     twotrisVramRow
+        dec     twotrisTemp+3
+        bne     @checkAgain
         rts
 
 playstatePaused:
@@ -507,7 +658,7 @@ setMmcControlAndRenderFlags:
 
 loadCurrentPieceCursor:
         lda     frameCounter
-        and     #$03
+        and     #$07
         beq     @ret
         ldx     twotrisOamIndex
         lda     twotrisCurrentRow
@@ -521,7 +672,7 @@ loadCurrentPieceCursor:
         lda     #$FB
         sta     oamStaging,x
         inx
-        lda     #$23
+        lda     #$03
         sta     oamStaging,x
         inx
         lda     #$55
@@ -583,87 +734,43 @@ boardInitializeData:
         .byte   $FE             ; end
 
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-
-
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
 
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
 
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
 

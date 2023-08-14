@@ -317,7 +317,8 @@ with open("./src/hacks/twotris_tables.asm", "w+") as file:
 
     print(f"twotrisInstructionStrings:", file=file)
     for instruction in groups:
-        print(f'    .byte "{instruction}"', file=file)
+        chars = ",".join(f'${ord(c)-55:02x}' for c in instruction.upper())
+        print(f'    .byte {chars} ; {instruction}', file=file)
     print("\n", file=file)
 
 

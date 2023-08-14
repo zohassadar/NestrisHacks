@@ -392,40 +392,40 @@ fourBitTo8Bit:
 
 
 twotrisInstructionStrings:
-    .byte "adc"
-    .byte "and"
-    .byte "asl"
-    .byte "bit"
-    .byte "clc"
-    .byte "clv"
-    .byte "cmp"
-    .byte "cpx"
-    .byte "cpy"
-    .byte "dec"
-    .byte "dex"
-    .byte "dey"
-    .byte "eor"
-    .byte "inc"
-    .byte "inx"
-    .byte "iny"
-    .byte "lda"
-    .byte "ldx"
-    .byte "ldy"
-    .byte "lsr"
-    .byte "nop"
-    .byte "ora"
-    .byte "rol"
-    .byte "ror"
-    .byte "sbc"
-    .byte "sec"
-    .byte "sta"
-    .byte "stx"
-    .byte "sty"
-    .byte "tax"
-    .byte "tay"
-    .byte "tsx"
-    .byte "txa"
-    .byte "tya"
+    .byte $0a,$0d,$0c ; adc
+    .byte $0a,$17,$0d ; and
+    .byte $0a,$1c,$15 ; asl
+    .byte $0b,$12,$1d ; bit
+    .byte $0c,$15,$0c ; clc
+    .byte $0c,$15,$1f ; clv
+    .byte $0c,$16,$19 ; cmp
+    .byte $0c,$19,$21 ; cpx
+    .byte $0c,$19,$22 ; cpy
+    .byte $0d,$0e,$0c ; dec
+    .byte $0d,$0e,$21 ; dex
+    .byte $0d,$0e,$22 ; dey
+    .byte $0e,$18,$1b ; eor
+    .byte $12,$17,$0c ; inc
+    .byte $12,$17,$21 ; inx
+    .byte $12,$17,$22 ; iny
+    .byte $15,$0d,$0a ; lda
+    .byte $15,$0d,$21 ; ldx
+    .byte $15,$0d,$22 ; ldy
+    .byte $15,$1c,$1b ; lsr
+    .byte $17,$18,$19 ; nop
+    .byte $18,$1b,$0a ; ora
+    .byte $1b,$18,$15 ; rol
+    .byte $1b,$18,$1b ; ror
+    .byte $1c,$0b,$0c ; sbc
+    .byte $1c,$0e,$0c ; sec
+    .byte $1c,$1d,$0a ; sta
+    .byte $1c,$1d,$21 ; stx
+    .byte $1c,$1d,$22 ; sty
+    .byte $1d,$0a,$21 ; tax
+    .byte $1d,$0a,$22 ; tay
+    .byte $1d,$1c,$21 ; tsx
+    .byte $1d,$21,$0a ; txa
+    .byte $1d,$22,$0a ; tya
 
 
 padding:

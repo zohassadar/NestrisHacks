@@ -233,10 +233,13 @@ twotrisRts: .res $01 ; $0523  needs to be set to RTS ($20)
 
 ; more vars here
 twotrisPlantTimer: .res $01 ; $0524
+twotrisPreviousRow: .res $01 ; $0525
+renderQueueIndex: .res $01 ; $0526
 
-.res $2b
+.res $29
 
-twotrisPlayfield: .res $28 ; $0550 stores instruction index and values
+twotrisPlayfield: .res $14 ; $0550 stores instruction index and values
+twotrisDigits: .res $14 ; $0564
 .res $8
 twotrisRenderQueue: .res $80 ; address (2 bytes), length, content. $00 means done
 .endif
