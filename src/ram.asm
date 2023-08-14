@@ -187,53 +187,52 @@ playfieldForSecondPlayer:	.res $C8	; $0500
 .res $38
 .else
 playfieldForSecondPlayer:
-twotrisJump: .res $02
-twotrisState: .res $01 ; $0506
-twotrisPpuCtrl: .res $01 ; $0506
-twotrisPpuMask: .res $01 ; $0506
-twotrisMmcControl: .res $01 ; $0506
+twotrisJump: .res $02 ; $0500
+twotrisState: .res $01 ; $0502
+twotrisPpuCtrl: .res $01 ; $0503
+twotrisPpuMask: .res $01 ; $0504
+twotrisMmcControl: .res $01 ; $0505
 twotrisVramRow: .res $01 ; $0506
-twotrisAnimationColumn: .res $01 ; $0506
-twotrisOamIndex: .res $01 ; $0505
-twotrisPreviousAutorepeatY: .res $01 ; $0505
+twotrisAnimationColumn: .res $01 ; $0507
+twotrisOamIndex: .res $01 ; $0508
+twotrisPreviousAutorepeatY: .res $01 ; $0509
 twotrisTemp: .res $04
-twotrisPauseInitialized: .res $01
+twotrisPauseInitialized: .res $01 ; $050e
+twotrisCurrentRow: .res $01 ; $050f
 
-twotrisCurrentRow: .res $01 ; $0505
+menuMoveThrottle: .res $01 ; $0510
+menuThrottleTmp: .res $01 ; $0511
 
-menuMoveThrottle: .res $01 ; $0505
-menuThrottleTmp: .res $01 ; $0505
+twotrisCurrentPiece: .res $01 ; $0512
+twotrisCurrentDigit: .res $01 ; $0513
 
-twotrisCurrentPiece: .res $01 ; $0505
-twotrisCurrentDigit: .res $01 ; $0505
-
-twotrisNextPiece: .res $01 ; $0505
-twotrisNextDigit: .res $01 ; $0505
+twotrisNextPiece: .res $01 ; $0514
+twotrisNextDigit: .res $01 ; $0515
 
 ; the state of the "vm"
-twotrisA: .res $01 ; $0500
-twotrisX: .res $01 ; $0501
-twotrisY: .res $01 ; $0502
-twotrisFlags: .res $01 ; $0503
+twotrisA: .res $01 ; $0516
+twotrisX: .res $01 ; $0517
+twotrisY: .res $01 ; $0518
+twotrisFlags: .res $01 ; $0519
 
 ; pause screen vars
-twotrisPauseStartLow: .res $01 ; $0506
-twotrisPauseStartHigh: .res $01 ; $0506
+twotrisPauseStartLow: .res $01 ; $051a
+twotrisPauseStartHigh: .res $01 ; $051b
 
-twotrisPauseDigit: .res $01 ; $0506
+twotrisPauseDigit: .res $01 ; $051c
 
-twotrisPauseStartHigh0: .res $01 ; $0506
-twotrisPauseStartHigh1: .res $01 ; $0506
-twotrisPauseStartLow0: .res $01 ; $0506
-twotrisPauseStartLow1: .res $01 ; $0506
+twotrisPauseStartHigh0: .res $01 ; $051d
+twotrisPauseStartHigh1: .res $01 ; $051e
+twotrisPauseStartLow0: .res $01 ; $051f
+twotrisPauseStartLow1: .res $01 ; $0520
 
 ; What gets executed
 
-twotrisInstruction: .res $02 ; $0506
-twotrisRts: .res $01 ; $0506  needs to be set to RTS ($20)
+twotrisInstruction: .res $02 ; $0521
+twotrisRts: .res $01 ; $0523  needs to be set to RTS ($20)
 
 
-twotrisPlayfield: .res $28 ; $0506 stores instruction index and values
+twotrisPlayfield: .res $28 ; $0524 stores instruction index and values
 
 .res $34
 

@@ -2,13 +2,13 @@ from itertools import count
 import re
 
 addressing_modes = (
-    (0, re.compile(r"^([a-z]{3})$", flags=re.IGNORECASE).match),
-    (1, re.compile(r"^([a-z]{3}) #\$[a-f0-9]{2}$", flags=re.IGNORECASE).match),
-    (2, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2}$", flags=re.IGNORECASE).match),
-    (3, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},x$", flags=re.IGNORECASE).match),
-    (4, re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2}\),y$", flags=re.IGNORECASE).match),
-    (5, re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2},x\)$", flags=re.IGNORECASE).match),
-    (6, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},y$", flags=re.IGNORECASE).match),
+    (0, re.compile(r"^([a-z]{3})$", flags=re.I).match),
+    (1, re.compile(r"^([a-z]{3}) #\$[a-f0-9]{2}$", flags=re.I).match),
+    (2, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2}$", flags=re.I).match),
+    (3, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},x$", flags=re.I).match),
+    (4, re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2}\),y$", flags=re.I).match),
+    (5, re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2},x\)$", flags=re.I).match),
+    (6, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},y$", flags=re.I).match),
 )
 
 table = (
@@ -107,72 +107,223 @@ expanded_table = []
 groups = {}
 last = None
 sub_index = 0
-for (opcode, description) in sorted_table:
+for opcode, description in sorted_table:
     index = next(counter)
     for mode_index, pattern in addressing_modes:
         if result := pattern(description):
-            instruction=result.group(1)
+            instruction = result.group(1)
             break
     else:
-        raise Exception(f'{opcode}, {description} does not fit into addressing pattern')
+        raise Exception(f"{opcode}, {description} does not fit into addressing pattern")
     if instruction != last:
         spawn_indexes.append((index, description))
         sub_index = 0
         last = instruction
     groups.setdefault(instruction, []).append(index)
-    expanded_table.append((index, mode_index, eval(opcode), instruction, sub_index, description))
-    sub_index+=1
+    expanded_table.append(
+        (index, mode_index, eval(opcode), instruction, sub_index, description)
+    )
+    sub_index += 1
     # print(f"{eval(opcode):<5}{str(description):<12}{str(mode):<5}{instruction}")
 
 
 instruction_indexes = {instruction: index for index, instruction in enumerate(groups)}
 
 
+# >>> {i: (index,description.split()[0],5) for i,(index,description) in enumerate(spawn_indexes)}
+
+spawn_weights = {
+    0: (0, "adc", 15),
+    1: (5, "and", 10),
+    2: (10, "asl", 5),
+    3: (13, "bit", 2),
+    4: (14, "clc", 10),
+    5: (15, "clv", 1),
+    6: (16, "cmp", 3),
+    7: (21, "cpx", 3),
+    8: (23, "cpy", 3),
+    9: (25, "dec", 10),
+    10: (27, "dex", 10),
+    11: (28, "dey", 10),
+    12: (29, "eor", 5),
+    13: (34, "inc", 5),
+    14: (36, "inx", 5),
+    15: (37, "iny", 5),
+    16: (38, "lda", 15),
+    17: (43, "ldx", 15),
+    18: (46, "ldy", 15),
+    19: (49, "lsr", 5),
+    20: (52, "nop", 1),
+    21: (53, "ora", 5),
+    22: (58, "rol", 5),
+    23: (61, "ror", 5),
+    24: (64, "sbc", 15),
+    25: (69, "sec", 5),
+    26: (70, "sta", 5),
+    27: (74, "stx", 15),
+    28: (76, "sty", 15),
+    29: (78, "tax", 15),
+    30: (79, "tay", 5),
+    31: (80, "tsx", 3),
+    32: (81, "txa", 5),
+    33: (82, "tya", 5),
+}
+
+import sys
+validation = sum(repeats for id,instruction,repeats in spawn_weights.values())
+if validation != 256:
+    sys.exit(f"Piece ID repeats must add up to 256.  This adds up to {validation}")
+
+weight_list = [repeats for id,instruction,repeats in spawn_weights.values()]
+
+table = []
+current_total = 0
+for weight in weight_list:
+    current_total+=weight
+    table.append(current_total)
+
+table.pop()
+
+
 from pprint import pp
 
-groups_shifted_up = {k: [v[-1]] + v[:-1] for k,v in groups.items()}
-groups_shifted_down = {k: v[1:] + [v[0]] for k,v in groups.items()}
+groups_shifted_up = {k: [v[-1]] + v[:-1] for k, v in groups.items()}
+groups_shifted_down = {k: v[1:] + [v[0]] for k, v in groups.items()}
 
 pp(expanded_table)
 pp(instruction_indexes)
-# pp(groups_shifted_up)
-# pp(groups_shifted_down)
+pp(groups_shifted_up)
+pp(groups_shifted_down)
 
+
+def signed(num):
+    if num >= 0 and num < 128:
+        return num
+    elif num >= -128:
+        return 256 + num
+    raise Exception(f"{num} out of range")
+
+
+signed_table = {i: signed(i) for i in range(-8, 8)}
+
+signed_table = {
+    -8: 248,
+    -7: 249,
+    -6: 250,
+    -5: 251,
+    -4: 252,
+    -3: 253,
+    -2: 254,
+    -1: 255,
+    0: 0,
+    1: 1,
+    2: 2,
+    3: 3,
+    4: 4,
+    5: 5,
+    6: 6,
+    7: 7,
+}
+
+
+compressed_rotation = []
+for index, addressing, opcode, instruction, sub_index, description in expanded_table:
+    previous = groups_shifted_up[instruction][sub_index]
+    next_ = groups_shifted_down[instruction][sub_index]
+
+    prev_diff = (index - previous) * -1
+    next_diff = (index - next_) * -1
+
+    prev_signed_shifted = (signed(prev_diff) << 4) & 0xF0
+    next_signed_masked = signed(next_diff) & 0x0F
+
+    compressed = prev_signed_shifted | next_signed_masked
+
+    compressed_rotation.append(compressed)
+    # print(f'{index:<4}{prev_diff:<4}{next_diff:<4}{compressed:08b}')
 
 
 with open("./src/hacks/twotris_tables.asm", "w+") as file:
     print(f"twotrisOpcodeTable:", file=file)
-    for index, addressing, opcode, instruction, sub_index, description in expanded_table:
+    for (
+        index,
+        addressing,
+        opcode,
+        instruction,
+        sub_index,
+        description,
+    ) in expanded_table:
         print(f"    .byte ${opcode:02x} ; {description}", file=file)
     print("\n", file=file)
 
+    print("twotrisInstructionWeightTable:", file=file)
+    for i in range(0,len(spawn_weights),8):
+        print("    .byte  " + ",".join(f"${j:02x}" for j in table[i:i+8]), file=file)
+    print("\n", file=file)
+
+
+
     print(f"twotrisAddressingTable:", file=file)
-    for index, addressing, opcode, instruction, sub_index, description in expanded_table:
+    for (
+        index,
+        addressing,
+        opcode,
+        instruction,
+        sub_index,
+        description,
+    ) in expanded_table:
         print(f"    .byte ${addressing:02x} ; {description}", file=file)
     print("\n", file=file)
 
     print(f"twotrisInstructionGroups:", file=file)
-    for index, addressing, opcode, instruction, sub_index, description in expanded_table:
-        print(f"    .byte ${instruction_indexes[instruction]:02x} ; {description}", file=file)
+    for (
+        index,
+        addressing,
+        opcode,
+        instruction,
+        sub_index,
+        description,
+    ) in expanded_table:
+        print(
+            f"    .byte ${instruction_indexes[instruction]:02x} ; {description}",
+            file=file,
+        )
     print("\n", file=file)
 
-    print(f"twotrisRotationPrevious:", file=file)
-    for index, addressing, opcode, instruction, sub_index, description in expanded_table:
-        print(f"    .byte ${groups_shifted_up[instruction][sub_index]:02x} ; {description}", file=file)
+    print(f"CompressedRotation:", file=file)
+    for (
+        index,
+        addressing,
+        opcode,
+        instruction,
+        sub_index,
+        description,
+    ) in expanded_table:
+        print(f"    .byte ${compressed_rotation[index]:02x} ; {description}", file=file)
     print("\n", file=file)
 
-    print(f"twotrisRotationNext:", file=file)
-    for index, addressing, opcode, instruction, sub_index, description in expanded_table:
-        print(f"    .byte ${groups_shifted_down[instruction][sub_index]:02x} ; {description}", file=file)
+    print(f"spawnInstructions:", file=file)
+    for index, description in spawn_indexes:
+        print(f"    .byte ${index:02x} ; {description}", file=file)
     print("\n", file=file)
 
+    print(f"fourBitTo8Bit:", file=file)
+    print(
+        "    .byte   ",
+        ",".join(f"${v:02x}" for v in sorted(signed_table.values())),
+        file=file,
+    )
+    print("\n", file=file)
 
     print(f"twotrisInstructionStrings:", file=file)
     for instruction in groups:
-        print(f"    .byte \"{instruction}\"", file=file)
+        print(f'    .byte "{instruction}"', file=file)
     print("\n", file=file)
 
 
-
-
+    # This is how much room we have left
+    print("padding:", file=file)
+    for _ in range(784):
+        print("    .byte $00", file=file)
+    print("\n", file=file)
 

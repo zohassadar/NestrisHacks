@@ -136,7 +136,6 @@ unreferenced_data1:
 
 .ifdef TWOTRIS
         .include "hacks/twotris.asm"
-        .include "hacks/twotris_tables.asm"
 .endif
 
 .ifndef OMIT_UD1
@@ -154,7 +153,12 @@ unreferenced_data1:
 
 
 .segment        "unreferenced_data4": absolute
+.ifndef TWOTRIS
 .include "data/unreferenced_data4.asm"
+.else
+unreferenced_data4:
+.include "hacks/twotris_tables.asm"
+.endif
 ; End of "unreferenced_data4" segment
 .code
 

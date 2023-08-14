@@ -7,18 +7,7 @@ STATE_REFRESHING := $04
 menuThrottleStart := $10
 menuThrottleRepeat := $4
 
-
 INST_NOP :=     $EF
-
-pauseByteRows:
-        .word   $2000           ; pause row 0
-        .word   $2000           ; pause row 1
-        .word   $2000           ; pause row 2
-        .word   $2000           ; pause row 3
-        .word   $2000           ; pause row 4
-        .word   $2000           ; pause row 5
-        .word   $2000           ; pause row 6
-        .word   $2000           ; pause row 7
 
 twotris:
         pha
@@ -26,16 +15,18 @@ twotris:
         pha
         tya
         pha
-
 ; Figure out if we're in twotris mode
         lda     player1_autorepeatY
         cmp     #$A0
         beq     @newGameStarted
         sta     twotrisPreviousAutorepeatY
+        ; set mmc1 control every frame for normal game
         inc     initRam
         lda     #$10
         jsr     setMMC1Control
         jmp     notPlayingTwotris
+
+        ; find out if a new game just started
 @newGameStarted:
         cmp     twotrisPreviousAutorepeatY
         beq     @initialized
@@ -57,13 +48,11 @@ twotris:
         lda     #$00
         sta     twotrisOamIndex
         ; --------
-        ldx     #$17
-        ldy     #$02
-        jsr     generateNextPseudorandomNumber
         jsr     pollControllerButtons
         jsr     jumpToGamePlayState
         jsr     checkForPause
         jsr     updateAudio
+        jsr     generateNumbers
 twoTrisNmiTail:
         pla
         tay
@@ -72,7 +61,33 @@ twoTrisNmiTail:
         pla
         rti
 
+generateNumbers:
+        lda rng_seed+1
+        and #$0F
+        sta twotrisTemp
+@reRoll:
+        ldx     #$17
+        ldy     #$02
+        jsr     generateNextPseudorandomNumber
+        dec twotrisTemp
+        bne @reRoll
+        rts
 
+
+pickRandomInstruction:
+        ldx     #$20
+        lda     rng_seed
+        adc     frameCounter
+@nextPiece:
+        cmp     twotrisInstructionWeightTable,x
+        bcs     @foundInstruction
+        dex
+        bmi     @foundInstruction
+        bpl     @nextPiece
+@foundInstruction:
+        inx
+        lda     spawnInstructions,x
+        rts
 
 
 twotrisInitialize:
@@ -108,18 +123,30 @@ twotrisInitialize:
         sta     player1_vramRow
         sta     vramRow
 
+        jsr     generateNumbers
+        jsr     pickRandomInstruction
+        sta     twotrisCurrentPiece
+        jsr     generateNumbers
+        lda     rng_seed
+        sta     twotrisCurrentDigit
+        jsr     newNextInstruction      
+
         lda     player1_autorepeatY
         sta     twotrisPreviousAutorepeatY
 
         ; load initial render of flags/regs into queue
         jsr     initializeBoard
-
-
         jmp     twoTrisNmiTail
 
-
-playstateInitializing:
+newNextInstruction:
+        jsr     generateNumbers
+        jsr     pickRandomInstruction
+        sta     twotrisNextPiece
+        jsr     generateNumbers
+        lda     rng_seed
+        sta     twotrisNextDigit
         rts
+
 
 playstatePlaying:
         rts
@@ -131,6 +158,11 @@ playstateClearing:
         rts
 
 playstateRefreshing:
+        lda nextPiece
+        sta currentPiece
+        lda twotrisNextDigit
+        sta twotrisCurrentDigit
+        jsr newNextInstruction
         rts
 
 playstatePaused:
@@ -243,7 +275,6 @@ pauseGroupToIndividual:
         rts
 
 
-
 pauseDrawRows:
         lda     twotrisPauseStartLow
         sta     tmp1
@@ -312,8 +343,6 @@ pauseDrawRows:
 
 
 
-
-
 fulfillRenderQueue:
         ldx     #$00
 @nextChunk:
@@ -336,7 +365,6 @@ fulfillRenderQueue:
 @ret:
         rts
 
-
 emptyRenderQueue:
         ldx     #$7F
         lda     #$00
@@ -346,24 +374,23 @@ emptyRenderQueue:
         bpl     @emptyQueueLoop
         rts
 
-
 checkForPause:
         lda     newlyPressedButtons_player1
         and     #BUTTON_START
-        beq     @ret
+        beq     nearbyReturn
         lda     twotrisPpuCtrl
         eor     #$02
         sta     twotrisPpuCtrl
         and     #$02
-        bne     @notPaused
+        bne     notPaused
         lda     #STATE_PLAYING
-        jmp     @storeNewState
-@notPaused:
+        bne     storeNewState
+notPaused:
         lda     #STATE_PAUSED
-@storeNewState:
+storeNewState:
         sta     twotrisState
         lda     twotrisPauseInitialized
-        bne     @ret
+        bne     nearbyReturn
         pla
         pla
         tsx
@@ -372,9 +399,6 @@ checkForPause:
         lda     #>initializePause
         sta     stack+6,x
         jmp     twoTrisNmiTail
-@ret:
-        rts
-
 
 menuThrottle:                   ; add DAS-like movement to the menu
         sta     menuThrottleTmp
@@ -388,8 +412,8 @@ menuThrottle:                   ; add DAS-like movement to the menu
         beq     menuThrottleContinue
 @endThrottle:
         lda     #0
+nearbyReturn:
         rts
-
 
 menuThrottleNew:
         lda     #menuThrottleStart
@@ -400,57 +424,31 @@ menuThrottleContinue:
         sta     menuMoveThrottle
         rts
 
-
-
 initializePause:
-        ; disable nmi
         lda     #$00
         sta     PPUMASK
-        lda     #$00
         sta     PPUCTRL
-
-        lda     #$00
-        sta     twotrisJump
+        ldy     #$04
+        tax
         lda     #$28
-        sta     twotrisJump+1
-        ldy     #$20            ; 30 rows + attribute table
-
-@blankRow:
-        ldx     #$20            ; 32 cols
-        lda     twotrisJump+1
         sta     PPUADDR
-        lda     twotrisJump
+        txa
         sta     PPUADDR
-
-        lda     #$FF            ; blank tile
-@blankColumn:
+        lda     #$FF
+@nextTile:
         sta     PPUDATA
-        dex
-        bne     @blankColumn
-
+        inx
+        bne     @nextTile
         dey
-        beq     @waitForVBlankAndEnableNmi
-
-        lda     #$20
-        clc
-
-        adc     twotrisJump
-        sta     twotrisJump
-        lda     #$00
-        adc     twotrisJump+1
-        sta     twotrisJump+1
-
-        jmp     @blankRow
-        ; enable nmi
-@waitForVBlankAndEnableNmi:
+        bne     @nextTile
         jsr     pauseDrawRows
+@waitForVBlankAndEnableNmi:
         bit     PPUSTATUS
         bpl     @waitForVBlankAndEnableNmi
         lda     #$80
         sta     PPUCTRL
         inc     twotrisPauseInitialized
         jmp     waitPartOfUpdateAudioWaitForNmiAndResetOamStaging
-
 
 
 jumpToGamePlayState:
@@ -461,7 +459,6 @@ jumpToGamePlayState:
         .addr   playstateChecking
         .addr   playstateClearing
         .addr   playstateRefreshing
-
 
 setMmcControlAndRenderFlags:
         inc     initRam
@@ -475,7 +472,6 @@ setMmcControlAndRenderFlags:
         lda     twotrisPpuMask
         sta     PPUMASK
         rts
-
 
 loadPauseAddressCursor:
         lda     frameCounter
@@ -527,10 +523,6 @@ boardInitializeData:
         .byte   $FE             ; end
 
 
-
-
-
-
         .byte $00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00,$00,$00,$00,$00
@@ -549,12 +541,83 @@ boardInitializeData:
         .byte $00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00,$00,$00,$00,$00
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00
 
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
+        .byte $00,$00,$00,$00,$00,$00,$00,$00
