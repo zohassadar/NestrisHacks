@@ -7,6 +7,11 @@ STATE_REFRESHING := $04
 menuThrottleStart := $10
 menuThrottleRepeat := $4
 
+SOUND_EFFECT_LOCK := $07
+SOUND_EFFECT_LINE_CLEAR := $0A
+
+PLANT_TIMER := $1F
+
 INST_NOP :=     $EF
 
 twotris:
@@ -117,6 +122,10 @@ twotrisInitialize:
         sta     twotrisPpuMask
         lda     #$20
         sta     twotrisRts
+        lda     #PLANT_TIMER
+        sta     twotrisPlantTimer
+        lda     #$FF
+        jsr     setMusicTrack
 
         lda     #$00
         sta     twotrisPauseInitialized
@@ -149,6 +158,25 @@ newNextInstruction:
 
 
 playstatePlaying:
+        lda     heldButtons_player1
+        and     #BUTTON_LEFT
+        beq     @leftNotHeld
+        dec     twotrisPlantTimer
+        bpl     @waitToPlant
+        lda     #SOUND_EFFECT_LOCK
+        sta     soundEffectSlot1Init
+        lda     #STATE_CHECKING
+        sta     twotrisState
+@leftNotHeld:
+        lda     #PLANT_TIMER
+        sta     twotrisPlantTimer
+@waitToPlant:
+        lda     #STATE_PLAYING
+        cmp     twotrisState
+        bne     @ret
+
+        jsr     loadCurrentPieceCursor
+@ret:
         rts
 
 playstateChecking:
@@ -383,9 +411,13 @@ checkForPause:
         sta     twotrisPpuCtrl
         and     #$02
         bne     notPaused
+        lda     #$00
+        sta     musicStagingNoiseHi
         lda     #STATE_PLAYING
         bne     storeNewState
 notPaused:
+        lda     #$05
+        sta     musicStagingNoiseHi
         lda     #STATE_PAUSED
 storeNewState:
         sta     twotrisState
@@ -472,6 +504,34 @@ setMmcControlAndRenderFlags:
         lda     twotrisPpuMask
         sta     PPUMASK
         rts
+
+loadCurrentPieceCursor:
+        lda     frameCounter
+        and     #$03
+        beq     @ret
+        ldx     twotrisOamIndex
+        lda     twotrisCurrentRow
+        asl
+        asl
+        asl
+        clc
+        adc     #$2F
+        sta     oamStaging,x
+        inx
+        lda     #$FB
+        sta     oamStaging,x
+        inx
+        lda     #$23
+        sta     oamStaging,x
+        inx
+        lda     #$55
+        sta     oamStaging,x
+        inx
+        stx     twotrisOamIndex
+@ret:   rts
+
+
+
 
 loadPauseAddressCursor:
         lda     frameCounter
@@ -607,17 +667,3 @@ boardInitializeData:
         .byte $00,$00,$00,$00,$00,$00,$00,$00
         .byte $00,$00,$00,$00,$00,$00,$00,$00
 
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
-        .byte $00,$00,$00,$00,$00,$00,$00,$00
