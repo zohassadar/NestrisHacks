@@ -226,6 +226,36 @@ signed_table = {
 }
 
 
+extra_tables = """
+        ; $80 - instruction
+        ; $81 - value
+        ; $82 - null
+renderChars:
+        .byte $80,$FF,$FF,$FF,$FF,$FF,$FF,$FF  ; INS
+        .byte $80,$FF,$FA,$F9,$81,$FF,$FF,$82  ; INS #$00
+        .byte $80,$FF,$F9,$81,$FF,$FF,$FF,$82  ; INS $00
+        .byte $80,$FF,$F9,$81,$25,$21,$FF,$82  ; INS $00,x
+        .byte $80,$F7,$F9,$81,$F8,$25,$22,$82  ; INS($00),y
+        .byte $80,$F7,$F9,$81,$25,$21,$F8,$82  ; INS($00,x)
+        .byte $80,$FF,$F9,$81,$25,$22,$FF,$82  ; INS $00,y
+
+
+boardInitializeData:
+        .byte   $21,$86,$03,$0A,$00,$00;A in T spot
+        .byte   $21,$C6,$03,$21,$00,$00;X in J spot
+        .byte   $22,$06,$03,$22,$00,$00;Y in Z spot
+        .byte   $22,$46,$03,$17,$FF,$00;N in O spot
+        .byte   $22,$86,$03,$1F,$FF,$00;V in S spot
+        .byte   $22,$C6,$03,$23,$FF,$00;Z in L spot
+        .byte   $23,$06,$03,$0C,$FF,$00;C in I spot
+        .byte   $FE             ; end
+
+        
+"""
+
+
+
+
 compressed_rotation = []
 for index, addressing, opcode, instruction, sub_index, description in expanded_table:
     previous = groups_shifted_up[instruction][sub_index]
@@ -321,10 +351,12 @@ with open("./src/hacks/twotris_tables.asm", "w+") as file:
         print(f'    .byte {chars} ; {instruction}', file=file)
     print("\n", file=file)
 
+    print(extra_tables, file=file)
+    print("\n", file=file)
 
     # This is how much room we have left
-    print("padding:", file=file)
-    for _ in range(784):
-        print("    .byte $00", file=file)
-    print("\n", file=file)
+    # print("padding:", file=file)
+    # for _ in range(784):
+    #     print("    .byte $00", file=file)
+    # print("\n", file=file)
 

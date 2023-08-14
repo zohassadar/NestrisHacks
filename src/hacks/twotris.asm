@@ -96,6 +96,7 @@ pickRandomInstruction:
         rts
 
 
+
 twotrisInitialize:
         ; store renderVars
         lda     outOfDateRenderFlags
@@ -217,22 +218,8 @@ playstatePlaying:
 
 
 
-drawRowByNumber:
-        asl
-        tay
-        ldx     renderQueueIndex
-        lda     vramPlayfieldRows+1,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     vramPlayfieldRows,y
-        clc
-        adc     #$06
-        sta     twotrisRenderQueue,x
-        inx
-        lda     #$03
-        sta     twotrisRenderQueue,x
-        inx
 
+drawInstruction:
         ldy     twotrisTemp
         lda     twotrisInstructionGroups,y
         sta     twotrisTemp+1
@@ -249,6 +236,45 @@ drawRowByNumber:
         lda     twotrisInstructionStrings+2,y
         sta     twotrisRenderQueue,x
         inx
+        rts
+
+
+drawSpace:
+        ldy     twotrisTemp
+        lda     twotrisAddressingTable,y
+        cmp     #$04
+        beq     @drawParenInstead
+        cmp     #$05
+        bne     @drawSpace
+@drawParenInstead:
+        lda     #$F7
+        bne     @storeValue
+@drawSpace:
+        lda     #$EF
+@storeValue:
+        sta     twotrisRenderQueue,x
+        inx
+        rts
+
+
+drawRowByNumber:
+        asl
+        tay
+        ldx     renderQueueIndex
+        lda     vramPlayfieldRows+1,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     vramPlayfieldRows,y
+        clc
+        adc     #$06
+        sta     twotrisRenderQueue,x
+        inx
+        lda     #$03
+        sta     twotrisRenderQueue,x
+        inx
+
+        jsr     drawInstruction
+        jsr     drawSpace
         stx     renderQueueIndex
 
 
@@ -723,15 +749,6 @@ initializeBoard:
         rts
 
 
-boardInitializeData:
-        .byte   $21,$86,$03,$0A,$00,$00;A in T spot
-        .byte   $21,$C6,$03,$21,$00,$00;X in J spot
-        .byte   $22,$06,$03,$22,$00,$00;Y in Z spot
-        .byte   $22,$46,$03,$17,$FF,$00;N in O spot
-        .byte   $22,$86,$03,$1F,$FF,$00;V in S spot
-        .byte   $22,$C6,$03,$23,$FF,$00;Z in L spot
-        .byte   $23,$06,$03,$0C,$FF,$00;C in I spot
-        .byte   $FE             ; end
 
 
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -766,11 +783,5 @@ boardInitializeData:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
-
 
 
