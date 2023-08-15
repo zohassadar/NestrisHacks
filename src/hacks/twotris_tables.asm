@@ -433,13 +433,14 @@ twotrisInstructionStrings:
         ; $81 - value
         ; $82 - null
 renderChars:
-        .byte $80,$FF,$FF,$FF,$FF,$FF,$FF,$FF  ; INS
-        .byte $80,$FF,$FA,$F9,$81,$FF,$FF,$82  ; INS #$00
-        .byte $80,$FF,$F9,$81,$FF,$FF,$FF,$82  ; INS $00
-        .byte $80,$FF,$F9,$81,$25,$21,$FF,$82  ; INS $00,x
-        .byte $80,$F7,$F9,$81,$F8,$25,$22,$82  ; INS($00),y
-        .byte $80,$F7,$F9,$81,$25,$21,$F8,$82  ; INS($00,x)
-        .byte $80,$FF,$F9,$81,$25,$22,$FF,$82  ; INS $00,y
+        .byte $80,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$82,$82  ; INS
+        .byte $80,$FF,$FA,$F9,$81,$FF,$FF,$82,$82,$82  ; INS #$00
+        .byte $80,$FF,$F9,$81,$FF,$FF,$FF,$82,$82,$82  ; INS $00
+        .byte $80,$FF,$F9,$81,$25,$21,$FF,$82,$82,$82  ; INS $00,x
+        .byte $80,$F7,$F9,$81,$F8,$25,$22,$82,$82,$82  ; INS($00),y
+        .byte $80,$F7,$F9,$81,$25,$21,$F8,$82,$82,$82  ; INS($00,x)
+        .byte $80,$FF,$F9,$81,$25,$22,$FF,$82,$82,$82  ; INS $00,y
+        .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF  ; blank
 
 
 boardInitializeData:

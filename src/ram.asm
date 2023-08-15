@@ -236,7 +236,12 @@ twotrisPlantTimer: .res $01 ; $0524
 twotrisPreviousRow: .res $01 ; $0525
 renderQueueIndex: .res $01 ; $0526
 
-.res $29
+renderedRow: .res $01  ; $0527
+renderedType: .res $01  ; $0528
+renderedInstruction: .res $01  ; $0529
+renderedValue: .res $01  ; $052A
+
+.res $25
 
 twotrisPlayfield: .res $14 ; $0550 stores instruction index and values
 twotrisDigits: .res $14 ; $0564

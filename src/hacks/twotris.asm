@@ -12,7 +12,10 @@ SOUND_EFFECT_LINE_CLEAR := $0A
 
 PLANT_TIMER :=  $1F
 
-INST_NOP :=     $EF
+EMPTY   :=      $EF
+
+
+
 
 twotris:
         pha
@@ -129,6 +132,13 @@ twotrisInitialize:
         lda     #$FF
         jsr     setMusicTrack
 
+        ldy     #$13
+        lda     #EMPTY
+@fillPlayfield:
+        sta     twotrisPlayfield,y
+        dey
+        bpl     @fillPlayfield
+
         lda     #$00
         sta     twotrisPauseInitialized
         sta     player1_vramRow
@@ -158,7 +168,6 @@ newNextInstruction:
         sta     twotrisNextDigit
         rts
 
-
 playstatePlaying:
         lda     twotrisCurrentRow
         sta     twotrisPreviousRow
@@ -186,6 +195,7 @@ playstatePlaying:
         cpx     #$14
         beq     @cantMoveDown
         lda     twotrisPlayfield,x
+        cmp     #EMPTY
         bne     @nextRow
         stx     twotrisCurrentRow
 
@@ -200,32 +210,78 @@ playstatePlaying:
         dex
         bmi     @cantMoveUp
         lda     twotrisPlayfield,x
+        cmp     #EMPTY
         bne     @nextRow2
         stx     twotrisCurrentRow
 @cantMoveUp:
-
         lda     #STATE_PLAYING
         cmp     twotrisState
         bne     @ret
         jsr     loadCurrentPieceCursor
 @ret:
-        lda     twotrisCurrentPiece
+        lda     twotrisCurrentRow
+        sta     renderedRow
+
+        ldy     twotrisCurrentPiece
+
+        lda     twotrisInstructionGroups,y
+        sta     renderedInstruction
+
+        lda     twotrisCurrentDigit
+        sta     renderedValue
+
+        lda     twotrisAddressingTable,y
+@storeType:
+        sta     renderedType
         sta     twotrisTemp
         lda     twotrisCurrentRow
-        jsr     drawRowByNumber
+        jsr     renderRow
         jsr     clearPreviousRow
         rts
 
+renderRow:
+        lda     renderQueueIndex
+        tax
+        clc
+        adc     #$0D
+        sta     renderQueueIndex
+        lda     renderedRow
+        asl
+        tay
+        lda     vramPlayfieldRows+1,y
+        sta     twotrisRenderQueue,x
+        lda     vramPlayfieldRows,y
+        clc
+        adc     #$06
+        sta     twotrisRenderQueue+1,x
+        lda     #$0A
+        sta     twotrisRenderQueue+2,x
 
+        inx
+        inx
+        inx
 
+        ldy     renderedType
+        lda     multBy10Table,y
+        tay
+        clc
+        adc      #$0A
+        sta      twotrisTemp
 
-drawInstruction:
-        ldy     twotrisTemp
-        lda     twotrisInstructionGroups,y
-        sta     twotrisTemp+1
+@nextRenderChar:
+        lda     renderChars,y
+        cmp     #$80
+        bne     @skipInstruction
+
+        tya
+        pha
+
+        lda     renderedInstruction
+        ; lda     twotrisInstructionGroups,y
+        ; sta     twotrisTemp
         asl
         clc
-        adc     twotrisTemp+1
+        adc     renderedInstruction
         tay
         lda     twotrisInstructionStrings,y
         sta     twotrisRenderQueue,x
@@ -236,74 +292,50 @@ drawInstruction:
         lda     twotrisInstructionStrings+2,y
         sta     twotrisRenderQueue,x
         inx
-        rts
 
-
-drawSpace:
-        ldy     twotrisTemp
-        lda     twotrisAddressingTable,y
-        cmp     #$04
-        beq     @drawParenInstead
-        cmp     #$05
-        bne     @drawSpace
-@drawParenInstead:
-        lda     #$F7
-        bne     @storeValue
-@drawSpace:
-        lda     #$EF
-@storeValue:
-        sta     twotrisRenderQueue,x
-        inx
-        rts
-
-
-drawRowByNumber:
-        asl
+        pla
         tay
-        ldx     renderQueueIndex
-        lda     vramPlayfieldRows+1,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     vramPlayfieldRows,y
-        clc
-        adc     #$06
-        sta     twotrisRenderQueue,x
-        inx
-        lda     #$03
-        sta     twotrisRenderQueue,x
-        inx
+        jmp     @next
 
-        jsr     drawInstruction
-        jsr     drawSpace
-        stx     renderQueueIndex
+@skipInstruction:
+        cmp     #$81
+        bne     @skipDigit
+        lda     renderedValue
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     twotrisRenderQueue,x
+        inx
+        lda     renderedValue
+        and     #$0F
+        sta     twotrisRenderQueue,x
+        inx
+        jmp     @next
+
+@skipDigit:
+        cmp     #$82
+        bne     @skipNull
+        jmp     @next
+
+@skipNull:
+        sta     twotrisRenderQueue,x
+        inx
+@next:
+        iny
+        cpy     twotrisTemp
+        bne     @nextRenderChar
+        rts
 
 
 clearPreviousRow:
         lda     twotrisPreviousRow
         cmp     twotrisCurrentRow
         beq     @ret
-        asl
-        tay
-        ldx     renderQueueIndex
-        lda     vramPlayfieldRows+1,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     vramPlayfieldRows,y
-        clc
-        adc     #$06
-        sta     twotrisRenderQueue,x
-        inx
-        lda     #$0A
-        sta     twotrisRenderQueue,x
-        inx
-        ldy     #$0A
-        lda     #$EF
-@clearNextColumn:
-        sta     twotrisRenderQueue,x
-        inx
-        dey
-        bne     @clearNextColumn
-        stx     renderQueueIndex
+        sta     renderedRow
+        lda     #$07
+        sta     renderedType
+        jsr     renderRow
 @ret:
         rts
 
@@ -347,8 +379,6 @@ playstateClearing:
         rts
 
 
-
-
 playstateRefreshing:
         lda     #$04
         sta     twotrisTemp+3
@@ -359,12 +389,30 @@ playstateRefreshing:
         lda     #STATE_PLAYING
         sta     twotrisState
         rts
+
 @inClearState:
-        ldx     twotrisVramRow
-        lda     twotrisCurrentPiece
-        sta     twotrisTemp
         lda     twotrisVramRow
-        jsr     drawRowByNumber
+        sta     renderedRow
+        tay
+        lda     twotrisPlayfield,y
+        cmp     #EMPTY
+        bne     @notBlank
+        lda     #$07
+        jmp     @storeType
+
+@notBlank:
+        tay
+        lda     twotrisInstructionGroups,y
+        sta     renderedInstruction
+
+        lda     twotrisDigits,y
+        sta     renderedValue
+
+        lda     twotrisAddressingTable,y
+
+@storeType:
+        sta     renderedType
+        jsr     renderRow
         inc     twotrisVramRow
         dec     twotrisTemp+3
         bne     @checkAgain
@@ -633,6 +681,7 @@ menuThrottleContinue:
         sta     menuMoveThrottle
         rts
 
+
 initializePause:
         lda     #$00
         sta     PPUMASK
@@ -658,6 +707,7 @@ initializePause:
         sta     PPUCTRL
         inc     twotrisPauseInitialized
         jmp     waitPartOfUpdateAudioWaitForNmiAndResetOamStaging
+
 
 
 jumpToGamePlayState:
@@ -774,11 +824,6 @@ initializeBoard:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
