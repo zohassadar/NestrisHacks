@@ -25,12 +25,12 @@ checkForReset:
         rts
 
 checkForNextBoxToggle:
-        lda    newlyPressedButtons_player1
-        and    #BUTTON_SELECT
-        beq    @ret
-        lda    twotrisDisplayNext
-        eor    #$01
-        sta    twotrisDisplayNext
+        lda     newlyPressedButtons_player1
+        and     #BUTTON_SELECT
+        beq     @ret
+        lda     twotrisDisplayNext
+        eor     #$01
+        sta     twotrisDisplayNext
 @ret:
         rts
 
@@ -171,7 +171,7 @@ playstateChecking:
         lda     twotrisDigits,y
 @storeValue:
         sta     twotrisInstruction+1
-        ldx    #$00
+        ldx     #$00
 @shiftPlayfield:
         lda     twotrisPlayfield+1,x
         sta     twotrisPlayfield,x
@@ -201,30 +201,30 @@ playstateChecking:
 
 
 increaseLineCount:
-        ldy   #$00
+        ldy     #$00
         tya
         sec
-        adc   twotrisLineCount
-        sta   twotrisLineCount
+        adc     twotrisLineCount
+        sta     twotrisLineCount
         tya
-        adc   twotrisLineCount+1
-        sta   twotrisLineCount+1
+        adc     twotrisLineCount+1
+        sta     twotrisLineCount+1
         rts
 
 executeInstruction:
-        ldy   twotrisY
-        ldx   twotrisX
-        lda   twotrisFlags
+        ldy     twotrisY
+        ldx     twotrisX
+        lda     twotrisFlags
         pha
-        lda   twotrisA
+        lda     twotrisA
         plp
-        jsr   twotrisInstruction
+        jsr     twotrisInstruction
         php
-        sta   twotrisA
+        sta     twotrisA
         pla
-        sta   twotrisFlags
-        stx   twotrisX
-        sty   twotrisY
+        sta     twotrisFlags
+        stx     twotrisX
+        sty     twotrisY
         rts
 
 
