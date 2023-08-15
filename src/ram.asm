@@ -241,7 +241,10 @@ renderedType: .res $01  ; $0528
 renderedInstruction: .res $01  ; $0529
 renderedValue: .res $01  ; $052A
 
-.res $25
+twotrisDisplayNext: .res $01  ; $052B
+twotrisLineCount: .res $02 ; $052C
+
+.res $22
 
 twotrisPlayfield: .res $14 ; $0550 stores instruction index and values
 twotrisDigits: .res $14 ; $0564

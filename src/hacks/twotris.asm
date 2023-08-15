@@ -16,6 +16,25 @@ PLANT_TIMER :=  $1F
 EMPTY   :=      $EF
 
 
+checkForReset:
+        lda     heldButtons_player1
+        cmp     #$F0
+        bne     @ret
+        jmp     reset
+@ret:
+        rts
+
+checkForNextBoxToggle:
+        lda    newlyPressedButtons_player1
+        and    #BUTTON_SELECT
+        beq    @ret
+        lda    twotrisDisplayNext
+        eor    #$01
+        sta    twotrisDisplayNext
+@ret:
+        rts
+
+
 playstatePlaying:
         lda     twotrisCurrentRow
         sta     twotrisPreviousRow
@@ -129,20 +148,83 @@ playstateLocking:
         sta     twotrisPlayfield,y
         lda     twotrisCurrentDigit
         sta     twotrisDigits,y
-        jsr     newNextInstruction
-@moveToClearing:
-        lda     #$13
+        lda     #PLANT_TIMER
+        sta     twotrisPlantTimer
+        lda     #STATE_CHECKING
+        sta     twotrisState
+        rts
+
+
+playstateChecking:
+        ldy     #$00
+        lda     twotrisPlayfield,y
+        cmp     #EMPTY
+        beq     @newPiece
+        tax
+        lda     twotrisOpcodeTable,x
+        sta     twotrisInstruction
+        lda     twotrisAddressingTable,x
+        bne     @loadValue
+        lda     #$EA
+        bne     @storeValue
+@loadValue:
+        lda     twotrisDigits,y
+@storeValue:
+        sta     twotrisInstruction+1
+        ldx    #$00
+@shiftPlayfield:
+        lda     twotrisPlayfield+1,x
+        sta     twotrisPlayfield,x
+        lda     twotrisDigits+1,x
+        sta     twotrisDigits,x
+        inx
+        cpx     #$13
+        bne     @shiftPlayfield
+        lda     #EMPTY
+        sta     twotrisPlayfield,x
+        txa
         sta     twotrisAnimationColumn
         lda     #STATE_CLEARING
         sta     twotrisState
-        lda     twotrisCurrentRow
-        bne     @ret
         lda     #SOUND_EFFECT_LINE_CLEAR
         sta     soundEffectSlot1Init
+        jsr     executeInstruction
+        jsr     increaseLineCount
+        jsr     twotrisRenderState
+        jmp     @ret
+@newPiece:
+        lda     #STATE_PLAYING
+        sta     twotrisState
+        jsr     newNextInstruction
 @ret:
         rts
 
-playstateChecking:
+
+increaseLineCount:
+        ldy   #$00
+        tya
+        sec
+        adc   twotrisLineCount
+        sta   twotrisLineCount
+        tya
+        adc   twotrisLineCount+1
+        sta   twotrisLineCount+1
+        rts
+
+executeInstruction:
+        ldy   twotrisY
+        ldx   twotrisX
+        lda   twotrisFlags
+        pha
+        lda   twotrisA
+        plp
+        jsr   twotrisInstruction
+        php
+        sta   twotrisA
+        pla
+        sta   twotrisFlags
+        stx   twotrisX
+        sty   twotrisY
         rts
 
 
@@ -182,7 +264,7 @@ playstateRefreshing:
         lda     twotrisVramRow
         cmp     #$14
         bcc     @inClearState
-        lda     #STATE_PLAYING
+        lda     #STATE_CHECKING
         sta     twotrisState
         rts
 @inClearState:
@@ -389,92 +471,6 @@ pauseDrawRows:
         sta     twotrisRenderQueue,x
         rts
 
-
-renderRow:
-        lda     renderQueueIndex
-        tax
-        clc
-        adc     #$0D
-        sta     renderQueueIndex
-        lda     renderedRow
-        asl
-        tay
-        lda     vramPlayfieldRows+1,y
-        sta     twotrisRenderQueue,x
-        lda     vramPlayfieldRows,y
-        clc
-        adc     #$06
-        sta     twotrisRenderQueue+1,x
-        lda     #$0A
-        sta     twotrisRenderQueue+2,x
-
-        inx
-        inx
-        inx
-
-        ldy     renderedType
-        lda     multBy10Table,y
-        tay
-        clc
-        adc     #$0A
-        sta     twotrisTemp
-
-@nextRenderChar:
-        lda     renderChars,y
-        cmp     #$80
-        bne     @skipInstruction
-
-        tya
-        pha
-
-        lda     renderedInstruction
-        asl
-        clc
-        adc     renderedInstruction
-        tay
-        lda     twotrisInstructionStrings,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     twotrisInstructionStrings+1,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     twotrisInstructionStrings+2,y
-        sta     twotrisRenderQueue,x
-        inx
-
-        pla
-        tay
-        jmp     @next
-
-@skipInstruction:
-        cmp     #$81
-        bne     @skipDigit
-        lda     renderedValue
-        lsr
-        lsr
-        lsr
-        lsr
-        sta     twotrisRenderQueue,x
-        inx
-        lda     renderedValue
-        and     #$0F
-        sta     twotrisRenderQueue,x
-        inx
-        jmp     @next
-
-@skipDigit:
-        cmp     #$82
-        bne     @skipNull
-        jmp     @next
-
-@skipNull:
-        sta     twotrisRenderQueue,x
-        inx
-@next:
-        iny
-        cpy     twotrisTemp
-        bne     @nextRenderChar
-@ret:   rts
 
 
 
@@ -730,6 +726,8 @@ twotrisInitialize:
         ; restore render vars
         pla
         sta     outOfDateRenderFlags
+        lda     #$20
+        sta     player1_vramRow
 
         ; clear the slate
         ldx     #$05
@@ -746,7 +744,7 @@ twotrisInitialize:
         sta     twotrisPpuCtrl
         lda     #$1E
         sta     twotrisPpuMask
-        lda     #$20
+        lda     #$60
         sta     twotrisRts
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
@@ -797,10 +795,14 @@ twotris:
         tya
         pha
 ; Figure out if we're in twotris mode
+        lda     gameMode
+        cmp     #$05
+        beq     @demoMode
         lda     player1_autorepeatY
         cmp     #$A0
         beq     @newGameStarted
         sta     twotrisPreviousAutorepeatY
+@demoMode:
         ; set mmc1 control every frame for normal game
         inc     initRam
         lda     #$10
@@ -832,9 +834,12 @@ twotris:
         ; --------
         jsr     pollControllerButtons
         jsr     jumpToGamePlayState
+        jsr     checkForReset
         jsr     checkForPause
         jsr     updateAudio
         jsr     generateNumbers
+        jsr     checkForNextBoxToggle
+        jsr     stageNextBox
 twoTrisNmiTail:
         pla
         tay
@@ -844,18 +849,3 @@ twoTrisNmiTail:
         rti
 
 
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00

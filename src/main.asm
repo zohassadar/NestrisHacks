@@ -158,6 +158,7 @@ unreferenced_data1:
 .else
 unreferenced_data4:
 .include "hacks/twotris_tables.asm"
+.include "hacks/twotris_render_state.asm"
 .endif
 ; End of "unreferenced_data4" segment
 .code
