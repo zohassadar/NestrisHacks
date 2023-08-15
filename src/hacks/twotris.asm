@@ -1,8 +1,9 @@
 STATE_PAUSED := $00
 STATE_PLAYING := $01
-STATE_CHECKING := $02
-STATE_CLEARING := $03
-STATE_REFRESHING := $04
+STATE_LOCKING := $02
+STATE_CHECKING := $03
+STATE_CLEARING := $04
+STATE_REFRESHING := $05
 
 menuThrottleStart := $10
 menuThrottleRepeat := $4
@@ -14,157 +15,6 @@ PLANT_TIMER :=  $1F
 
 EMPTY   :=      $EF
 
-
-twotris:
-        pha
-        txa
-        pha
-        tya
-        pha
-; Figure out if we're in twotris mode
-        lda     player1_autorepeatY
-        cmp     #$A0
-        beq     @newGameStarted
-        sta     twotrisPreviousAutorepeatY
-        ; set mmc1 control every frame for normal game
-        inc     initRam
-        lda     #$10
-        jsr     setMMC1Control
-        jmp     notPlayingTwotris
-
-        ; find out if a new game just started
-@newGameStarted:
-        cmp     twotrisPreviousAutorepeatY
-        beq     @initialized
-        jmp     twotrisInitialize
-@initialized:
-        jsr     fulfillRenderQueue
-        jsr     copyOamStagingToOam
-        jsr     setMmcControlAndRenderFlags
-        ; --------
-        jsr     emptyRenderQueue
-
-        ldx     #$02
-        ldy     #$02
-        lda     #$FF
-        jsr     memset_page
-
-        ; --------
-        inc     frameCounter
-        lda     #$00
-        sta     twotrisOamIndex
-        sta     renderQueueIndex
-        ; --------
-        jsr     pollControllerButtons
-        jsr     jumpToGamePlayState
-        jsr     checkForPause
-        jsr     updateAudio
-        jsr     generateNumbers
-twoTrisNmiTail:
-        pla
-        tay
-        pla
-        tax
-        pla
-        rti
-
-generateNumbers:
-        lda     rng_seed+1
-        and     #$0F
-        sta     twotrisTemp
-@reRoll:
-        ldx     #$17
-        ldy     #$02
-        jsr     generateNextPseudorandomNumber
-        dec     twotrisTemp
-        bne     @reRoll
-        rts
-
-
-pickRandomInstruction:
-        ldx     #$20
-        lda     rng_seed
-        adc     frameCounter
-@nextPiece:
-        cmp     twotrisInstructionWeightTable,x
-        bcs     @foundInstruction
-        dex
-        bmi     @foundInstruction
-        bpl     @nextPiece
-@foundInstruction:
-        inx
-        lda     spawnInstructions,x
-        rts
-
-
-
-twotrisInitialize:
-        ; store renderVars
-        lda     outOfDateRenderFlags
-        pha
-        ; do last render so colors/score/lines/level show up
-        jsr     render_mode_play_and_demo
-        ; restore render vars
-        pla
-        sta     outOfDateRenderFlags
-
-        ; clear the slate
-        ldx     #$05
-        ldy     #$05
-        lda     #$00
-        jsr     memset_page
-
-        ; set up variables here
-        lda     #$01
-        sta     twotrisState
-        lda     #$13
-        sta     twotrisMmcControl
-        lda     #$80
-        sta     twotrisPpuCtrl
-        lda     #$1E
-        sta     twotrisPpuMask
-        lda     #$20
-        sta     twotrisRts
-        lda     #PLANT_TIMER
-        sta     twotrisPlantTimer
-        lda     #$FF
-        jsr     setMusicTrack
-
-        ldy     #$13
-        lda     #EMPTY
-@fillPlayfield:
-        sta     twotrisPlayfield,y
-        dey
-        bpl     @fillPlayfield
-
-        lda     #$00
-        sta     twotrisPauseInitialized
-        sta     player1_vramRow
-        sta     vramRow
-
-        jsr     generateNumbers
-        jsr     pickRandomInstruction
-        sta     twotrisCurrentPiece
-        jsr     generateNumbers
-        lda     rng_seed
-        sta     twotrisCurrentDigit
-        jsr     newNextInstruction
-
-        lda     player1_autorepeatY
-        sta     twotrisPreviousAutorepeatY
-
-        ; load initial render of flags/regs into queue
-        jsr     initializeBoard
-        jmp     twoTrisNmiTail
-
-newNextInstruction:
-        jsr     generateNumbers
-        jsr     pickRandomInstruction
-        sta     twotrisNextPiece
-        jsr     generateNumbers
-        lda     rng_seed
-        sta     twotrisNextDigit
-        rts
 
 playstatePlaying:
         lda     twotrisCurrentRow
@@ -193,7 +43,7 @@ playstatePlaying:
         bpl     @waitToPlant
         lda     #SOUND_EFFECT_LOCK
         sta     soundEffectSlot1Init
-        lda     #STATE_CHECKING
+        lda     #STATE_LOCKING
         sta     twotrisState
         jmp     @ret
 @leftNotHeld:
@@ -214,7 +64,6 @@ playstatePlaying:
         cmp     #EMPTY
         bne     @nextRow
         stx     twotrisCurrentRow
-
 @cantMoveDown:
         lda     #BUTTON_UP
         jsr     menuThrottle
@@ -273,110 +122,14 @@ playstatePlaying:
         jsr     clearPreviousRow
         rts
 
-renderRow:
-        lda     renderQueueIndex
-        tax
-        clc
-        adc     #$0D
-        sta     renderQueueIndex
-        lda     renderedRow
-        asl
-        tay
-        lda     vramPlayfieldRows+1,y
-        sta     twotrisRenderQueue,x
-        lda     vramPlayfieldRows,y
-        clc
-        adc     #$06
-        sta     twotrisRenderQueue+1,x
-        lda     #$0A
-        sta     twotrisRenderQueue+2,x
 
-        inx
-        inx
-        inx
-
-        ldy     renderedType
-        lda     multBy10Table,y
-        tay
-        clc
-        adc     #$0A
-        sta     twotrisTemp
-
-@nextRenderChar:
-        lda     renderChars,y
-        cmp     #$80
-        bne     @skipInstruction
-
-        tya
-        pha
-
-        lda     renderedInstruction
-        asl
-        clc
-        adc     renderedInstruction
-        tay
-        lda     twotrisInstructionStrings,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     twotrisInstructionStrings+1,y
-        sta     twotrisRenderQueue,x
-        inx
-        lda     twotrisInstructionStrings+2,y
-        sta     twotrisRenderQueue,x
-        inx
-
-        pla
-        tay
-        jmp     @next
-
-@skipInstruction:
-        cmp     #$81
-        bne     @skipDigit
-        lda     renderedValue
-        lsr
-        lsr
-        lsr
-        lsr
-        sta     twotrisRenderQueue,x
-        inx
-        lda     renderedValue
-        and     #$0F
-        sta     twotrisRenderQueue,x
-        inx
-        jmp     @next
-
-@skipDigit:
-        cmp     #$82
-        bne     @skipNull
-        jmp     @next
-
-@skipNull:
-        sta     twotrisRenderQueue,x
-        inx
-@next:
-        iny
-        cpy     twotrisTemp
-        bne     @nextRenderChar
-        rts
-
-
-clearPreviousRow:
-        lda     twotrisPreviousRow
-        cmp     twotrisCurrentRow
-        beq     @ret
-        sta     renderedRow
-        lda     #$07
-        sta     renderedType
-        jsr     renderRow
-@ret:
-        rts
-
-playstateLockAndCheck:
+playstateLocking:
         ldy     twotrisCurrentRow
         lda     twotrisCurrentPiece
         sta     twotrisPlayfield,y
         lda     twotrisCurrentDigit
         sta     twotrisDigits,y
+        jsr     newNextInstruction
 @moveToClearing:
         lda     #$13
         sta     twotrisAnimationColumn
@@ -388,6 +141,10 @@ playstateLockAndCheck:
         sta     soundEffectSlot1Init
 @ret:
         rts
+
+playstateChecking:
+        rts
+
 
 playstateClearing:
         lda     twotrisAnimationColumn
@@ -428,7 +185,6 @@ playstateRefreshing:
         lda     #STATE_PLAYING
         sta     twotrisState
         rts
-
 @inClearState:
         lda     twotrisVramRow
         sta     renderedRow
@@ -634,6 +390,93 @@ pauseDrawRows:
         rts
 
 
+renderRow:
+        lda     renderQueueIndex
+        tax
+        clc
+        adc     #$0D
+        sta     renderQueueIndex
+        lda     renderedRow
+        asl
+        tay
+        lda     vramPlayfieldRows+1,y
+        sta     twotrisRenderQueue,x
+        lda     vramPlayfieldRows,y
+        clc
+        adc     #$06
+        sta     twotrisRenderQueue+1,x
+        lda     #$0A
+        sta     twotrisRenderQueue+2,x
+
+        inx
+        inx
+        inx
+
+        ldy     renderedType
+        lda     multBy10Table,y
+        tay
+        clc
+        adc     #$0A
+        sta     twotrisTemp
+
+@nextRenderChar:
+        lda     renderChars,y
+        cmp     #$80
+        bne     @skipInstruction
+
+        tya
+        pha
+
+        lda     renderedInstruction
+        asl
+        clc
+        adc     renderedInstruction
+        tay
+        lda     twotrisInstructionStrings,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisInstructionStrings+1,y
+        sta     twotrisRenderQueue,x
+        inx
+        lda     twotrisInstructionStrings+2,y
+        sta     twotrisRenderQueue,x
+        inx
+
+        pla
+        tay
+        jmp     @next
+
+@skipInstruction:
+        cmp     #$81
+        bne     @skipDigit
+        lda     renderedValue
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     twotrisRenderQueue,x
+        inx
+        lda     renderedValue
+        and     #$0F
+        sta     twotrisRenderQueue,x
+        inx
+        jmp     @next
+
+@skipDigit:
+        cmp     #$82
+        bne     @skipNull
+        jmp     @next
+
+@skipNull:
+        sta     twotrisRenderQueue,x
+        inx
+@next:
+        iny
+        cpy     twotrisTemp
+        bne     @nextRenderChar
+@ret:   rts
+
+
 
 fulfillRenderQueue:
         ldx     #$00
@@ -752,7 +595,8 @@ jumpToGamePlayState:
         jsr     switch_s_plus_2a
         .addr   playstatePaused
         .addr   playstatePlaying
-        .addr   playstateLockAndCheck
+        .addr   playstateLocking
+        .addr   playstateChecking
         .addr   playstateClearing
         .addr   playstateRefreshing
 
@@ -821,6 +665,20 @@ loadPauseAddressCursor:
 @ret:   rts
 
 
+clearPreviousRow:
+        ldy     twotrisPreviousRow
+        cpy     twotrisCurrentRow
+        beq     @ret
+        lda     twotrisPlayfield,y
+        cmp     #EMPTY
+        bne     @ret
+        sty     renderedRow
+        lda     #$07
+        sta     renderedType
+        jsr     renderRow
+@ret:
+        rts
+
 initializeBoard:
         ldx     #$00
 @loopThroughInitialize:
@@ -833,6 +691,158 @@ initializeBoard:
 @ret:
         rts
 
+generateNumbers:
+        lda     rng_seed+1
+        and     #$0F
+        sta     twotrisTemp
+@reRoll:
+        ldx     #$17
+        ldy     #$02
+        jsr     generateNextPseudorandomNumber
+        dec     twotrisTemp
+        bne     @reRoll
+        rts
+
+
+pickRandomInstruction:
+        ldx     #$20
+        lda     rng_seed
+        adc     frameCounter
+@nextPiece:
+        cmp     twotrisInstructionWeightTable,x
+        bcs     @foundInstruction
+        dex
+        bmi     @foundInstruction
+        bpl     @nextPiece
+@foundInstruction:
+        inx
+        lda     spawnInstructions,x
+        rts
+
+
+
+twotrisInitialize:
+        ; store renderVars
+        lda     outOfDateRenderFlags
+        pha
+        ; do last render so colors/score/lines/level show up
+        jsr     render_mode_play_and_demo
+        ; restore render vars
+        pla
+        sta     outOfDateRenderFlags
+
+        ; clear the slate
+        ldx     #$05
+        ldy     #$05
+        lda     #$00
+        jsr     memset_page
+
+        ; set up variables here
+        lda     #$01
+        sta     twotrisState
+        lda     #$13
+        sta     twotrisMmcControl
+        lda     #$80
+        sta     twotrisPpuCtrl
+        lda     #$1E
+        sta     twotrisPpuMask
+        lda     #$20
+        sta     twotrisRts
+        lda     #PLANT_TIMER
+        sta     twotrisPlantTimer
+        lda     #$FF
+        jsr     setMusicTrack
+
+        ldy     #$13
+        lda     #EMPTY
+@fillPlayfield:
+        sta     twotrisPlayfield,y
+        dey
+        bpl     @fillPlayfield
+
+        lda     #$00
+        sta     twotrisPauseInitialized
+        sta     player1_vramRow
+        sta     vramRow
+
+        jsr     newNextInstruction
+        jsr     newNextInstruction
+
+        lda     player1_autorepeatY
+        sta     twotrisPreviousAutorepeatY
+
+        ; load initial render of flags/regs into queue
+        jsr     initializeBoard
+        jmp     twoTrisNmiTail
+
+newNextInstruction:
+        lda     #$00
+        sta     twotrisCurrentRow
+        lda     twotrisNextDigit
+        sta     twotrisCurrentDigit
+        lda     twotrisNextPiece
+        sta     twotrisCurrentPiece
+        jsr     generateNumbers
+        jsr     pickRandomInstruction
+        sta     twotrisNextPiece
+        jsr     generateNumbers
+        lda     rng_seed
+        sta     twotrisNextDigit
+        rts
+
+twotris:
+        pha
+        txa
+        pha
+        tya
+        pha
+; Figure out if we're in twotris mode
+        lda     player1_autorepeatY
+        cmp     #$A0
+        beq     @newGameStarted
+        sta     twotrisPreviousAutorepeatY
+        ; set mmc1 control every frame for normal game
+        inc     initRam
+        lda     #$10
+        jsr     setMMC1Control
+        jmp     notPlayingTwotris
+
+        ; find out if a new game just started
+@newGameStarted:
+        cmp     twotrisPreviousAutorepeatY
+        beq     @initialized
+        jmp     twotrisInitialize
+@initialized:
+        jsr     fulfillRenderQueue
+        jsr     copyOamStagingToOam
+        jsr     setMmcControlAndRenderFlags
+        ; --------
+        jsr     emptyRenderQueue
+
+        ldx     #$02
+        ldy     #$02
+        lda     #$FF
+        jsr     memset_page
+
+        ; --------
+        inc     frameCounter
+        lda     #$00
+        sta     twotrisOamIndex
+        sta     renderQueueIndex
+        ; --------
+        jsr     pollControllerButtons
+        jsr     jumpToGamePlayState
+        jsr     checkForPause
+        jsr     updateAudio
+        jsr     generateNumbers
+twoTrisNmiTail:
+        pla
+        tay
+        pla
+        tax
+        pla
+        rti
+
 
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -849,7 +859,3 @@ initializeBoard:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
-
