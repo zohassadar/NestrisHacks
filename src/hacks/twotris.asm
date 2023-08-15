@@ -15,8 +15,6 @@ PLANT_TIMER :=  $1F
 EMPTY   :=      $EF
 
 
-
-
 twotris:
         pha
         txa
@@ -171,6 +169,23 @@ newNextInstruction:
 playstatePlaying:
         lda     twotrisCurrentRow
         sta     twotrisPreviousRow
+
+; unpack the compressed rotation
+        ldy     twotrisCurrentPiece
+        lda     CompressedRotation,y
+        lsr
+        lsr
+        lsr
+        lsr
+        tax
+        lda     fourBitTo8Bit,x
+        sta     twotrisTemp+1
+        lda     CompressedRotation,y
+        and     #$0f
+        tax
+        lda     fourBitTo8Bit,x
+        sta     twotrisTemp+2
+
         lda     heldButtons_player1
         and     #BUTTON_LEFT
         beq     @leftNotHeld
@@ -180,6 +195,7 @@ playstatePlaying:
         sta     soundEffectSlot1Init
         lda     #STATE_CHECKING
         sta     twotrisState
+        jmp     @ret
 @leftNotHeld:
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
@@ -214,6 +230,26 @@ playstatePlaying:
         bne     @nextRow2
         stx     twotrisCurrentRow
 @cantMoveUp:
+        lda     #BUTTON_A
+        jsr     menuThrottle
+        beq     @aNotPressed
+        lda     twotrisCurrentPiece
+        clc
+        adc     twotrisTemp+2
+        sta     twotrisCurrentPiece
+        lda     #$01
+        sta     soundEffectSlot1Init
+@aNotPressed:
+        lda     #BUTTON_B
+        jsr     menuThrottle
+        beq     @bNotPressed
+        lda     twotrisCurrentPiece
+        clc
+        adc     twotrisTemp+1
+        sta     twotrisCurrentPiece
+        lda     #$01
+        sta     soundEffectSlot1Init
+@bNotPressed:
         lda     #STATE_PLAYING
         cmp     twotrisState
         bne     @ret
@@ -233,8 +269,6 @@ playstatePlaying:
         lda     twotrisAddressingTable,y
 @storeType:
         sta     renderedType
-        sta     twotrisTemp
-        lda     twotrisCurrentRow
         jsr     renderRow
         jsr     clearPreviousRow
         rts
@@ -265,8 +299,8 @@ renderRow:
         lda     multBy10Table,y
         tay
         clc
-        adc      #$0A
-        sta      twotrisTemp
+        adc     #$0A
+        sta     twotrisTemp
 
 @nextRenderChar:
         lda     renderChars,y
@@ -277,8 +311,6 @@ renderRow:
         pha
 
         lda     renderedInstruction
-        ; lda     twotrisInstructionGroups,y
-        ; sta     twotrisTemp
         asl
         clc
         adc     renderedInstruction
@@ -339,15 +371,22 @@ clearPreviousRow:
 @ret:
         rts
 
-playstateChecking:
-
+playstateLockAndCheck:
+        ldy     twotrisCurrentRow
+        lda     twotrisCurrentPiece
+        sta     twotrisPlayfield,y
+        lda     twotrisCurrentDigit
+        sta     twotrisDigits,y
 @moveToClearing:
         lda     #$13
         sta     twotrisAnimationColumn
-        lda     #SOUND_EFFECT_LINE_CLEAR
-        sta     soundEffectSlot1Init
         lda     #STATE_CLEARING
         sta     twotrisState
+        lda     twotrisCurrentRow
+        bne     @ret
+        lda     #SOUND_EFFECT_LINE_CLEAR
+        sta     soundEffectSlot1Init
+@ret:
         rts
 
 playstateClearing:
@@ -395,21 +434,21 @@ playstateRefreshing:
         sta     renderedRow
         tay
         lda     twotrisPlayfield,y
+        sta     twotrisTemp
         cmp     #EMPTY
         bne     @notBlank
         lda     #$07
         jmp     @storeType
 
 @notBlank:
-        tay
-        lda     twotrisInstructionGroups,y
-        sta     renderedInstruction
-
         lda     twotrisDigits,y
         sta     renderedValue
 
-        lda     twotrisAddressingTable,y
+        ldy     twotrisTemp
+        lda     twotrisInstructionGroups,y
+        sta     renderedInstruction
 
+        lda     twotrisAddressingTable,y
 @storeType:
         sta     renderedType
         jsr     renderRow
@@ -708,14 +747,12 @@ initializePause:
         inc     twotrisPauseInitialized
         jmp     waitPartOfUpdateAudioWaitForNmiAndResetOamStaging
 
-
-
 jumpToGamePlayState:
         lda     twotrisState
         jsr     switch_s_plus_2a
         .addr   playstatePaused
         .addr   playstatePlaying
-        .addr   playstateChecking
+        .addr   playstateLockAndCheck
         .addr   playstateClearing
         .addr   playstateRefreshing
 
@@ -758,8 +795,6 @@ loadCurrentPieceCursor:
 @ret:   rts
 
 
-
-
 loadPauseAddressCursor:
         lda     frameCounter
         and     #$03
@@ -799,8 +834,6 @@ initializeBoard:
         rts
 
 
-
-
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -809,16 +842,6 @@ initializeBoard:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-
 
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
