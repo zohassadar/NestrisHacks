@@ -238,6 +238,30 @@ stageNextBox:
         rts
 
 
+loadCurrentPieceCursor:
+        lda     frameCounter
+        and     #$07
+        beq     @ret
+        ldx     twotrisOamIndex
+        lda     twotrisCurrentRow
+        asl
+        asl
+        asl
+        clc
+        adc     #$2F
+        sta     oamStaging,x
+        inx
+        lda     #$FB
+        sta     oamStaging,x
+        inx
+        lda     #$03
+        sta     oamStaging,x
+        inx
+        lda     #$55
+        sta     oamStaging,x
+        inx
+        stx     twotrisOamIndex
+@ret:   rts
 
 
 

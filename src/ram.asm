@@ -2,25 +2,29 @@
 tmp1:	.res $1	                    ; $0000
 tmp2:	.res $1	                    ; $0001
 tmp3:	.res $1	                    ; $0002
-.res $2                             ; $0003
-tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
-.res $E                             ; $0006
-patchToPpuAddr: .res $1             ; $0014
-.res $2                             ; $0015
+twotrisReset: .res $1
+.res $1                             ; $0004
+tmpBulkCopyToPpuReturnAddr: .res $2 ; $0005
+.res $D                             ; $0007
+patchToPpuAddr: .res $2             ; $0014
+.res $1                             ; $0016
 rng_seed: .res $2	                ; $0017
 spawnID: .res $1	                ; $0019
 spawnCount:	.res $1	                ; $001A
 .res $1
 
 ; Anydas
-anydasMenu: .res $1                 ; $000C
-anydasDASValue: .res $1             ; $000D
-anydasARRValue: .res $1             ; $000E
-anydasARECharge: .res $1            ; $000F
+; anydasMenu: .res $1                 ; $000C
+; anydasDASValue: .res $1             ; $000D
+; anydasARRValue: .res $1             ; $000E
+; anydasARECharge: .res $1            ; $000F
+.res $4
+
 
 ; SPS
-set_seed_input: .res $3          ; $0010
-set_seed: .res $3                ; $0013
+.res $6
+; set_seed_input: .res $3          ; $0010
+; set_seed: .res $3                ; $0013
 
 .res $0D
 
@@ -187,7 +191,6 @@ playfieldForSecondPlayer:	.res $C8	; $0500
 .res $38
 .else
 playfieldForSecondPlayer:
-twotrisJump: .res $02 ; $0500
 twotrisState: .res $01 ; $0502
 twotrisPpuCtrl: .res $01 ; $0503
 twotrisPpuMask: .res $01 ; $0504
@@ -199,15 +202,11 @@ twotrisPreviousAutorepeatY: .res $01 ; $0509
 twotrisTemp: .res $04
 twotrisPauseInitialized: .res $01 ; $050e
 twotrisCurrentRow: .res $01 ; $050f
-
 menuMoveThrottle: .res $01 ; $0510
 menuThrottleTmp: .res $01 ; $0511
-
 twotrisCurrentPiece: .res $01 ; $0512
 twotrisCurrentDigit: .res $01 ; $0513
-
 twotrisNextPiece: .res $01 ; $0514
-twotrisNextDigit: .res $01 ; $0515
 
 ; the state of the "vm"
 twotrisA: .res $01 ; $0516
@@ -218,9 +217,7 @@ twotrisFlags: .res $01 ; $0519
 ; pause screen vars
 twotrisPauseStartLow: .res $01 ; $051a
 twotrisPauseStartHigh: .res $01 ; $051b
-
 twotrisPauseDigit: .res $01 ; $051c
-
 twotrisPauseStartHigh0: .res $01 ; $051d
 twotrisPauseStartHigh1: .res $01 ; $051e
 twotrisPauseStartLow0: .res $01 ; $051f
@@ -229,7 +226,7 @@ twotrisPauseStartLow1: .res $01 ; $0520
 ; What gets executed
 
 twotrisInstruction: .res $02 ; $0521
-twotrisRts: .res $01 ; $0523  needs to be set to RTS ($20)
+twotrisRts: .res $01 ; $0523  needs to be set to RTS ($60)
 
 ; more vars here
 twotrisPlantTimer: .res $01 ; $0524
@@ -250,7 +247,7 @@ twotrisFallSpeed: .res $01
 twotrisFallTimer: .res $01
 
 
-.res $1f
+.res $22
 
 twotrisPlayfield: .res $14 ; $0550 stores instruction index and values
 twotrisDigits: .res $14 ; $0564

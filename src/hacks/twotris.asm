@@ -20,7 +20,7 @@ checkForReset:
         lda     heldButtons_player1
         cmp     #$F0
         bne     @ret
-        jmp     reset
+        inc     twotrisReset
 @ret:
         rts
 
@@ -67,7 +67,7 @@ playstatePlaying:
         sta     twotrisState
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
-        ; reset fall 
+        ; reset fall
         lda     twotrisFallSpeed
         sta     twotrisFallTimer
         jmp     @ret
@@ -204,8 +204,16 @@ playstateChecking:
         sta     twotrisAnimationColumn
         lda     #STATE_CLEARING
         sta     twotrisState
+        jsr     checkForEmptyPlayfield
+        txa
+        bpl     @loadLineClearEffect
+        lda     #$02
+        sta     soundEffectSlot0Init
+        jmp     @carryOn
+@loadLineClearEffect:
         lda     #SOUND_EFFECT_LINE_CLEAR
         sta     soundEffectSlot1Init
+@carryOn:
         jsr     executeInstruction
         jsr     increaseLineCount
         jsr     twotrisRenderState
@@ -214,6 +222,18 @@ playstateChecking:
         lda     #STATE_PLAYING
         sta     twotrisState
         jsr     newNextInstruction
+@ret:
+        rts
+
+
+checkForEmptyPlayfield:
+        ldx     #$13
+        lda     #EMPTY
+@loopThroughRows:
+        cmp     twotrisPlayfield,x
+        bne     @ret
+        dex
+        bpl     @loopThroughRows
 @ret:
         rts
 
@@ -227,6 +247,14 @@ increaseLineCount:
         tya
         adc     twotrisLineCount+1
         sta     twotrisLineCount+1
+        lda     twotrisLineCount
+        and     #$0F
+        bne     @sameLevel
+        inc     player1_levelNumber
+        lda     #$06
+        sta     soundEffectSlot1Init
+        jsr     setFallSpeed
+@sameLevel:
         rts
 
 executeInstruction:
@@ -276,6 +304,12 @@ playstateClearing:
 
 
 playstateRefreshing:
+        jsr     checkForEmptyPlayfield
+        txa
+        bpl     @refresh
+        inc     twotrisReset
+        rts
+@refresh:
         lda     #$04
         sta     twotrisTemp+3
 @checkAgain:
@@ -627,30 +661,6 @@ setMmcControlAndRenderFlags:
         sta     PPUMASK
         rts
 
-loadCurrentPieceCursor:
-        lda     frameCounter
-        and     #$07
-        beq     @ret
-        ldx     twotrisOamIndex
-        lda     twotrisCurrentRow
-        asl
-        asl
-        asl
-        clc
-        adc     #$2F
-        sta     oamStaging,x
-        inx
-        lda     #$FB
-        sta     oamStaging,x
-        inx
-        lda     #$03
-        sta     oamStaging,x
-        inx
-        lda     #$55
-        sta     oamStaging,x
-        inx
-        stx     twotrisOamIndex
-@ret:   rts
 
 
 loadPauseAddressCursor:
@@ -851,7 +861,7 @@ twotris:
 @initialized:
         jsr     fulfillRenderQueue
 
-; Use this to keep digit counter constantly moving and displayed 
+; Use this to keep digit counter constantly moving and displayed
         lda     #$0F
         bit     frameCounter
         bne     @skipIncrement
@@ -864,6 +874,8 @@ twotris:
         lda     twotrisCounter
         jsr     twoDigsToPPU
 ; --------
+
+        jsr     updatePaletteForLevel
 
         jsr     copyOamStagingToOam
         jsr     setMmcControlAndRenderFlags
@@ -889,6 +901,10 @@ twotris:
         jsr     generateNumbers
         jsr     checkForNextBoxToggle
         jsr     stageNextBox
+        jsr     setFallSpeed
+        lda     twotrisReset
+        beq     twoTrisNmiTail
+        jmp     reset
 twoTrisNmiTail:
         pla
         tay
