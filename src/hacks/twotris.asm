@@ -11,7 +11,7 @@ menuThrottleRepeat := $4
 SOUND_EFFECT_LOCK := $07
 SOUND_EFFECT_LINE_CLEAR := $0A
 
-PLANT_TIMER :=  $1F
+PLANT_TIMER :=  $0A
 
 EMPTY   :=      $EF
 
@@ -60,44 +60,62 @@ playstatePlaying:
         beq     @leftNotHeld
         dec     twotrisPlantTimer
         bpl     @waitToPlant
+@lockInstruction:
         lda     #SOUND_EFFECT_LOCK
         sta     soundEffectSlot1Init
         lda     #STATE_LOCKING
         sta     twotrisState
+        lda     #PLANT_TIMER
+        sta     twotrisPlantTimer
+        ; reset fall 
+        lda     twotrisFallSpeed
+        sta     twotrisFallTimer
         jmp     @ret
 @leftNotHeld:
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
 @waitToPlant:
+
+        lda     frameCounter
+        ror
+        bcc     @dontDecrement
+        dec     twotrisFallTimer
+@dontDecrement:
+        beq     @goDownAnyways
+
         lda     #BUTTON_DOWN
         jsr     menuThrottle
-        beq     @cantMoveDown
+        beq     @downNotPressedOrIsThrottled
+
         lda     #$01
         sta     soundEffectSlot1Init
+@goDownAnyways:
+        lda     twotrisFallSpeed
+        sta     twotrisFallTimer
         ldx     twotrisCurrentRow
 @nextRow:
         inx
         cpx     #$14
-        beq     @cantMoveDown
+        beq     @lockInstruction
         lda     twotrisPlayfield,x
         cmp     #EMPTY
         bne     @nextRow
         stx     twotrisCurrentRow
-@cantMoveDown:
-        lda     #BUTTON_UP
-        jsr     menuThrottle
-        beq     @cantMoveUp
-        lda     #$01
-        sta     soundEffectSlot1Init
-        ldx     twotrisCurrentRow
-@nextRow2:
-        dex
-        bmi     @cantMoveUp
-        lda     twotrisPlayfield,x
-        cmp     #EMPTY
-        bne     @nextRow2
-        stx     twotrisCurrentRow
-@cantMoveUp:
+@downNotPressedOrIsThrottled:
+;         lda     #BUTTON_UP
+;         jsr     menuThrottle
+;         beq     @cantMoveUp
+;         lda     #$01
+;         sta     soundEffectSlot1Init
+;         ldx     twotrisCurrentRow
+; @nextRow2:
+;         dex
+;         bmi     @cantMoveUp
+;         lda     twotrisPlayfield,x
+;         cmp     #EMPTY
+;         bne     @nextRow2
+;         stx     twotrisCurrentRow
+; @cantMoveUp:
         lda     #BUTTON_A
         jsr     menuThrottle
         beq     @aNotPressed
@@ -763,6 +781,9 @@ twotrisInitialize:
         sta     player1_vramRow
         sta     vramRow
 
+
+        jsr     setFallSpeed
+
         jsr     newNextInstruction
         jsr     newNextInstruction
 
@@ -772,6 +793,19 @@ twotrisInitialize:
         ; load initial render of flags/regs into queue
         jsr     initializeBoard
         jmp     twoTrisNmiTail
+
+
+setFallSpeed:
+        ldx     player1_levelNumber
+        lda     framesPerDropTable,x
+        asl
+        asl
+        clc
+        adc     framesPerDropTable,x
+        sta     twotrisFallSpeed
+        sta     twotrisFallTimer
+        rts
+
 
 newNextInstruction:
         lda     #$00
@@ -818,7 +852,7 @@ twotris:
         jsr     fulfillRenderQueue
 
 ; Use this to keep digit counter constantly moving and displayed 
-        lda     #$1F
+        lda     #$0F
         bit     frameCounter
         bne     @skipIncrement
         inc     twotrisCounter
