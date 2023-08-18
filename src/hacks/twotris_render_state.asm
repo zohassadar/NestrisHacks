@@ -189,13 +189,13 @@ stageNextBox:
         ldx     twotrisNextPiece
         ldy     twotrisOamIndex
 
-        lda     twotrisAddressingTable,x
-        bne     @shiftUp
+        ; lda     twotrisAddressingTable,x
+        ; bne     @shiftUp
         lda     #STAGING_Y_ANCHOR
-        bne     @storeY
-@shiftUp:
-        lda     #STAGING_Y_ANCHOR - 6
-@storeY:
+;         bne     @storeY
+; @shiftUp:
+;         lda     #STAGING_Y_ANCHOR - 6
+; @storeY:
         sta     oamStaging,y
         sta     oamStaging+4,y
         sta     oamStaging+8,y
@@ -234,55 +234,6 @@ stageNextBox:
         clc
         adc     #$0c
         sta     twotrisOamIndex
-
-; draw next digits
-        tay
-        ldx     twotrisNextPiece
-
-        lda     twotrisAddressingTable,x
-        beq     @ret
-
-; Y coords
-        lda     #STAGING_Y_ANCHOR + 6
-        sta     oamStaging,y
-        sta     oamStaging+4,y
-        sta     oamStaging+8,y
-
-
-; tile
-        lda     #$F9
-        sta     oamStaging+1,y
-        lda     twotrisNextDigit
-        lsr
-        lsr
-        lsr
-        lsr
-        sta     oamStaging+5,y
-        lda     twotrisNextDigit
-        and     #$0f
-        sta     oamStaging+9,y
-
-; attributes
-        lda     #$02
-        sta     oamStaging+2,y
-        sta     oamStaging+6,y
-        sta     oamStaging+10,y
-
-; X coords
-        lda     #STAGING_X_ANCHOR
-        sta     oamStaging+3,y
-        lda     #STAGING_X_ANCHOR + 8
-        sta     oamStaging+7,y
-        lda     #STAGING_X_ANCHOR + 16
-        sta     oamStaging+11,y
-
-; Add 12 to oam index
-        lda     twotrisOamIndex
-        clc
-        adc     #$0C
-        sta     twotrisOamIndex
-
-
 @ret:
         rts
 

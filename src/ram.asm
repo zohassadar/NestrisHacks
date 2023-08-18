@@ -244,7 +244,13 @@ renderedValue: .res $01  ; $052A
 twotrisDisplayNext: .res $01  ; $052B
 twotrisLineCount: .res $02 ; $052C
 
-.res $22
+twotrisCounter: .res $01
+
+twotrisFallSpeed: .res $01
+twotrisFallTimer: .res $01
+
+
+.res $1f
 
 twotrisPlayfield: .res $14 ; $0550 stores instruction index and values
 twotrisDigits: .res $14 ; $0564

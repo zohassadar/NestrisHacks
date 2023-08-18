@@ -776,16 +776,16 @@ twotrisInitialize:
 newNextInstruction:
         lda     #$00
         sta     twotrisCurrentRow
-        lda     twotrisNextDigit
+
+        lda     twotrisCounter
         sta     twotrisCurrentDigit
+
         lda     twotrisNextPiece
         sta     twotrisCurrentPiece
+
         jsr     generateNumbers
         jsr     pickRandomInstruction
         sta     twotrisNextPiece
-        jsr     generateNumbers
-        lda     rng_seed
-        sta     twotrisNextDigit
         rts
 
 twotris:
@@ -816,9 +816,24 @@ twotris:
         jmp     twotrisInitialize
 @initialized:
         jsr     fulfillRenderQueue
+
+; Use this to keep digit counter constantly moving and displayed 
+        lda     #$1F
+        bit     frameCounter
+        bne     @skipIncrement
+        inc     twotrisCounter
+@skipIncrement:
+        lda     #$22
+        sta     PPUADDR
+        lda     #$BA
+        sta     PPUADDR
+        lda     twotrisCounter
+        jsr     twoDigsToPPU
+; --------
+
         jsr     copyOamStagingToOam
         jsr     setMmcControlAndRenderFlags
-        ; --------
+
         jsr     emptyRenderQueue
 
         ldx     #$02
