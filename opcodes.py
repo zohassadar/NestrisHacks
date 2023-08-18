@@ -1,15 +1,52 @@
-from itertools import count
+import logging
+import pprint
 import re
+import sys
 
-addressing_modes = (
-    (0, re.compile(r"^([a-z]{3})$", flags=re.I).match),
-    (1, re.compile(r"^([a-z]{3}) #\$[a-f0-9]{2}$", flags=re.I).match),
-    (2, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2}$", flags=re.I).match),
-    (3, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},x$", flags=re.I).match),
-    (4, re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2}\),y$", flags=re.I).match),
-    (5, re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2},x\)$", flags=re.I).match),
-    (6, re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},y$", flags=re.I).match),
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+
+# implied index, pattern
+modes = (
+    re.compile(r"^([a-z]{3})$", flags=re.I),
+    re.compile(r"^([a-z]{3}) #\$[a-f0-9]{2}$", flags=re.I),
+    re.compile(r"^([a-z]{3}) \$[a-f0-9]{2}$", flags=re.I),
+    re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},x$", flags=re.I),
+    re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2}\),y$", flags=re.I),
+    re.compile(r"^([a-z]{3})\(\$[a-f0-9]{2},x\)$", flags=re.I),
+    re.compile(r"^([a-z]{3}) \$[a-f0-9]{2},y$", flags=re.I),
 )
+indexed_modes = [(i, pattern) for i, pattern in enumerate(modes)]
+
+
+instructions = (
+    (15, re.compile(r"^adc$")),
+    (15, re.compile(r"^and$")),
+    (15, re.compile(r"^(?:as|ro)l$")),
+    (2, re.compile(r"^bit$")),
+    (4, re.compile(r"^(cl[cv]|sec)$")),
+    (4, re.compile(r"^cp[xy]$")),
+    (4, re.compile(r"^cmp$")),
+    (25, re.compile(r"^de[cxy]$")),
+    (15, re.compile(r"^eor$")),
+    (25, re.compile(r"^in[cxy]$")),
+    (15, re.compile(r"^lda$")),
+    (15, re.compile(r"^ld[xy]$")),
+    (15, re.compile(r"^(?:ls|ro)r$")),
+    (2, re.compile(r"^nop$")),
+    (15, re.compile(r"^ora$")),
+    (15, re.compile(r"^sbc$")),
+    (15, re.compile(r"^sta$")),
+    (15, re.compile(r"^st[xy]$")),
+    (25, re.compile(r"^t[saxy][axy]$")),
+)
+
+
+indexed_instructions = [
+    (i, weight, pattern) for i, (weight, pattern) in enumerate(instructions)
+]
+
 
 table = (
     ("0x69", "adc #$42"),
@@ -97,103 +134,119 @@ table = (
     ("0x98", "tya"),
 )
 
-sorted_table = sorted(table, key=lambda x: x[1])
+table_with_groups = []
 
-counter = iter(count())
-
-spawn_indexes = []
-
-expanded_table = []
-groups = {}
-last = None
-sub_index = 0
-for opcode, description in sorted_table:
-    index = next(counter)
-    for mode_index, pattern in addressing_modes:
-        if result := pattern(description):
+for opcode, syntax in table:
+    logger.debug(f"evaluating {opcode=} {syntax=}")
+    for mode_index, pattern in indexed_modes:
+        if result := pattern.match(syntax):
             instruction = result.group(1)
             break
     else:
-        raise Exception(f"{opcode}, {description} does not fit into addressing pattern")
-    if instruction != last:
-        spawn_indexes.append((index, description))
+        raise Exception(
+            f"{opcode}, {syntax} does not match any addressing mode pattern"
+        )
+
+    group_found = False
+    for group_index, weight, pattern in indexed_instructions:
+        logger.debug(
+            f"testing {instruction!r} against {pattern!r}.  {pattern.match(instruction)=}"
+        )
+        if result := pattern.match(instruction):
+            logger.debug(f"{result=}")
+            group_found = True
+            logger.debug(f"{group_found=}")
+            break
+    if not group_found:
+        raise Exception(f"{opcode}, {instruction} does not match any grouping pattern")
+
+    table_with_groups.append(
+        (
+            opcode,
+            syntax,
+            mode_index,
+            instruction,
+            group_index,
+        )
+    )
+
+
+# sort by group_index
+sorted_table = sorted(table_with_groups, key=lambda x: x[4])
+logger.debug(pprint.pformat(sorted_table))
+
+
+# create a set with instructions, sort, add index
+instruction_groups = {
+    instruction: i
+    for i, instruction in enumerate(sorted({t[3] for t in table_with_groups}))
+}
+logger.debug(pprint.pformat(instruction_groups))
+
+
+spawn_indexes = []
+expanded_table = []
+
+rotation_groups = {}
+
+last = None
+sub_index = 0
+for index,(
+    opcode,
+    syntax,
+    mode_index,
+    instruction,
+    group_index,
+) in enumerate(sorted_table):
+    opcode = eval(opcode)
+    instruction_group = instruction_groups[instruction]
+    if group_index != last:
+        spawn_indexes.append((index, instruction))
         sub_index = 0
-        last = instruction
-    groups.setdefault(instruction, []).append(index)
+        last = group_index
+    rotation_groups.setdefault(group_index, []).append(index)
     expanded_table.append(
-        (index, mode_index, eval(opcode), instruction, sub_index, description)
+        (
+            index,
+            opcode,
+            syntax,
+            mode_index,
+            instruction,
+            group_index,
+            instruction_group,
+            sub_index,
+        )
     )
     sub_index += 1
-    # print(f"{eval(opcode):<5}{str(description):<12}{str(mode):<5}{instruction}")
+    # logger.debug(f"{opcode:<5}{str(syntax):<12}{mode_index:<5}{syntax}")
 
 
-instruction_indexes = {instruction: index for index, instruction in enumerate(groups)}
+GROUP_LIMIT = 7
+for rotation_group in rotation_groups.values():
+    if (rot_group_len := len(rotation_group)) > GROUP_LIMIT:
+        sys.exit (f"{rot_group_len} exceeds limit of {GROUP_LIMIT}")
 
 
-# >>> {i: (index,description.split()[0],5) for i,(index,description) in enumerate(spawn_indexes)}
-
-spawn_weights = {
-    0: (0, "adc", 15),
-    1: (5, "and", 10),
-    2: (10, "asl", 5),
-    3: (13, "bit", 2),
-    4: (14, "clc", 10),
-    5: (15, "clv", 1),
-    6: (16, "cmp", 3),
-    7: (21, "cpx", 3),
-    8: (23, "cpy", 3),
-    9: (25, "dec", 10),
-    10: (27, "dex", 10),
-    11: (28, "dey", 10),
-    12: (29, "eor", 5),
-    13: (34, "inc", 5),
-    14: (36, "inx", 5),
-    15: (37, "iny", 5),
-    16: (38, "lda", 15),
-    17: (43, "ldx", 15),
-    18: (46, "ldy", 15),
-    19: (49, "lsr", 5),
-    20: (52, "nop", 1),
-    21: (53, "ora", 5),
-    22: (58, "rol", 5),
-    23: (61, "ror", 5),
-    24: (64, "sbc", 15),
-    25: (69, "sec", 5),
-    26: (70, "sta", 5),
-    27: (74, "stx", 15),
-    28: (76, "sty", 15),
-    29: (78, "tax", 15),
-    30: (79, "tay", 5),
-    31: (80, "tsx", 3),
-    32: (81, "txa", 5),
-    33: (82, "tya", 5),
-}
-
-import sys
-validation = sum(repeats for id,instruction,repeats in spawn_weights.values())
+validation = sum(weight for group_index, weight, pattern in indexed_instructions)
 if validation != 256:
     sys.exit(f"Piece ID repeats must add up to 256.  This adds up to {validation}")
 
-weight_list = [repeats for id,instruction,repeats in spawn_weights.values()]
+weight_list = [weight for group_index, weight, pattern in indexed_instructions]
 
-table = []
+weight_table = []
 current_total = 0
 for weight in weight_list:
-    current_total+=weight
-    table.append(current_total)
+    current_total += weight
+    weight_table.append(current_total)
 
-table.pop()
+weight_table.pop()
 
+groups_shifted_up = {k: [v[-1]] + v[:-1] for k, v in rotation_groups.items()}
+groups_shifted_down = {k: v[1:] + [v[0]] for k, v in rotation_groups.items()}
 
-from pprint import pp
-
-groups_shifted_up = {k: [v[-1]] + v[:-1] for k, v in groups.items()}
-groups_shifted_down = {k: v[1:] + [v[0]] for k, v in groups.items()}
-
-pp(expanded_table)
-pp(instruction_indexes)
-pp(groups_shifted_up)
-pp(groups_shifted_down)
+# pprint.pprint(expanded_table)
+# pprint.pprint(groups_shifted_up)
+# pprint.pprint(groups_shifted_down)
 
 
 def signed(num):
@@ -255,15 +308,23 @@ boardInitializeData:
 """
 
 
-
-
 compressed_rotation = []
-for index, addressing, opcode, instruction, sub_index, description in expanded_table:
-    previous = groups_shifted_up[instruction][sub_index]
-    next_ = groups_shifted_down[instruction][sub_index]
+for (
+    index,
+    opcode,
+    syntax,
+    mode_index,
+    instruction,
+    group_index,
+    instruction_group,
+    sub_index,
+) in expanded_table:
+    previous = groups_shifted_up[group_index][sub_index]
+    next_ = groups_shifted_down[group_index][sub_index]
 
     prev_diff = (index - previous) * -1
     next_diff = (index - next_) * -1
+    logger.debug(f'{prev_diff=} {next_diff=}')
 
     prev_signed_shifted = (signed(prev_diff) << 4) & 0xF0
     next_signed_masked = signed(next_diff) & 0x0F
@@ -275,48 +336,57 @@ for index, addressing, opcode, instruction, sub_index, description in expanded_t
 
 
 with open("./src/hacks/twotris_tables.asm", "w+") as file:
+
+    print(f"SPAWN_LENGTH := ${len(spawn_indexes)-2:02x}\n\n\n", file=file)
+
     print(f"twotrisOpcodeTable:", file=file)
     for (
         index,
-        addressing,
         opcode,
+        syntax,
+        mode_index,
         instruction,
+        group_index,
+        instruction_group,
         sub_index,
-        description,
     ) in expanded_table:
-        print(f"    .byte ${opcode:02x} ; {description}", file=file)
+        print(f"    .byte ${opcode:02x} ; {syntax}", file=file)
     print("\n", file=file)
 
     print("twotrisInstructionWeightTable:", file=file)
-    for i in range(0,len(spawn_weights),8):
-        print("    .byte  " + ",".join(f"${j:02x}" for j in table[i:i+8]), file=file)
+    for i in range(0, len(weight_table), 8):
+        print(
+            "    .byte  " + ",".join(f"${j:02x}" for j in weight_table[i : i + 8]), file=file
+        )
     print("\n", file=file)
-
-
 
     print(f"twotrisAddressingTable:", file=file)
     for (
         index,
-        addressing,
         opcode,
+        syntax,
+        mode_index,
         instruction,
+        group_index,
+        instruction_group,
         sub_index,
-        description,
     ) in expanded_table:
-        print(f"    .byte ${addressing:02x} ; {description}", file=file)
+        print(f"    .byte ${mode_index:02x} ; {syntax}", file=file)
     print("\n", file=file)
 
     print(f"twotrisInstructionGroups:", file=file)
     for (
         index,
-        addressing,
         opcode,
+        syntax,
+        mode_index,
         instruction,
+        group_index,
+        instruction_group,
         sub_index,
-        description,
     ) in expanded_table:
         print(
-            f"    .byte ${instruction_indexes[instruction]:02x} ; {description}",
+            f"    .byte ${instruction_group:02x} ; {syntax}",
             file=file,
         )
     print("\n", file=file)
@@ -324,18 +394,20 @@ with open("./src/hacks/twotris_tables.asm", "w+") as file:
     print(f"CompressedRotation:", file=file)
     for (
         index,
-        addressing,
         opcode,
+        syntax,
+        mode_index,
         instruction,
+        group_index,
+        instruction_group,
         sub_index,
-        description,
     ) in expanded_table:
-        print(f"    .byte ${compressed_rotation[index]:02x} ; {description}", file=file)
+        print(f"    .byte ${compressed_rotation[index]:02x} ; {syntax}", file=file)
     print("\n", file=file)
 
     print(f"spawnInstructions:", file=file)
-    for index, description in spawn_indexes:
-        print(f"    .byte ${index:02x} ; {description}", file=file)
+    for index, syntax in spawn_indexes:
+        print(f"    .byte ${index:02x} ; {syntax}", file=file)
     print("\n", file=file)
 
     print(f"fourBitTo8Bit:", file=file)
@@ -347,9 +419,9 @@ with open("./src/hacks/twotris_tables.asm", "w+") as file:
     print("\n", file=file)
 
     print(f"twotrisInstructionStrings:", file=file)
-    for instruction in groups:
-        chars = ",".join(f'${ord(c)-55:02x}' for c in instruction.upper())
-        print(f'    .byte {chars} ; {instruction}', file=file)
+    for instruction in instruction_groups:
+        chars = ",".join(f"${ord(c)-55:02x}" for c in instruction.upper())
+        print(f"    .byte {chars} ; {instruction}", file=file)
     print("\n", file=file)
 
     print(extra_tables, file=file)
@@ -360,4 +432,3 @@ with open("./src/hacks/twotris_tables.asm", "w+") as file:
     # for _ in range(784):
     #     print("    .byte $00", file=file)
     # print("\n", file=file)
-

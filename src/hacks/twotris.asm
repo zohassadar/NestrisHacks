@@ -701,7 +701,7 @@ generateNumbers:
 
 
 pickRandomInstruction:
-        ldx     #$20
+        ldx     #SPAWN_LENGTH
         lda     rng_seed
         adc     frameCounter
 @nextPiece:
