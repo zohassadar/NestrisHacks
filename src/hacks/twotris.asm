@@ -12,6 +12,7 @@ SOUND_EFFECT_LOCK := $07
 SOUND_EFFECT_LINE_CLEAR := $0A
 
 PLANT_TIMER :=  $0A
+FRAMES_INC_MASK := $0F
 
 EMPTY   :=      $EF
 
@@ -80,9 +81,8 @@ playstatePlaying:
         ror
         bcc     @dontDecrement
         dec     twotrisFallTimer
-@dontDecrement:
         beq     @goDownAnyways
-
+@dontDecrement:
         lda     #BUTTON_DOWN
         jsr     menuThrottle
         beq     @downNotPressedOrIsThrottled
@@ -758,11 +758,8 @@ twotrisInitialize:
         sta     player1_vramRow
 
         ; clear the slate
-        ldx     #$05
-        ldy     #$05
-        lda     #$00
-        jsr     memset_page
 
+        jsr     resetAllVars
         ; set up variables here
         lda     #$01
         sta     twotrisState
@@ -774,6 +771,10 @@ twotrisInitialize:
         sta     twotrisPpuMask
         lda     #$60
         sta     twotrisRts
+        lda     #FRAMES_INC_MASK
+        sta     twotrisCounterMask
+        lda     frameCounter
+        sta     twotrisCounter
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
         lda     #$FF
@@ -793,6 +794,7 @@ twotrisInitialize:
 
 
         jsr     setFallSpeed
+        sta     twotrisFallTimer
 
         jsr     newNextInstruction
         jsr     newNextInstruction
@@ -813,7 +815,6 @@ setFallSpeed:
         clc
         adc     framesPerDropTable,x
         sta     twotrisFallSpeed
-        sta     twotrisFallTimer
         rts
 
 
@@ -861,12 +862,6 @@ twotris:
 @initialized:
         jsr     fulfillRenderQueue
 
-; Use this to keep digit counter constantly moving and displayed
-        lda     #$0F
-        bit     frameCounter
-        bne     @skipIncrement
-        inc     twotrisCounter
-@skipIncrement:
         lda     #$22
         sta     PPUADDR
         lda     #$BA
@@ -893,6 +888,25 @@ twotris:
         sta     twotrisOamIndex
         sta     renderQueueIndex
         ; --------
+
+; Use this to keep digit counter constantly moving and displayed
+        lda     heldButtons_player1
+        and     #BUTTON_DOWN
+        bne     @skipSkipping
+        lda     twotrisCounterMask
+        bit     frameCounter
+        bne     @skipIncrement
+@skipSkipping:
+        lda     twotrisCounterDirection
+        ror
+        bcs     @decrement
+        inc     twotrisCounter
+        jmp     @skipIncrement
+@decrement:
+        dec     twotrisCounter
+        jmp     @skipIncrement
+@skipIncrement:
+        ; --------
         jsr     pollControllerButtons
         jsr     jumpToGamePlayState
         jsr     checkForReset
@@ -901,7 +915,6 @@ twotris:
         jsr     generateNumbers
         jsr     checkForNextBoxToggle
         jsr     stageNextBox
-        jsr     setFallSpeed
         lda     twotrisReset
         beq     twoTrisNmiTail
         jmp     reset

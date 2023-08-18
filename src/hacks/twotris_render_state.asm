@@ -350,3 +350,56 @@ renderRow:
         cpy     twotrisTemp
         bne     @nextRenderChar
 @ret:   rts
+
+
+resetAllVars:
+        lda     #$00
+        ; sta     twotrisState
+        ; sta     twotrisPpuCtrl
+        ; sta     twotrisPpuMask
+        ; sta     twotrisMmcControl
+        sta     twotrisVramRow
+        sta     twotrisAnimationColumn
+        sta     twotrisOamIndex
+        ; sta     twotrisPreviousAutorepeatY
+        ; sta     twotrisTemp
+        ; sta     twotrisPauseInitialized
+        sta     twotrisCurrentRow
+        sta     menuMoveThrottle
+        sta     menuThrottleTmp
+        sta     twotrisCurrentPiece
+        sta     twotrisCurrentDigit
+        sta     twotrisNextPiece
+        sta     twotrisA
+        sta     twotrisX
+        sta     twotrisY
+        sta     twotrisFlags
+        sta     twotrisPauseStartLow
+        sta     twotrisPauseStartHigh
+        sta     twotrisPauseDigit
+        sta     twotrisPauseStartHigh0
+        sta     twotrisPauseStartHigh1
+        sta     twotrisPauseStartLow0
+        sta     twotrisPauseStartLow1
+        ; sta     twotrisInstruction
+        ; sta     twotrisRts
+        ; sta     twotrisPlantTimer
+        sta     twotrisPreviousRow
+        sta     renderQueueIndex
+        ; sta     renderedRow
+        ; sta     renderedType
+        ; sta     renderedInstruction
+        ; sta     renderedValue
+        sta     twotrisDisplayNext
+        sta     twotrisLineCount
+        ; sta     twotrisCounter
+        ; sta     twotrisFallSpeed
+        ; sta     twotrisFallTimer
+        sta     twotrisCounterMask
+        sta     twotrisCounterDirection
+        ldx     #$50
+@clearPlayfieldAndRender:
+        sta     playfieldForSecondPlayer,x
+        inx
+        bne     @clearPlayfieldAndRender
+        rts
