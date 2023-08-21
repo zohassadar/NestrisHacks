@@ -89,9 +89,9 @@ twotrisOpcodeTable:
 
 
 twotrisInstructionWeightTable:
-    .byte  $0f,$1e,$2d,$2f,$33,$37,$3b,$54
-    .byte  $63,$7c,$8b,$9a,$a9,$ab,$ba,$c9
-    .byte  $d8,$e7
+    .byte  $07,$0e,$15,$16,$17,$18,$19,$3c
+    .byte  $43,$66,$74,$82,$89,$8a,$91,$98
+    .byte  $bb,$de
 
 
 twotrisAddressingTable:

@@ -11,8 +11,8 @@ menuThrottleRepeat := $4
 SOUND_EFFECT_LOCK := $07
 SOUND_EFFECT_LINE_CLEAR := $0A
 
-PLANT_TIMER :=  $0A
-FRAMES_INC_MASK := $0F
+PLANT_TIMER :=  $03
+FRAMES_INC_MASK := $07
 
 EMPTY   :=      $EF
 
@@ -149,7 +149,7 @@ playstatePlaying:
         lda     twotrisInstructionGroups,y
         sta     renderedInstruction
 
-        lda     twotrisCurrentDigit
+        lda     twotrisCounter
         sta     renderedValue
 
         lda     twotrisAddressingTable,y
@@ -164,7 +164,7 @@ playstateLocking:
         ldy     twotrisCurrentRow
         lda     twotrisCurrentPiece
         sta     twotrisPlayfield,y
-        lda     twotrisCurrentDigit
+        lda     twotrisCounter
         sta     twotrisDigits,y
         lda     #PLANT_TIMER
         sta     twotrisPlantTimer
@@ -746,13 +746,15 @@ pickRandomInstruction:
 
 
 twotrisInitialize:
+        ; "Bit 0-lines 1-level 2-score 6-stats 7-high score entry letter"; };
         ; store renderVars
-        lda     outOfDateRenderFlags
-        pha
+        ; lda     outOfDateRenderFlags
+        ; pha
         ; do last render so colors/score/lines/level show up
         jsr     render_mode_play_and_demo
         ; restore render vars
-        pla
+        ; pla
+        lda #%11000000
         sta     outOfDateRenderFlags
         lda     #$20
         sta     player1_vramRow
@@ -822,8 +824,8 @@ newNextInstruction:
         lda     #$00
         sta     twotrisCurrentRow
 
-        lda     twotrisCounter
-        sta     twotrisCurrentDigit
+        ; lda     twotrisCounter
+        ; sta     twotrisCurrentDigit
 
         lda     twotrisNextPiece
         sta     twotrisCurrentPiece
@@ -889,22 +891,27 @@ twotris:
         sta     renderQueueIndex
         ; --------
 
+
+
 ; Use this to keep digit counter constantly moving and displayed
         lda     heldButtons_player1
         and     #BUTTON_DOWN
+        lsr
+        sta     generalCounter
+        lda     twotrisCounterDirection
+        and     #$01
+        ora     generalCounter
+        tax
+        and     #$02
         bne     @skipSkipping
         lda     twotrisCounterMask
         bit     frameCounter
         bne     @skipIncrement
 @skipSkipping:
-        lda     twotrisCounterDirection
-        ror
-        bcs     @decrement
-        inc     twotrisCounter
-        jmp     @skipIncrement
-@decrement:
-        dec     twotrisCounter
-        jmp     @skipIncrement
+        lda     twotrisCounter
+        clc
+        adc     frameJumpTable,x
+        sta     twotrisCounter
 @skipIncrement:
         ; --------
         jsr     pollControllerButtons
@@ -927,3 +934,6 @@ twoTrisNmiTail:
         rti
 
 
+frameJumpTable:
+        ;00,01,10,11
+        .byte $01,$FF,$02,$FE
