@@ -22,7 +22,9 @@ anydasARECharge: .res $1            ; $000F
 set_seed_input: .res $3          ; $0010
 set_seed: .res $3                ; $0013
 
-.res $0D
+displayedNextPiece: .res 1       ; $0016
+
+.res $0C
 
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034

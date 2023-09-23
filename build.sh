@@ -15,6 +15,7 @@ hacks=(
     "upsidedown"
     "wallhack2"
     "warp7"
+    "wrongnext"
     )
 
 variations=(
@@ -190,6 +191,11 @@ get_flag_opts (){
                     echo "Warp 7 Enabled"
                     buildflags+=("-D WARP7")
                     name_modifiers+=("W7")
+                    ;;
+                "wrongnext")
+                    echo "Sometimes Wrong Nextbox"
+                    buildflags+=("-D SOMETIMES_WRONG_NEXTBOX")
+                    name_modifiers+=("Wn")
                     ;;
                 *)
                     echo "${OPTARG} is an invalid hack"

@@ -142,6 +142,45 @@ unreferenced_data4:
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
+.ifdef SOMETIMES_WRONG_NEXTBOX
+pickNextAndPossiblyDisplayWrongNext:
+        jsr chooseNextTetrimino
+        sta nextPiece
+        lda rng_seed
+        and #$07
+        bne @showCorrectPiece
+        lda rng_seed
+        pha
+        lda rng_seed+1
+        pha
+        lda frameCounter
+        and #$0F
+        clc
+        adc #$01
+        sta generalCounter
+@rollLoop:
+        ldx #$17
+        ldy #$02
+        jsr generateNextPseudorandomNumber
+        dec generalCounter
+        bne @rollLoop
+        jsr chooseNextTetrimino
+        sta displayedNextPiece
+        pla
+        sta rng_seed+1
+        pla
+        sta rng_seed
+        jmp @putRealNextInA
+@showCorrectPiece:
+        lda nextPiece
+        sta displayedNextPiece
+@putRealNextInA:
+        lda nextPiece
+        rts
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$FF
+.else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -152,6 +191,7 @@ unreferenced_data4:
         .byte   $FF,$BF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+.endif
 
 .ifdef WARP7
 warp7ButtonHeldDown:
