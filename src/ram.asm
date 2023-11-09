@@ -10,13 +10,13 @@ patchToPpuAddr: .res $1             ; $0014
 rng_seed: .res $2	                ; $0017
 spawnID: .res $1	                ; $0019
 spawnCount:	.res $1	                ; $001A
-.res $1
 
 ; Anydas
-anydasMenu: .res $1                 ; $000C
-anydasDASValue: .res $1             ; $000D
-anydasARRValue: .res $1             ; $000E
-anydasARECharge: .res $1            ; $000F
+anydasInit: .res $1            ; $001B
+anydasMenu: .res $1                 ; $001C
+anydasDASValue: .res $1             ; $001D
+anydasARRValue: .res $1             ; $001E
+anydasARECharge: .res $1            ; $001F
 
 ; SPS
 set_seed_input: .res $3          ; $0010

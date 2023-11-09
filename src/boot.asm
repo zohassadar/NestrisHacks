@@ -104,13 +104,8 @@ initRamContinued:
         sta     unused_0E
         lda     #$00
         sta     gameModeState
-.ifdef ANYDAS
-        lda     #$01
-        sta     gameMode
-.else
         sta     gameMode
         lda     #$01
-.endif
         sta     numberOfPlayers
         lda     #$00
         sta     frameCounter+1

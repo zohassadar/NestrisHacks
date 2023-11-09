@@ -9,13 +9,15 @@ renderAnydasMenu:
         sta PPUADDR
         lda #$70
         sta PPUADDR
-        lda anydasDASValue
+        ldx anydasDASValue
+        lda byteToBcdTable,x
         jsr twoDigsToPPU
         lda #$26
         sta PPUADDR
         lda #$90
         sta PPUADDR
-        lda anydasARRValue
+        ldx anydasARRValue
+        lda byteToBcdTable,x
         jsr twoDigsToPPU
         lda #$26
         sta PPUADDR
@@ -72,46 +74,76 @@ renderAnydasMenu:
 
 anydasControllerInput:
         jsr pollController
+        lda anydasInit
+        bne @initialized
+        lda #$10
+        sta anydasDASValue
+        lda #$06
+        sta anydasARRValue
+        inc anydasInit
+@initialized:
         lda gameMode
         cmp #$01
-        bne @ret3
-        lda newlyPressedButtons_player1
-        and #$0F
-        beq @ret3
-        and #$0C
-        beq @upDownNotPressed
-        and #$04
+        beq @getInputs
+        rts
+@getInputs:
+
+        lda #BUTTON_DOWN
+        jsr menuThrottle
         beq @downNotPressed
+        lda #$01
+        sta soundEffectSlot1Init
         inc anydasMenu
         lda anydasMenu
         cmp #$03
-        bne @ret1
+        bne @downNotPressed
         lda #$00
         sta anydasMenu
-@ret1:  rts
 @downNotPressed:
+
+
+        lda #BUTTON_UP
+        jsr menuThrottle
+        beq @upNotPressed
+        lda #$01
+        sta soundEffectSlot1Init
         dec anydasMenu
-        lda anydasMenu
-        cmp #$FF
-        bne @ret2
+        bpl @upNotPressed
         lda #$02
         sta anydasMenu
-@ret2:
-        rts
-@upDownNotPressed:
+@upNotPressed:
+
+
+        lda #BUTTON_LEFT
+        jsr menuThrottle
+        beq @leftNotPressed
+        lda #$01
+        sta soundEffectSlot1Init
         ldx anydasMenu
-        cpx #$02
-        beq @toggleARECharge
-        lda newlyPressedButtons_player1
-        and #$01
+        dec anydasDASValue,x
+        bpl @leftNotPressed
+        lda anydasUpperLimit,x
+        sta anydasDASValue,x
+        dec anydasDASValue,x
+@leftNotPressed:
+
+
+        lda #BUTTON_RIGHT
+        jsr menuThrottle
         beq @rightNotPressed
-        inc anydasDASValue,X
-        rts
+        lda #$01
+        sta soundEffectSlot1Init
+        ldx anydasMenu
+        inc anydasDASValue,x
+        lda anydasDASValue,x
+        cmp anydasUpperLimit,x
+        bne @rightNotPressed
+        lda #$00
+        sta anydasDASValue,x
 @rightNotPressed:
-        dec anydasDASValue,X
         rts
-@toggleARECharge:
-        lda anydasARECharge
-        eor #$01
-        sta anydasARECharge
-@ret3:  rts
+
+
+anydasUpperLimit:
+        .byte $32,$32,$02
+
