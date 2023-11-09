@@ -32,8 +32,14 @@ render_mode_play_and_demo:
         sta     playfieldAddr+1
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
+.ifdef TALLER
+        jsr     copyPlayfieldRowToVRAM3Times
+        jmp     @carryOn
+.else
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
+.endif
+@carryOn:
         lda     vramRow
         sta     player1_vramRow
 @renderPlayer2Playfield:
@@ -84,9 +90,15 @@ render_mode_play_and_demo:
         lda     numberOfPlayers
         cmp     #$02
         beq     @renderLinesTwoPlayers
+.ifdef TALLER
+        lda     #$20
+        sta     PPUADDR
+        lda     #$53
+.else
         lda     #$20
         sta     PPUADDR
         lda     #$73
+.endif
         sta     PPUADDR
         lda     player1_lines+1
         sta     PPUDATA
@@ -164,10 +176,16 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$40
         beq     @renderTetrisFlashAndSound
+.ifdef TALLER
+        nop
+        ldx     player1_currentPiece
+        lda     tetriminoTypeFromOrientation,x
+.else
         lda     #$00
         sta     tmpCurrentPiece
 @renderPieceStat:
         lda     tmpCurrentPiece
+.endif
         asl     a
         tax
         lda     pieceToPpuStatAddr,x
@@ -178,10 +196,21 @@ render_mode_play_and_demo:
         sta     PPUDATA
         lda     statsByType,x
         jsr     twoDigsToPPU
+.ifdef TALLER
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         inc     tmpCurrentPiece
         lda     tmpCurrentPiece
         cmp     #$07
         bne     @renderPieceStat
+.endif
         lda     outOfDateRenderFlags
         and     #$BF
         sta     outOfDateRenderFlags
@@ -245,12 +274,19 @@ levelDisplayTable:
         .byte   $08,$09,$10,$11,$12,$13,$14,$15
         .byte   $16,$17,$18,$19,$20,$21,$22,$23
         .byte   $24,$25,$26,$27,$28,$29
+.ifdef TALLER
+unusedMultBy10Table:
+.else
 multBy10Table:
+.endif
         .byte   $00,$0A,$14,$1E,$28,$32,$3C,$46
         .byte   $50,$5A,$64,$6E,$78,$82,$8C,$96
         .byte   $A0,$AA,$B4,$BE
 ; addresses
+.ifdef TALLER
+.else
 vramPlayfieldRows:
+.endif
         .word   $20C6,$20E6,$2106,$2126
         .word   $2146,$2166,$2186,$21A6
         .word   $21C6,$21E6,$2206,$2226
@@ -271,7 +307,11 @@ twoDigsToPPU:
 
 copyPlayfieldRowToVRAM:
         ldx     vramRow
+.ifdef TALLER
+        cpx     #$19
+.else
         cpx     #$15
+.endif
         bpl     @ret
         lda     multBy10Table,x
 .ifdef UPSIDEDOWN
@@ -341,7 +381,11 @@ copyPlayfieldRowToVRAM:
         bne     @copyByte
         inc     vramRow
         lda     vramRow
+.ifdef TALLER
+        cmp     #$18
+.else
         cmp     #$14
+.endif
         bmi     @ret
         lda     #$20
         sta     vramRow

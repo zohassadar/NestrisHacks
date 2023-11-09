@@ -34,7 +34,11 @@ stageSpriteForCurrentPiece:
         rol     a
         rol     a
         rol     a
+.ifdef TALLER
+        adc     #$1F
+.else
         adc     #$2F
+.endif
         sta     generalCounter4 ; y position of center block
         lda     currentPiece
 .ifndef UPSIDEDOWN
@@ -85,7 +89,12 @@ stageSpriteForCurrentPiece:
         cmp #$C8 ; Maximum value in upside down mode
         bcc @validYCoordinate
 .else
-        cmp     #$2F ; compares with smallest allowed y position on the screen, not the field
+
+.ifdef TALLER
+        cmp     #$1F
+.else
+        cmp     #$2F
+.endif
         bcs     @validYCoordinate
 .endif
         inc     oamStagingLength

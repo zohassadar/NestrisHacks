@@ -68,7 +68,11 @@ isPositionValid:
         clc
         adc     tetriminoY
         adc     #$02
+.ifdef TALLER
+        cmp     #$1A
+.else
         cmp     #$16
+.endif
         bcs     @invalid
         lda     orientationTable,x
         asl     a

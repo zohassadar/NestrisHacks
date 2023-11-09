@@ -293,7 +293,11 @@ initPlayfieldForTypeB:
 typeBRows:  
         lda     generalCounter
         beq     initCopyPlayfieldToPlayer2
+.ifdef TALLER
+        lda     #$18
+.else
         lda     #$14
+.endif
         sec
         sbc     generalCounter
         sta     generalCounter2  ; row (20 - generalCounter)
@@ -379,7 +383,11 @@ endTypeBInit:
         rts
 
 typeBBlankInitCountByHeightTable:
+.ifdef TALLER
+        .byte   $F0,$D2,$BE,$A0,$8C,$78
+.else
         .byte   $C8,$AA,$96,$78,$64,$50
+.endif
 rngTable:
         .byte   $EF,$7B,$EF,$7C,$7D,$7D,$EF
         .byte   $EF
