@@ -111,7 +111,11 @@ playState_lockTetrimino:
 
 playState_updateGameOverCurtain:
         lda     curtainRow
+.ifdef TALLER
+        cmp     #$18
+.else
         cmp     #$14
+.endif
         beq     @curtainFinished
         lda     frameCounter
         and     #$03

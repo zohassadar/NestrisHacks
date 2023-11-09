@@ -100,7 +100,11 @@ game_type_menu_nametable:
 level_menu_nametable:
         .incbin "nametables/level_menu_nametable.bin"
 game_nametable:
+.ifdef TALLER
+        .incbin "nametables/taller_game_nametable.bin"
+.else
         .incbin "nametables/game_nametable.bin"
+.endif
 enter_high_score_nametable:
         .incbin "nametables/enter_high_score_nametable.bin"
 high_scores_nametable:
@@ -121,6 +125,11 @@ type_a_ending_nametable:
 
 .segment        "unreferenced_data1": absolute
 unreferenced_data1:
+
+.ifdef TALLER
+        .include "hacks/taller.asm"
+.endif
+
 
 .ifdef ANYDAS
         .include "hacks/anydas.asm"

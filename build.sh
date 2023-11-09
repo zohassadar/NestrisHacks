@@ -12,6 +12,7 @@ hacks=(
     "rando"
     "scrolltris"
     "sps"
+    "taller"
     "upsidedown"
     "wallhack2"
     "warp7"
@@ -175,6 +176,12 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D SPS")
                     name_modifiers+=("Sps")
+                    ;;
+                "taller")
+                    echo "TALLER ENABLED"
+                    omit_ud1
+                    buildflags+=("-D TALLER")
+                    name_modifiers+=("Tall")
                     ;;
                 "upsidedown")
                     echo "Upside Down enabled"
