@@ -130,6 +130,9 @@ unreferenced_data1:
         .include "hacks/taller.asm"
 .endif
 
+.if .defined(SPS) .or .defined(ANYDAS)
+        .include "hacks/menudas.asm"
+.endif
 
 .ifdef ANYDAS
         .include "hacks/anydas.asm"
