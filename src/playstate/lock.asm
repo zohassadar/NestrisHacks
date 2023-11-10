@@ -110,15 +110,23 @@ playState_lockTetrimino:
 @ret:   rts
 
 playState_updateGameOverCurtain:
+.ifndef TOURNAMENT
         lda     curtainRow
-.ifdef TALLER
+  .ifdef TALLER
         cmp     #$18
-.else
+  .else
         cmp     #$14
-.endif
+  .endif
         beq     @curtainFinished
         lda     frameCounter
         and     #$03
+.else
+        lda     newlyPressedButtons_player1
+        and     #BUTTON_START
+        beq     @ret
+        jmp     @endingAnimationCheck
+        nop
+.endif
         bne     @ret
         ldx     curtainRow
         bmi     @incrementCurtainRow
@@ -149,11 +157,22 @@ playState_updateGameOverCurtain:
         lda     numberOfPlayers
         cmp     #$02
         beq     @exitGame
+@endingAnimationCheck:
         lda     player1_score+2
         cmp     #$03
+.ifndef TOURNAMENT
         bcc     @checkForStartButton
         lda     #$80
         jsr     sleep_for_a_vblanks
+.else
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.endif
         jsr     endingAnimation_maybe
         jmp     @exitGame
 

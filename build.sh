@@ -13,6 +13,7 @@ hacks=(
     "scrolltris"
     "sps"
     "taller"
+    "tourney"
     "upsidedown"
     "wallhack2"
     "warp7"
@@ -182,6 +183,12 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D TALLER")
                     name_modifiers+=("Tall")
+                    ;;
+                "tourney")
+                    echo "Tournament Enabled"
+                    omit_ud1
+                    buildflags+=("-D TOURNAMENT")
+                    name_modifiers+=("Trn")
                     ;;
                 "upsidedown")
                     echo "Upside Down enabled"

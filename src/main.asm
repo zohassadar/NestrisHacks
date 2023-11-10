@@ -130,6 +130,11 @@ unreferenced_data1:
         .include "hacks/taller.asm"
 .endif
 
+.ifdef TOURNAMENT
+        .include "hacks/tourney.asm"
+.endif
+
+
 .if .defined(SPS) .or .defined(ANYDAS)
         .include "hacks/menudas.asm"
 .endif

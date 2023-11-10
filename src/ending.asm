@@ -549,7 +549,11 @@ LA926:  jsr     updateAudioWaitForNmiAndDisablePpuRendering
         lda     #$0A
         jsr     setMusicTrack
         lda     #$80
+.ifdef TOURNAMENT
+        jmp     render_endingSkippable_A
+.else
         jsr     render_endingUnskippable
+.endif
 LA95D:  jsr     render_ending
         jsr     updateAudioWaitForNmiAndResetOamStaging
         lda     ending_customVars
