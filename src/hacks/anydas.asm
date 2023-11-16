@@ -147,3 +147,39 @@ anydasControllerInput:
 anydasUpperLimit:
         .byte $32,$32,$02
 
+
+checkFor0Arr:
+        lda     anydasARRValue
+        beq     @zeroArr
+        jmp     buttonHeldDown
+@zeroArr:
+        lda     heldButtons
+        and     #BUTTON_RIGHT
+        beq     @checkLeftPressed
+@shiftRight:
+        inc     tetriminoX
+        jsr     isPositionValid
+        bne     @shiftBackToLeft
+        lda     #$03
+        sta     soundEffectSlot1Init
+        jmp     @shiftRight
+@checkLeftPressed:
+        lda     heldButtons
+        and     #BUTTON_LEFT
+        beq     @leftNotPressed
+@shiftLeft:
+        dec     tetriminoX
+        jsr     isPositionValid
+        bne     @shiftBackToRight
+        lda     #$03
+        sta     soundEffectSlot1Init
+        jmp     @shiftLeft
+@shiftBackToLeft:
+        dec     tetriminoX
+        dec     tetriminoX
+@shiftBackToRight:
+        inc     tetriminoX
+        lda     anydasDASValue
+        sta     autorepeatX
+@leftNotPressed:
+        rts

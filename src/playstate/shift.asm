@@ -4,45 +4,36 @@ shift_tetrimino:
         sta     originalY
         lda     heldButtons
         and     #BUTTON_DOWN
-        bne     @ret
+        bne     shift_ret
         lda     newlyPressedButtons
         and     #BUTTON_RIGHT+BUTTON_LEFT
         bne     @resetAutorepeatX
         lda     heldButtons
         and     #BUTTON_RIGHT+BUTTON_LEFT
-        beq     @ret
+        beq     shift_ret
 .ifdef ANYDAS
         dec     autorepeatX
         lda     autorepeatX
         cmp     #$01
-        bpl     @ret
+        bpl     shift_ret
         lda     anydasARRValue
         sta     autorepeatX
-.ifdef WARP7
-        jmp     warp7ButtonHeldDown
-.else
-        jmp     @buttonHeldDown
-.endif
+        jmp     checkFor0Arr
 @resetAutorepeatX:
         lda     anydasDASValue
 .else
         inc     autorepeatX
         lda     autorepeatX
         cmp     #$10
-        bmi     @ret
+        bmi     shift_ret
         lda     #$0A
         sta     autorepeatX
-.ifdef WARP7
-        jmp     warp7ButtonHeldDown
-.else
-        jmp     @buttonHeldDown
-.endif
-
+        jmp     buttonHeldDown
 @resetAutorepeatX:
         lda     #$00
 .endif
         sta     autorepeatX
-@buttonHeldDown:
+buttonHeldDown:
         lda     heldButtons
 .ifdef UPSIDEDOWN
         and     #BUTTON_LEFT
@@ -59,7 +50,7 @@ shift_tetrimino:
         bne     @restoreX
         lda     #$03
         sta     soundEffectSlot1Init
-        jmp     @ret
+        jmp     shift_ret
 
 @notPressingRight:
         lda     heldButtons
@@ -68,7 +59,7 @@ shift_tetrimino:
 .else           
         and     #BUTTON_LEFT
 .endif     
-        beq     @ret
+        beq     shift_ret
         dec     tetriminoX
 .ifdef WALLHACK2
         jsr     testLeftShiftAndValidate
@@ -78,7 +69,7 @@ shift_tetrimino:
         bne     @restoreX
         lda     #$03
         sta     soundEffectSlot1Init
-        jmp     @ret
+        jmp     shift_ret
 
 @restoreX:
         lda     originalY
@@ -89,4 +80,5 @@ shift_tetrimino:
         lda     #$10
 .endif
         sta     autorepeatX
-@ret:   rts
+shift_ret:   
+        rts
