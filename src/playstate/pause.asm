@@ -32,20 +32,35 @@ gameModeState_startButtonHandling:
         lda     #$00
         sta     renderMode
         jsr     updateAudioAndWaitForNmi
+.ifdef TOURNAMENT
+        lda     currentPpuMask
+.else
         lda     #$16
+.endif
         sta     PPUMASK
         lda     #$FF
         ldx     #$02
         ldy     #$02
         jsr     memset_page
 @pauseLoop:
+.ifdef TOURNAMENT
+        lda     #PAUSE_SPRITE_X
+        sta     spriteXOffset
+        lda     #PAUSE_SPRITE_Y
+        sta     spriteYOffset
+.else
         lda     #$70
         sta     spriteXOffset
         lda     #$77
         sta     spriteYOffset
+.endif
         lda     #$05
         sta     spriteIndexInOamContentLookup
+.ifdef TOURNAMENT
+        jsr     stageSpritesThenloadSprites
+.else
         jsr     loadSpriteIntoOamStaging
+.endif
         lda     newlyPressedButtons_player1
         cmp     #$10
         beq     @resume

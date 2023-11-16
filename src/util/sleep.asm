@@ -1,14 +1,28 @@
 sleep_for_14_vblanks:
         lda     #$14
+.ifndef TOURNAMENT
         sta     sleepCounter
-@loop:  jsr     updateAudioWaitForNmiAndResetOamStaging
+sleep14loop:  
+        jsr     updateAudioWaitForNmiAndResetOamStaging
         lda     sleepCounter
-        bne     @loop
+        bne     sleep14loop
         rts
-
+.endif
 sleep_for_a_vblanks:
         sta     sleepCounter
-@loop:  jsr     updateAudioWaitForNmiAndResetOamStaging
+sleepALoop:  
+        jsr     updateAudioWaitForNmiAndResetOamStaging
+.ifdef TOURNAMENT
+        lda     newlyPressedButtons_player1
+        and     #BUTTON_START
+        bne     sleepAReturn
+        nop
+        nop
+        nop
+        nop
+.endif
         lda     sleepCounter
-        bne     @loop
+        bne     sleepALoop
+sleepAReturn:
         rts
+

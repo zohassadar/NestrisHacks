@@ -170,10 +170,21 @@ L9C84:  lda     score+2
         and     #$F0
         cmp     #$A0
         bcc     L9C94
+.ifdef TOURNAMENT
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
         lda     #$99
         sta     score
         sta     score+1
         sta     score+2
+.endif
 L9C94:  dec     generalCounter
         bne     L9C37
         lda     outOfDateRenderFlags

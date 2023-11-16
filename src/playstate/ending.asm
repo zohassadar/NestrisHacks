@@ -91,7 +91,11 @@ L9EA4:  jsr     bulkCopyToPpu
         lda     #$0A
         jsr     setMusicTrack
         lda     #$80
+.ifdef TOURNAMENT
+        jsr     render_endingSkippable_B
+.else
         jsr     render_endingUnskippable
+.endif
         lda     player1_score
         sta     $DC
         lda     player1_score+1
@@ -105,7 +109,11 @@ L9EA4:  jsr     bulkCopyToPpu
         sta     player1_score+1
         sta     player1_score+2
         lda     #$40
+.ifdef TOURNAMENT
+        jsr     render_endingSkippable_B
+.else
         jsr     render_endingUnskippable
+.endif
         lda     generalCounter4
         beq     L9F12
 L9EE8:  dec     generalCounter4
@@ -122,11 +130,19 @@ L9EFA:  lda     generalCounter4
         lda     #$01
         sta     soundEffectSlot1Init
         lda     #$02
+.ifdef TOURNAMENT
+        jsr     render_endingSkippable_B
+.else
         jsr     render_endingUnskippable
+.endif
         lda     generalCounter4
         bne     L9EE8
         lda     #$40
+.ifdef TOURNAMENT
+        jsr     render_endingSkippable_B
+.else
         jsr     render_endingUnskippable
+.endif
 L9F12:  lda     generalCounter5
         beq     L9F45
 L9F16:  dec     generalCounter5
@@ -143,18 +159,39 @@ L9F28:  lda     generalCounter5
         lda     #$01
         sta     soundEffectSlot1Init
         lda     #$02
+.ifdef TOURNAMENT
+        jsr     render_endingSkippable_B
+.else
         jsr     render_endingUnskippable
+.endif
         lda     generalCounter5
         bne     L9F16
         lda     #$02
         sta     soundEffectSlot1Init
         lda     #$40
+.ifdef TOURNAMENT
+        jsr     render_endingSkippable_B
+.else
         jsr     render_endingUnskippable
-L9F45:  jsr     render_ending
+.endif
+L9F45:
+.ifdef TOURNAMENT
+@loop:
+        jsr     render_endingSkippable_B
+        lda     player2_score
+        beq     @loop
+        nop
+        nop
+        nop
+        nop
+        nop
+.else
+        jsr     render_ending
         jsr     updateAudioWaitForNmiAndResetOamStaging
         lda     newlyPressedButtons_player1
         cmp     #$10
         bne     L9F45
+.endif
         lda     player1_levelNumber
         sta     levelNumber
         lda     $DC
