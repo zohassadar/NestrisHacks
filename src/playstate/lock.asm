@@ -154,25 +154,30 @@ playState_updateGameOverCurtain:
 @ret:   rts
 
 @curtainFinished:
+.ifdef TOURNAMENT
+@endingAnimationCheck:
+        lda     newlyPressedButtons_player1
+        cmp     #$10
+        bne     @startNotPressed
+        lda     gameType
+        bne     @bGameOrUnder30K
+        lda     player1_score+2
+        cmp     #$03
+        bcc     @bGameOrUnder30K
+        jsr     endingAnimation_maybe
+@bGameOrUnder30K:
+        jmp     @exitGame
+@startNotPressed:  rts
+        .byte $00,$00,$00,$00,$00,$00
+.else
         lda     numberOfPlayers
         cmp     #$02
         beq     @exitGame
-@endingAnimationCheck:
         lda     player1_score+2
         cmp     #$03
-.ifndef TOURNAMENT
         bcc     @checkForStartButton
         lda     #$80
         jsr     sleep_for_a_vblanks
-.else
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-.endif
         jsr     endingAnimation_maybe
         jmp     @exitGame
 
@@ -180,6 +185,7 @@ playState_updateGameOverCurtain:
         lda     newlyPressedButtons_player1
         cmp     #$10
         bne     @ret2
+.endif
 @exitGame:
         lda     #$00
         sta     playState
