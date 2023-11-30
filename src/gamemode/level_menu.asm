@@ -41,7 +41,11 @@ gameMode_levelMenu:
         lda     gameType
         bne     @skipTypeBHeightDisplay
         jsr     bulkCopyToPpu
+.ifdef SPS
+        .addr   show_a_on_level_select_screen
+.else
         .addr   height_menu_nametablepalette_patch
+.endif
 @skipTypeBHeightDisplay:
         jsr     showHighScores
         jsr     waitForVBlankAndEnableNmi
@@ -223,7 +227,11 @@ gameMode_levelMenu_handleLevelHeightNavigation:
         dec     startHeight
 @checkAPressed:
         lda     gameType
+.ifdef SPS
+        bmi     @showSelection
+.else
         beq     @showSelection
+.endif
         lda     newlyPressedButtons
         cmp     #$80
         bne     @showSelection
@@ -258,7 +266,11 @@ gameMode_levelMenu_handleLevelHeightNavigation:
         jsr     loadSpriteIntoOamStaging
 @skipShowingSelectionLevel:
         lda     gameType
+.ifdef SPS
+        bmi     @ret
+.else
         beq     @ret
+.endif
         lda     selectingLevelOrHeight
         beq     @showSelectionHeight
         lda     frameCounter

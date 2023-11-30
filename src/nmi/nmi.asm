@@ -32,7 +32,11 @@ returnFromAnydasRender:
         sta     frameCounter+1
         ldx     #$17
         ldy     #$02
+.ifdef SPS
+        jsr     generateNextPseudoAndAlsoBSeed
+.else
         jsr     generateNextPseudorandomNumber
+.endif
 .ifdef SCROLLTRIS
         nop
         nop

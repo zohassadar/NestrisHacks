@@ -203,7 +203,11 @@ gameModeState_initGameState:
         lda     #$47
         sta     outOfDateRenderFlags
         jsr     updateAudioWaitForNmiAndResetOamStaging
+.ifdef SPS
+        jsr     resetBSeed
+.else
         jsr     initPlayfieldIfTypeB
+.endif
         ldx     musicType
         lda     musicSelectionTable,x
         jsr     setMusicTrack
@@ -295,7 +299,11 @@ savePlayer2State:
 
 initPlayfieldIfTypeB:
         lda     gameType
+.ifdef SPS
+        bpl     initPlayfieldForTypeB
+.else
         bne     initPlayfieldForTypeB
+.endif
         jmp     endTypeBInit
 
 initPlayfieldForTypeB:
@@ -320,10 +328,19 @@ typeBRows:
         sta     generalCounter3 ; column
 
 typeBGarbageInRow:  
+.ifdef SPS
+        ldx     bSeedSource
+.else
         ldx     #$17
+.endif
         ldy     #$02
+.ifdef SPS
+        jsr     generateNextPseudoAndAlsoCopy
+        lda     bseedCopy
+.else
         jsr     generateNextPseudorandomNumber
         lda     rng_seed
+.endif
         and     #$07
         tay
         lda     rngTable,y
@@ -341,10 +358,19 @@ typeBGarbageInRow:
         jmp     typeBGarbageInRow
 
 typeBGuaranteeBlank:  
+.ifdef SPS
+        ldx     bSeedSource
+.else
         ldx     #$17
+.endif
         ldy     #$02
+.ifdef SPS
+        jsr     generateNextPseudoAndAlsoCopy
+        lda     bseedCopy
+.else
         jsr     generateNextPseudorandomNumber
         lda     rng_seed
+.endif
         and     #$0F
         cmp     #$0A
         bpl     typeBGuaranteeBlank

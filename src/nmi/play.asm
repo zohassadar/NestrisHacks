@@ -136,6 +136,21 @@ render_mode_play_and_demo:
         lda     numberOfPlayers
         cmp     #$02
         beq     @renderScore
+.ifdef ANYDAS
+        lda     #$22
+        sta     PPUADDR
+        lda     #$B9
+        sta     PPUADDR
+        lda     player1_levelNumber
+        jsr     renderByteBCD
+        sec
+        bcs     @skipthis
+        nop
+        nop
+        nop
+        nop
+@skipthis:
+.else
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         sta     generalCounter
@@ -145,6 +160,7 @@ render_mode_play_and_demo:
         sta     PPUADDR
         lda     generalCounter
         jsr     twoDigsToPPU
+.endif
         jsr     updatePaletteForLevel
         lda     outOfDateRenderFlags
         and     #$FD
@@ -176,7 +192,7 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$40
         beq     @renderTetrisFlashAndSound
-.ifdef TALLER
+.if .defined(TALLER) .or .defined(ANYDAS)
         nop
         ldx     player1_currentPiece
         lda     tetriminoTypeFromOrientation,x
@@ -196,7 +212,7 @@ render_mode_play_and_demo:
         sta     PPUDATA
         lda     statsByType,x
         jsr     twoDigsToPPU
-.ifdef TALLER
+.if .defined(TALLER) .or .defined(ANYDAS)
         nop
         nop
         nop

@@ -9,8 +9,8 @@ drawNonBlinkingMenuSprite:
         lda     levelToSpriteXOffset,x
         sta     spriteXOffset
         jsr     loadSpriteIntoOamStaging
-        lda     gameType
-        beq     @ret
+        ; lda     gameType
+        ; beq     @ret
         ldx     startHeight
         lda     heightToPpuHighAddr,x
         sta     spriteYOffset
@@ -45,6 +45,14 @@ loadSeedCursor:
         asl
         clc
         adc #$27
+        sta generalCounter
+        ldy menuSeedCursorIndex
+        cpy #$07
+        bcc @piecesSeed
+        lda #$30
+        clc
+        adc generalCounter
+@piecesSeed:
         sta oamStaging,x
         inx
         stx oamStagingLength
@@ -54,7 +62,9 @@ loadSeedCursor:
 renderSeedIfNecessary:
         lda gameMode
         cmp #$03
-        bne @continueToRender
+        beq @itsNecessary
+        jmp render
+@itsNecessary:
         lda #$22
         sta PPUADDR
         lda #$06
@@ -65,39 +75,66 @@ renderSeedIfNecessary:
         jsr twoDigsToPPU
         lda set_seed_input+2
         jsr twoDigsToPPU
-        lda #$22
-        sta PPUADDR
-        lda #$0F
-        sta PPUADDR
+        lda #$FF
+        sta PPUDATA
         ldx seedVersion
         bne @drawValidSeed
-        lda #$17
-        sta PPUDATA
         lda #$18
         sta PPUDATA
-        lda #$1B
+        lda #$0F
         sta PPUDATA
-        lda #$16
         sta PPUDATA
-        lda #$0A
-        sta PPUDATA
-        lda #$15
-        sta PPUDATA
-        jmp render
+        bne @drawBSeed
 @drawValidSeed:
         lda #$1F
         sta PPUDATA
         lda seedVersion
         sta PPUDATA
-        lda #$1C
+        lda #$FF
         sta PPUDATA
-        lda #$0E
+@drawBSeed:
+        lda #$FF
         sta PPUDATA
         sta PPUDATA
-        lda #$0D
+        ; ldy gameType
+        ; beq @hideBSeed
+        lda bseed_input
+        jsr twoDigsToPPU
+        lda bseed_input+1
+        jsr twoDigsToPPU
+        lda #$FF
         sta PPUDATA
-@continueToRender:
+        lda #$18
+        sta PPUDATA
+        lda bseed_input
+        bne @validBSeed
+        lda bseed_input+1
+        beq @noBSeed
+        cmp #$01
+        bne @validBSeed
+@noBSeed:
+        lda #$0F
+        sta PPUDATA
+        sta PPUDATA
         jmp render
+@validBSeed:
+        lda startHeight
+        beq @noBSeed
+        lda #$17
+        sta PPUDATA
+        lda #$FF
+        sta PPUDATA
+        jmp render
+; @hideBSeed:
+;         sta PPUDATA
+;         sta PPUDATA
+;         sta PPUDATA
+;         sta PPUDATA
+;         sta PPUDATA
+;         sta PPUDATA
+;         sta PPUDATA
+;         sta PPUDATA
+;         jmp render
 
 drawSeedOnBackground:
         lda seedVersion
@@ -209,6 +246,9 @@ checkValidSeed:
 
 
 
+; seedLimit:
+;         .byte $07,$0B
+
 samePieceSetMenu:
         lda menuSeedCursorIndex
         bne @cursorAlreadySet
@@ -235,6 +275,15 @@ continueSamePieceSetMenu:
         lda newlyPressedButtons_player1
         and #BUTTON_UP
         beq @skipSeedSelect
+        lda menuSeedCursorIndex
+        cmp #$7
+        bcc @randomizePieceSeed
+        lda rng_seed
+        sta bseed_input
+        lda rng_seed+1
+        sta bseed_input+1
+        jmp @randomizeSound
+@randomizePieceSeed:
         lda rng_seed
         sta set_seed_input
         lda rng_seed+1
@@ -243,6 +292,7 @@ continueSamePieceSetMenu:
         eor #$77
         ror
         sta set_seed_input+2
+@randomizeSound:
         lda #$01
         sta soundEffectSlot1Init
         jmp @skipSeedControl
@@ -253,12 +303,19 @@ continueSamePieceSetMenu:
         lda newlyPressedButtons_player1
         and #BUTTON_DOWN
         beq @skipSeedReset
+        lda menuSeedCursorIndex
+        cmp #$7
+        bcc @clearPieceSeed
+        lda #$00
+        sta bseed_input
+        sta bseed_input+1
+        beq @soundEffect
+@clearPieceSeed:
         lda #$00
         sta set_seed_input
         sta set_seed_input+1
         sta set_seed_input+2
-        lda #$01
-        sta menuSeedCursorIndex
+@soundEffect:
         lda #$01
         sta soundEffectSlot1Init
         jmp @skipSeedControl
@@ -271,7 +328,9 @@ continueSamePieceSetMenu:
         lda menuSeedCursorIndex
         cmp #$01
         bne @noSeedLeftWrap
-        lda #7
+        ; ldx gameType
+        ; lda seedLimit,x
+        lda #$0B
         sta menuSeedCursorIndex
 @noSeedLeftWrap:
         dec menuSeedCursorIndex
@@ -283,7 +342,9 @@ continueSamePieceSetMenu:
         sta soundEffectSlot1Init
         inc menuSeedCursorIndex
         lda menuSeedCursorIndex
-        cmp #7
+        ; ldx gameType
+        ; cmp seedLimit,x
+        cmp #$0B
         bne @skipSeedRight
         lda #1
         sta menuSeedCursorIndex
@@ -291,6 +352,7 @@ continueSamePieceSetMenu:
         lda menuSeedCursorIndex
         beq @skipSeedControl
         lda menuSeedCursorIndex
+        sec
         sbc #1
         lsr
         tax ; save seed offset
@@ -366,7 +428,8 @@ continueSamePieceSetMenu:
         jsr checkValidSeed
         jsr loadSeedCursor
         jsr drawNonBlinkingMenuSprite
-        lda #$00
+        lda newlyPressedButtons_player1
+        and #$50 ; allow start & b through
         sta newlyPressedButtons_player1
         rts
 
@@ -382,3 +445,53 @@ resetSetSeedandChooseNextTetrimino:
 .else
         jmp     chooseNextTetrimino
 .endif
+
+resetBSeed:
+        lda     bseed_input
+        bne     @seededGame
+        lda     bseed_input+1
+        beq     @notSeeded
+        cmp     #$01
+        bne     @seededGame
+@notSeeded:
+        lda     startHeight
+        beq     @skipStore
+        ; store rng in input for replay
+        lda     rng_seed
+        sta     bseed_input
+        lda     rng_seed+1
+        sta     bseed_input+1
+@skipStore:
+        lda     #rng_seed
+        bne     @storeAndJump
+@seededGame:
+        lda     bseed_input
+        sta     bseed
+        lda     bseed_input+1
+        sta     bseed+1
+        lda     #bseed
+@storeAndJump:
+        sta     bSeedSource
+        lda     startHeight
+        beq     @ret
+        jmp     initPlayfieldIfTypeB
+@ret:   rts
+
+
+generateNextPseudoAndAlsoBSeed:
+        jsr generateNextPseudorandomNumber
+        ldx #bseed
+        ldy #$02
+        jmp generateNextPseudorandomNumber
+
+
+generateNextPseudoAndAlsoCopy:
+        jsr generateNextPseudorandomNumber
+        ldx bSeedSource
+        lda tmp1,x
+        sta bseedCopy
+        rts
+
+show_a_on_level_select_screen:
+        .byte   $20,$6D,$01,$0A
+        .byte   $FF
