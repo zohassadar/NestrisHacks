@@ -68,11 +68,17 @@ drop_tetrimino:
 @lookupDropSpeed:
         lda     #$01
         ldx     levelNumber
+.ifdef HALF
+        cpx     #$00
+        bcs     @halfSpeed
+.else
         cpx     #$1D
         bcs     @noTableLookup
+.endif
         lda     framesPerDropTable,x
 @noTableLookup:
         sta     dropSpeed
+@halfSpeed:
         lda     fallTimer
         cmp     dropSpeed
         bpl     @drop

@@ -26,7 +26,7 @@ set_seed: .res $3                ; $0024
 displayedNextPiece: .res 1       ; $0027
 
 .res $0B
-
+halfSpeed: .res $1                  ; $0032
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034
 .res $B

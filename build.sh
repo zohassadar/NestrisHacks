@@ -8,6 +8,7 @@ name_modifiers=()
 
 hacks=(
     "anydas"
+    "half"
     "penguin"
     "rando"
     "scrolltris"
@@ -156,6 +157,11 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D ANYDAS")
                     name_modifiers+=("Any")
+                    ;;
+                "half")
+                    echo "28 1/2 enabled"
+                    buildflags+=("-D HALF")
+                    name_modifiers+=("28.5")
                     ;;
                 "penguin")
                     echo "Penguin Line Clear enabled"

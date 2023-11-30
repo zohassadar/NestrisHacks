@@ -227,8 +227,19 @@ makePlayer1Active:
         dex
         cpx     #$FF
         bne     @copyByteFromMirror
+.ifdef HALF
+        ldx     tetriminoY
+        cpx     unused_0E
+        beq     @dontToggleDropSpeed
+        lda     dropSpeed
+        eor     #$02
+        sta     dropSpeed
+@dontToggleDropSpeed:
+        stx     unused_0E
+makePlayer2Active:
         rts
-
+.else
+        rts
 ; Copies $80 to $40
 makePlayer2Active:
         lda     #$02
@@ -238,6 +249,7 @@ makePlayer2Active:
         lda     newlyPressedButtons_player2
         sta     newlyPressedButtons
         lda     heldButtons_player2
+.endif
         sta     heldButtons
         ldx     #$1F
 @whileXNotNeg1:
