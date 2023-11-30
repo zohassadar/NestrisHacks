@@ -94,7 +94,11 @@ gameMode_levelMenu_processPlayer1Navigation:
         bne     @startAndANotPressed
         lda     player1_startLevel
         clc
+.ifdef ANYDAS
+        adc     levelOffset
+.else
         adc     #$0A
+.endif
         sta     player1_startLevel
 @startAndANotPressed:
         lda     #$00

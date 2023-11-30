@@ -17,14 +17,15 @@ anydasMenu: .res $1                 ; $001C
 anydasDASValue: .res $1             ; $001D
 anydasARRValue: .res $1             ; $001E
 anydasARECharge: .res $1            ; $001F
+levelOffset: .res $1                ; $0020
 
 ; SPS
-set_seed_input: .res $3          ; $0010
-set_seed: .res $3                ; $0013
+set_seed_input: .res $3          ; $0021
+set_seed: .res $3                ; $0024
 
-displayedNextPiece: .res 1       ; $0016
+displayedNextPiece: .res 1       ; $0027
 
-.res $0C
+.res $0B
 
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034
