@@ -6,50 +6,25 @@ stageSpriteForCurrentPiece:
         asl     a
         adc     tmp3
         sta     generalCounter3 ; x position of center block
-.ifdef UPSIDEDOWN
-        bne     @calculateYPixel
-.else
         lda     numberOfPlayers
         cmp     #$01
         beq     @calculateYPixel
-.endif
-.ifndef WALLHACK2
-        ; omit bytes to account for the extra bytes below
-        lda     generalCounter3
-        sec
-        sbc     #$40
-        sta     generalCounter3 ; if 2 player mode, player 1's field is more to the left
-        lda     activePlayer
-        cmp     #$01
-.endif
-.ifndef UPSIDEDOWN
         beq     @calculateYPixel
         lda     generalCounter3
         adc     #$6F
         sta     generalCounter3 ; and player 2's field is more to the right
-.endif
 @calculateYPixel:
         clc
         lda     tetriminoY
         rol     a
         rol     a
         rol     a
-.ifdef TALLER
-        adc     #$1F
-.else
         adc     #$2F
-.endif
         sta     generalCounter4 ; y position of center block
         lda     currentPiece
-.ifndef UPSIDEDOWN
         sta     generalCounter5
         clc
         lda     generalCounter5
-.else   
-        nop
-        nop
-        clc
-.endif
         rol     a
         rol     a
         sta     generalCounter
@@ -110,7 +85,6 @@ stageSpriteForCurrentPiece:
 @validYCoordinate:
         inc     oamStagingLength
         iny
-.ifdef WALLHACK2
         sty     generalCounter
         lda     orientationTable,x
         clc
@@ -123,20 +97,6 @@ stageSpriteForCurrentPiece:
         clc
         adc     tmp3
         ldy     generalCounter
-.else
-        lda     orientationTable,x
-        asl     a
-        asl     a
-        asl     a
-        clc
-        adc     generalCounter3
-.endif
-.ifdef UPSIDEDOWN
-        sta     generalCounter5
-        lda     #$08
-        sec
-        sbc     generalCounter5
-.endif
         sta     oamStaging,y ; stage actual x coordinate
 @finishLoop:
         inc     oamStagingLength
