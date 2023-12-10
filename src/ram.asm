@@ -195,11 +195,12 @@ playfieldForSecondPlayer:		; $0500
 .res $60
 stripeAddr: .res 2
 stripe: .res 20
+.res 10
 tileEraseHi:    .res 16
 tileEraseLo:    .res 16
 tileHi:         .res 16
 tileLo:         .res 16
-tile:           .res 16
+tiles:           .res 16
 ; addresses are hardcoded
 scoreTiles: .res 6
 linesTiles: .res 3
@@ -210,7 +211,7 @@ animationAddress3: .res 2
 animationAddress4: .res 2
 animationTiles: .res 2
 
-.res $24
+.res 26
 
 ; Area for romhacks
 
@@ -225,8 +226,9 @@ ppuScrollXHi: .res 1
 columnOffset: .res 1 ; number from 0 to 4
 columnAddress: .res 2
 renderOffset: .res 1
+tileBufferPosition: .res 1
 
-.res $76
+.res $75
 
 ; End romhacks
 

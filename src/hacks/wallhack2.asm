@@ -30,10 +30,6 @@ effectiveTetriminoXTable:
 
 
 wallHackyStageSprite:
-        lda     #$00
-        sec
-        sbc     ppuScrollX
-        sta     tmp3
         jsr     stageSpriteForCurrentPiece
         rts
 

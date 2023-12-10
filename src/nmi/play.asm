@@ -268,26 +268,6 @@ twoDigsToPPU:
         rts
 
 
-        ; .addr $20c0
-        ; .addr $20e0
-        ; .addr $2100
-        ; .addr $2120
-        ; .addr $2140
-        ; .addr $2160
-        ; .addr $2180
-        ; .addr $21a0
-        ; .addr $21c0
-        ; .addr $21e0
-        ; .addr $2200
-        ; .addr $2220
-        ; .addr $2240
-        ; .addr $2260
-        ; .addr $2280
-        ; .addr $22a0
-        ; .addr $22c0
-        ; .addr $22e0
-        ; .addr $2300
-        ; .addr $2320
 
 multBy32TableLo:
         .byte $00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40
@@ -328,7 +308,6 @@ copyPlayfieldColumnToBuffer:
         ; divide by 2 with bit from hi
         lda     renderOffset
         ror
-
         lsr
         lsr
         cmp     #$20
@@ -393,9 +372,138 @@ copyPlayfieldColumnToVRAM:
         bpl     @loop
         lda     currentPpuCtrl
         sta     PPUCTRL
+;---------------------
+        ldx     #03
+@loop2:
+        lda     tileHi,x
+        sta     PPUADDR
+        lda     tileLo,x
+        sta     PPUADDR
+        lda     tiles,x
+        sta     PPUDATA
+        dex
+        bpl     @loop2
+;---------------------
         lda     #$20
         sta     vramRow
         rts
+
+
+counter := generalCounter2
+
+yPos := generalCounter3
+xPos := generalCounter4
+tile := generalCounter5
+
+stageSpriteForCurrentPiece:
+        lda     #$00
+        sta     tileBufferPosition
+        lda     currentPiece
+        asl     a
+        asl     a
+        sta     generalCounter
+        asl     a
+        adc     generalCounter
+        tax     ; x contains index into orientation table
+        lda     #$04
+        sta     counter ; iterate through all four minos
+@stageMino:
+        lda     orientationTable,x
+        clc
+        adc     tetriminoY
+        sta     yPos
+        inx
+        lda     orientationTable,x
+        sta     tile ; stage block type of mino
+        inx
+        lda     orientationTable,x
+        clc
+        adc     tetriminoX
+        tay
+        lda     effectiveTetriminoXTable,y
+        sta     xPos
+        inx
+        txa
+        pha
+        jsr     translatePieceIntoBuffer
+        pla
+        tax
+        dec     counter
+        bne     @stageMino
+        rts
+
+ppuAddressHi:
+        .byte $20,$20,$21,$21,$21,$21,$21,$21,$21,$21,$22,$22,$22,$22,$22,$22,$22,$22,$23,$23
+ppuAddressLo:
+        .byte $c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20
+
+
+translatePieceIntoBuffer:
+        lda     xPos
+        cmp     columnOffset
+        bcs     @dontAdd
+        clc
+        adc     #$0A
+        sta     xPos
+@dontAdd:
+        lda     xPos
+        sec
+        sbc     columnOffset
+        asl
+        asl
+        asl
+        sta     xPos    ; This should have the best first position to draw the tile
+
+        ldy     yPos
+        lda     ppuAddressHi,y
+        sta     columnAddress+1
+        lda     ppuAddressLo,y
+        sta     columnAddress
+
+        lda     ppuScrollX
+        clc
+        adc     xPos
+        sta     renderOffset
+        lda     #$00
+        adc     ppuScrollXHi
+        lsr
+        ; divide by 2 with bit from hi
+        lda     renderOffset
+        ror
+        lsr
+        lsr
+        cmp     #$20
+        bcc     @addToLowByte
+        pha
+        lda     #$04
+        clc
+        adc     columnAddress+1
+        sta     columnAddress+1
+        pla
+        sec
+        sbc     #$20
+@addToLowByte:
+        clc
+        adc     columnAddress
+        sta     columnAddress
+        ldx     tileBufferPosition
+        lda     columnAddress
+        sta     tileLo,x
+        lda     columnAddress+1
+        sta     tileHi,x
+        lda     tile
+        sta     tiles,x
+        inc     tileBufferPosition
+        rts
+
+
+
+
+
+
+
+
+
 
 copyPlayfieldRowToVRAM:
         ldx     vramRow

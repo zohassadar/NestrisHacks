@@ -16,7 +16,7 @@ branchOnGameMode:
 gameModeState_updatePlayer1:
         jsr     makePlayer1Active
         jsr     branchOnPlayStatePlayer1
-        jsr     wallHackyStageSprite
+        jsr     stageSpriteForCurrentPiece
         jsr     savePlayer1State
         jsr     stageSpriteForNextPiece
         inc     gameModeState
