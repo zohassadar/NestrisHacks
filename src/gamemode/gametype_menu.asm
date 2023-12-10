@@ -12,7 +12,7 @@ gameMode_gameTypeMenu:
         ; 82d9
 .else
         inc     initRam
-        lda     #$10
+        lda     #$12
         jsr     setMMC1Control
 .endif
         lda     #$01

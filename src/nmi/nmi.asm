@@ -4,6 +4,7 @@ nmi:    pha
         tya
         pha
         jsr     renderAnydasMenu
+        jsr     incrementWallHackScroll
         jsr     restore_ppu_scroll
         lda     sleepCounter
         beq     @jumpOverDecrement
@@ -21,6 +22,7 @@ nmi:    pha
         ldy     #$02
         jsr     generateNextPseudorandomNumber
         inc     verticalBlankingInterval
+; cycle wait here and change scroll
         jsr     anydasControllerInput
         pla
         tay

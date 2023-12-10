@@ -7,12 +7,8 @@
 
 .segment "HEADER"
 
-.ifdef CNROM
 INES_MAPPER = 3 ; 0 = NROM
-.else
-INES_MAPPER = 1 ; 0 = NROM
-.endif
-INES_MIRROR = 0 ; 0 = horizontal mirroring, 1 = vertical mirroring
+INES_MIRROR = 1 ; 0 = horizontal mirroring, 1 = vertical mirroring
 INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
 
 .byte 'N', 'E', 'S', $1A ; ID

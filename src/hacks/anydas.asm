@@ -70,7 +70,6 @@ renderAnydasMenu:
 
 anydasControllerInput:
         jsr pollController
-        jsr incrementWallHackScroll
         lda anydasInit
         bne @initialized
         lda #$10

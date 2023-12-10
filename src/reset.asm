@@ -30,7 +30,7 @@ reset:  cld
         nop
         nop
 .else
-        lda     #$10
+        lda     #$12
         jsr     setMMC1Control
         lda     #$00
         jsr     changeCHRBank0

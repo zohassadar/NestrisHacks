@@ -14,7 +14,7 @@ gameMode_levelMenu:
        ; 83df
 .else
         inc     initRam
-        lda     #$10
+        lda     #$12
         jsr     setMMC1Control
 .endif
         jsr     updateAudio2

@@ -30,8 +30,8 @@ render_mode_play_and_demo:
         sta     vramRow
         lda     #$04
         sta     playfieldAddr+1
-        jsr     copyPlayfieldRowToVRAM
-        jsr     copyPlayfieldRowToVRAM
+        jsr     copyPlayfieldColumnToVRAM
+        ; jsr     copyPlayfieldRowToVRAM
         ; jsr     copyPlayfieldRowToVRAM
         ; jsr     copyPlayfieldRowToVRAM
         lda     vramRow
@@ -84,15 +84,9 @@ render_mode_play_and_demo:
         lda     numberOfPlayers
         cmp     #$02
         beq     @renderLinesTwoPlayers
-.ifdef TALLER
         lda     #$20
         sta     PPUADDR
-        lda     #$53
-.else
-        lda     #$20
-        sta     PPUADDR
-        lda     #$69
-.endif
+        lda     #$70
         sta     PPUADDR
         lda     player1_lines+1
         sta     PPUDATA
@@ -130,10 +124,9 @@ render_mode_play_and_demo:
         lda     numberOfPlayers
         cmp     #$02
         beq     @renderScore
-.ifdef ANYDAS
         lda     #$20
         sta     PPUADDR
-        lda     #$61
+        lda     #$64
         sta     PPUADDR
         lda     player1_levelNumber
         jsr     renderByteBCD
@@ -144,17 +137,6 @@ render_mode_play_and_demo:
         nop
         nop
 @skipthis:
-.else
-        ldx     player1_levelNumber
-        lda     levelDisplayTable,x
-        sta     generalCounter
-        lda     #$20
-        sta     PPUADDR
-        lda     #$62
-        sta     PPUADDR
-        lda     generalCounter
-        jsr     twoDigsToPPU
-.endif
         jsr     updatePaletteForLevel
         lda     outOfDateRenderFlags
         and     #$FD
@@ -166,9 +148,9 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$04
         beq     @renderStats
-        lda     #$20
+        lda     #$24
         sta     PPUADDR
-        lda     #$75
+        lda     #$6e
         sta     PPUADDR
         lda     player1_score+2
         jsr     twoDigsToPPU
@@ -285,6 +267,118 @@ twoDigsToPPU:
         sta     PPUDATA
         rts
 
+
+        ; .addr $20c0
+        ; .addr $20e0
+        ; .addr $2100
+        ; .addr $2120
+        ; .addr $2140
+        ; .addr $2160
+        ; .addr $2180
+        ; .addr $21a0
+        ; .addr $21c0
+        ; .addr $21e0
+        ; .addr $2200
+        ; .addr $2220
+        ; .addr $2240
+        ; .addr $2260
+        ; .addr $2280
+        ; .addr $22a0
+        ; .addr $22c0
+        ; .addr $22e0
+        ; .addr $2300
+        ; .addr $2320
+
+multBy32TableLo:
+        .byte $00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40
+multBy32TableHi:
+        .byte $00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40
+
+mod10A:
+        cmp #$0a
+        bcc @ret
+        sec
+        sbc #$0a
+        jmp mod10A
+@ret:   rts
+
+mod64A:
+        cmp #$40
+        bcc @ret
+        sec
+        sbc #$40
+        jmp mod64A
+@ret:   rts
+
+copyPlayfieldColumnToVRAM:
+; start here
+        lda     #$20
+        sta     columnAddress+1
+        lda     #$c0
+        sta     columnAddress
+
+; figure out which column to focus on
+        ; put >256 bit into carry
+        lda     ppuScrollX
+        clc
+        adc     #$08
+        sta     renderOffset
+        lda     ppuScrollXHi
+        adc     #$01
+        lsr
+        ; divide by 2 with bit from hi
+        lda     renderOffset
+        ror
+
+        lsr
+        lsr
+        cmp     #$20
+        bcc     @addToLowByte
+        pha
+        lda     #$04
+        clc
+        adc     columnAddress+1
+        sta     columnAddress+1
+        pla
+        sec
+        sbc     #$20
+@addToLowByte:
+        clc
+        adc     columnAddress
+        sta     columnAddress
+
+        lda     currentPpuCtrl
+        ora     #$04
+        sta     PPUCTRL
+
+        lda     columnAddress+1
+        sta     PPUADDR
+        lda     columnAddress
+        sta     PPUADDR
+
+        lda     columnOffset
+        sta     playfieldAddr
+
+        ldy     #$00
+        ldx     #$14
+@loop:
+        lda     (playfieldAddr),y
+        sta     PPUDATA
+        lda     playfieldAddr
+        clc     
+        adc     #$0A
+        sta     playfieldAddr
+        dex
+        bne     @loop
+        lda     currentPpuCtrl
+        sta     PPUCTRL
+        lda     #$00
+        sta     playfieldAddr
+        lda     #$20
+        sta     vramRow
+
+@ret:   rts
+
 copyPlayfieldRowToVRAM:
         ldx     vramRow
         cpx     #$15
@@ -322,10 +416,6 @@ copyPlayfieldRowToVRAM:
         lda     #$20
         sta     vramRow
 @ret:   rts
-
-.repeat 35
-        .byte $00
-.endrepeat
 
 .ifdef PENGUIN
         .include "../hacks/penguin_line_clear.asm"

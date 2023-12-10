@@ -27,16 +27,15 @@ gameModeState_initGameBackground:
         .addr   right_game_nametable
         lda     #$20
         sta     PPUADDR
-        lda     #$67
+        lda     #$68
         sta     PPUADDR
         lda     gameType
         bne     @typeB
         lda     #$0A
         sta     PPUDATA
-        lda     #$20
-        sec
-        bcs     @skipHighScore
-        lda     #$B8
+        lda     #$24
+        sta     PPUADDR
+        lda     #$61
         sta     PPUADDR
         lda     highScoreScoresA
         jsr     twoDigsToPPU
@@ -53,10 +52,9 @@ gameModeState_initGameBackground:
 
 @typeB: lda     #$0B
         sta     PPUDATA
-        lda     #$20
-        sec
-        bcs     @skipHighScore2
-        lda     #$B8
+        lda     #$24
+        sta     PPUADDR
+        lda     #$61
         sta     PPUADDR
         lda     highScoreScoresB
         jsr     twoDigsToPPU
@@ -136,7 +134,7 @@ gameModeState_initGameState:
         sta     player2_tetriminoX
         lda     #$00
         sta     player1_tetriminoY
-        sta     player2_tetriminoY
+        sta     playfield ; todo remove this debug
         sta     player1_vramRow
         sta     player2_vramRow
         sta     player1_fallTimer
