@@ -66,10 +66,11 @@ renderAnydasMenu:
 @clearOAMStagingAndReturn:
         lda #$00
         sta oamStagingLength
-        jmp returnFromAnydasRender
+        jmp render
 
 anydasControllerInput:
         jsr pollController
+        jsr incrementWallHackScroll
         lda anydasInit
         bne @initialized
         lda #$10

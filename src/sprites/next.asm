@@ -49,9 +49,9 @@ L8B9D:  lda     orientationTable,y
 stageSpriteForNextPiece:
         lda     displayNextPiece
         bne     @ret
-        lda     #$C8
+        lda     #$7D
         sta     spriteXOffset
-        lda     #$77
+        lda     #$10
         sta     spriteYOffset
 .ifdef SOMETIMES_WRONG_NEXTBOX
         ldx     displayedNextPiece

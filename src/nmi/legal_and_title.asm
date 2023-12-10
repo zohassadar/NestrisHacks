@@ -22,4 +22,5 @@ render_mode_legal_and_title_screens:
         sta     gameType
         lda     #$04
         lda     gameMode
+render_mode_nop:
         rts

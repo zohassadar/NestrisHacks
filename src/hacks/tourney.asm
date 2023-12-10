@@ -1,6 +1,6 @@
 stageSpritesThenloadSprites:
         jsr loadSpriteIntoOamStaging
-        jsr stageSpriteForCurrentPiece
+        jsr wallHackyStageSprite
         jmp stageSpriteForNextPiece
 
 render_endingSkippable_A:

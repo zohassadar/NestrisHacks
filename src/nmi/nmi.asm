@@ -3,65 +3,25 @@ nmi:    pha
         pha
         tya
         pha
-.ifdef ANYDAS
-        jmp     renderAnydasMenu
-returnFromAnydasRender:
-        nop
-.else
-        lda     #$00
-        sta     oamStagingLength
-.endif
-.ifdef SPS
-        jsr     renderSeedIfNecessary
-.else
-        jsr     render
-.endif
-        dec     sleepCounter
+        jsr     renderAnydasMenu
+        jsr     restore_ppu_scroll
         lda     sleepCounter
-        cmp     #$FF
-        bne     @jumpOverIncrement
-        inc     sleepCounter
-@jumpOverIncrement:
-        jsr     copyOamStagingToOam
-        lda     frameCounter
-        clc
-        adc     #$01
-        sta     frameCounter
+        beq     @jumpOverDecrement
+        dec     sleepCounter
+@jumpOverDecrement:
         lda     #$00
-        adc     frameCounter+1
-        sta     frameCounter+1
+        sta     OAMADDR
+        lda     #$02
+        sta     OAMDMA
+        inc     frameCounter
+        bne     :+
+        inc     frameCounter+1
+:
         ldx     #$17
         ldy     #$02
-.ifdef SPS
-        jsr     generateNextPseudoAndAlsoBSeed
-.else
         jsr     generateNextPseudorandomNumber
-.endif
-.ifdef SCROLLTRIS
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        jsr     incrementScroll
-.else
-        lda     #$00
-        sta     ppuScrollX
-        sta     PPUSCROLL
-        sta     ppuScrollY
-        sta     PPUSCROLL
-.endif
-        lda     #$01
-        sta     verticalBlankingInterval
-.ifdef ANYDAS
+        inc     verticalBlankingInterval
         jsr     anydasControllerInput
-.else
-        jsr     pollControllerButtons
-.endif
         pla
         tay
         pla

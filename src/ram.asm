@@ -182,7 +182,10 @@ currentPpuCtrl:	.res 1	; $00FF
 .bss
 stack:	.res $100	; $0100
 oamStaging:	.res $100	; $0200
-.res $F0
+
+renderStripe: .res $14 ; $0300
+renderAddress: .res $2 ; $0300
+.res $DA
 statsByType:	.res $0E	; $03F0
 .res 2
 playfield:	.res $C8	; $0400
@@ -199,7 +202,11 @@ menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
 seedVersion: .res 1              ; $0604
 
-.res $7B
+.res 1
+
+
+
+.res $7A
 
 ; End romhacks
 

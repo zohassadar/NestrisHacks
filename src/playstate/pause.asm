@@ -29,7 +29,7 @@ gameModeState_startButtonHandling:
 
 @pause: lda     #$05
         sta     musicStagingNoiseHi
-        lda     #$00
+        lda     #$05
         sta     renderMode
         jsr     updateAudioAndWaitForNmi
 .ifdef TOURNAMENT
@@ -56,11 +56,7 @@ gameModeState_startButtonHandling:
 .endif
         lda     #$05
         sta     spriteIndexInOamContentLookup
-.ifdef TOURNAMENT
         jsr     stageSpritesThenloadSprites
-.else
-        jsr     loadSpriteIntoOamStaging
-.endif
         lda     newlyPressedButtons_player1
         cmp     #$10
         beq     @resume

@@ -1,64 +1,5 @@
 ; Stuff stashed here to save space in the hacks section
 unreferenced_data5:
-
-.ifdef SCROLLTRIS
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-
-shiftSpritesThenUpdateAudio:
-        ldx     #$00
-        ldy     #$10
-loopThroughSprites:
-; y offset
-        lda     oamStaging,x
-        sta     tmp3
-        lda     ppuScrollY                     
-        cmp     tmp3                            
-        bcc     dontOffset                           
-        lda     tmp3                            
-        sec
-        sbc     #$10                            
-        sta     tmp3                            
-dontOffset:
-        lda     tmp3                            
-        clc
-        sbc     ppuScrollY                      
-        sta     oamStaging,x
-
-; x offset
-        lda     oamStaging+3,x
-        clc
-        sbc     ppuScrollX
-        sta     oamStaging+3,x
-        inx
-        inx
-        inx
-        inx
-        dey
-        bne     loopThroughSprites
-        jsr     updateAudio_jmp
-        rts
-
-
-incrementScroll:
-        inc     ppuScrollX
-        lda     ppuScrollX
-        sta     PPUSCROLL
-        inc     ppuScrollY
-        lda     ppuScrollY
-        cmp     #$EF
-        bne     @dontResetY
-        lda     #$00                      
-        sta     ppuScrollY
-@dontResetY:
-        sta     PPUSCROLL
-        rts
-.else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
@@ -69,7 +10,6 @@ incrementScroll:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-.endif
 
 .if .defined(RANDO) | .defined(UPSIDEDOWN)
         ; padding for easy adjustment in case of future development

@@ -4,7 +4,7 @@ stageSpriteForCurrentPiece:
         asl     a
         asl     a
         asl     a
-        adc     #$60
+        adc     tmp3
         sta     generalCounter3 ; x position of center block
 .ifdef UPSIDEDOWN
         bne     @calculateYPixel
@@ -121,7 +121,7 @@ stageSpriteForCurrentPiece:
         asl     a
         asl     a
         clc
-        adc     #$60
+        adc     tmp3
         ldy     generalCounter
 .else
         lda     orientationTable,x

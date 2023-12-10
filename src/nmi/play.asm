@@ -32,14 +32,8 @@ render_mode_play_and_demo:
         sta     playfieldAddr+1
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
-.ifdef TALLER
-        jsr     copyPlayfieldRowToVRAM3Times
-        jmp     @carryOn
-.else
-        jsr     copyPlayfieldRowToVRAM
-        jsr     copyPlayfieldRowToVRAM
-.endif
-@carryOn:
+        ; jsr     copyPlayfieldRowToVRAM
+        ; jsr     copyPlayfieldRowToVRAM
         lda     vramRow
         sta     player1_vramRow
 @renderPlayer2Playfield:
@@ -97,7 +91,7 @@ render_mode_play_and_demo:
 .else
         lda     #$20
         sta     PPUADDR
-        lda     #$73
+        lda     #$69
 .endif
         sta     PPUADDR
         lda     player1_lines+1
@@ -137,9 +131,9 @@ render_mode_play_and_demo:
         cmp     #$02
         beq     @renderScore
 .ifdef ANYDAS
-        lda     #$22
+        lda     #$20
         sta     PPUADDR
-        lda     #$B9
+        lda     #$61
         sta     PPUADDR
         lda     player1_levelNumber
         jsr     renderByteBCD
@@ -154,9 +148,9 @@ render_mode_play_and_demo:
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         sta     generalCounter
-        lda     #$22
+        lda     #$20
         sta     PPUADDR
-        lda     #$BA
+        lda     #$62
         sta     PPUADDR
         lda     generalCounter
         jsr     twoDigsToPPU
@@ -172,9 +166,9 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$04
         beq     @renderStats
-        lda     #$21
+        lda     #$20
         sta     PPUADDR
-        lda     #$18
+        lda     #$75
         sta     PPUADDR
         lda     player1_score+2
         jsr     twoDigsToPPU
@@ -187,7 +181,7 @@ render_mode_play_and_demo:
         sta     outOfDateRenderFlags
 @renderStats:
         lda     numberOfPlayers
-        cmp     #$02
+        bne     @renderTetrisFlashAndSound
         beq     @renderTetrisFlashAndSound
         lda     outOfDateRenderFlags
         and     #$40
@@ -250,36 +244,6 @@ render_mode_play_and_demo:
         sta     soundEffectSlot1Init
 @setPaletteColor:
         stx     PPUDATA
-.ifdef CNROM
-        ; 969b
-        ; Very important to reset PPUCTRL
-        ; Relevant conversation in NESDEV discord
-        ; https://discord.com/channels/352252932953079811/745626657439744011/1106210182125592666
-        lda     currentPpuCtrl
-        sta     PPUCTRL
-        ldy     #$00
-        sty     PPUSCROLL
-        sty     PPUSCROLL
-        nop
-        ; 96a9
-.else
-        ldy     #$00
-.ifdef SCROLLTRIS
-        ldy     ppuScrollX
-        sty     PPUSCROLL
-        nop
-        nop
-        ldy     ppuScrollY
-        sty     PPUSCROLL
-.else
-        sty     ppuScrollX
-        sty     PPUSCROLL
-        ldy     #$00
-        sty     ppuScrollY
-        sty     PPUSCROLL
-.endif
-
-.endif
         rts
 
 pieceToPpuStatAddr:
@@ -303,11 +267,11 @@ multBy10Table:
 .else
 vramPlayfieldRows:
 .endif
-        .word   $20C6,$20E6,$2106,$2126
-        .word   $2146,$2166,$2186,$21A6
-        .word   $21C6,$21E6,$2206,$2226
-        .word   $2246,$2266,$2286,$22A6
-        .word   $22C6,$22E6,$2306,$2326
+        .word   $20C2,$20E2,$2102,$2122
+        .word   $2142,$2162,$2182,$21A2
+        .word   $21C2,$21E2,$2202,$2222
+        .word   $2242,$2262,$2282,$22A2
+        .word   $22C2,$22E2,$2302,$2322
 twoDigsToPPU:
         sta     generalCounter
         and     #$F0
@@ -323,78 +287,30 @@ twoDigsToPPU:
 
 copyPlayfieldRowToVRAM:
         ldx     vramRow
-.ifdef TALLER
-        cpx     #$19
-.else
         cpx     #$15
-.endif
         bpl     @ret
         lda     multBy10Table,x
-.ifdef UPSIDEDOWN
-        clc
-        adc     #$9
-.endif
-        tay
+        sta     generalCounter2
         txa
-.ifdef UPSIDEDOWN
-        lda      #$13
-        sec
-        sbc     vramRow
-.endif
         asl     a
         tax
-.ifdef  UPSIDEDOWN
-        ; this nonsense is to shave a few cycles
         lda     vramPlayfieldRows+1,x
-.else
-        inx
-        lda     vramPlayfieldRows,x
-.endif
         sta     PPUADDR
-.ifdef UPSIDEDOWN
-        ; this nonsense is also to shave a few cycles
-        jmp @onePlayer
-.else
-        dex
-.endif
-        lda     numberOfPlayers
-        cmp     #$01
-        beq     @onePlayer
-        lda     playfieldAddr+1
-        cmp     #$05
-        beq     @playerTwo
         lda     vramPlayfieldRows,x
-        sec
-        sbc     #$02
         sta     PPUADDR
-        jmp     @copyRow
-
-@playerTwo:
-.ifndef UPSIDEDOWN
-        lda     vramPlayfieldRows,x
-        clc
-        adc     #$0C
-        sta     PPUADDR
-        jmp     @copyRow
-.endif
-
-@onePlayer:
-        lda     vramPlayfieldRows,x
-        clc
-        adc     #$06
-        sta     PPUADDR
+        lda     #$03
+        sta     generalCounter
 @copyRow:
         ldx     #$0A
+        ldy     generalCounter2
 @copyByte:
-        lda     (playfieldAddr),y
+        lda     playfield,y
         sta     PPUDATA
-.ifdef UPSIDEDOWN
-        dey
-.else
         iny
-.endif
         dex
         bne     @copyByte
+        dec     generalCounter
+        bne     @copyRow
         inc     vramRow
         lda     vramRow
 .ifdef TALLER
@@ -407,9 +323,9 @@ copyPlayfieldRowToVRAM:
         sta     vramRow
 @ret:   rts
 
-.ifdef UPSIDEDOWN
-        .byte $00,$00,$00
-.endif
+.repeat 35
+        .byte $00
+.endrepeat
 
 .ifdef PENGUIN
         .include "../hacks/penguin_line_clear.asm"

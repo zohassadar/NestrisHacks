@@ -63,10 +63,10 @@ LAA82:  ldx     #$FF
         rts
 
 copyCurrentScrollAndCtrlToPPU:
+        rts
         lda     #$00
         sta     PPUSCROLL
         sta     PPUSCROLL
         lda     currentPpuCtrl
         sta     PPUCTRL
-        rts
     

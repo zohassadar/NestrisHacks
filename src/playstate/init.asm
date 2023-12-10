@@ -15,24 +15,27 @@ gameModeState_initGameBackground:
 .else
         lda     #$03
         jsr     changeCHRBank0
-        lda     #$03
-        jsr     changeCHRBank1
+        lda     #$12
+        jsr     setMMC1Control
 .endif
 
         jsr     bulkCopyToPpu
         .addr   game_palette
         jsr     bulkCopyToPpu
         .addr   game_nametable
+        jsr     bulkCopyToPpu
+        .addr   right_game_nametable
         lda     #$20
         sta     PPUADDR
-        lda     #$83
+        lda     #$67
         sta     PPUADDR
         lda     gameType
         bne     @typeB
         lda     #$0A
         sta     PPUDATA
         lda     #$20
-        sta     PPUADDR
+        sec
+        bcs     @skipHighScore
         lda     #$B8
         sta     PPUADDR
         lda     highScoreScoresA
@@ -41,6 +44,7 @@ gameModeState_initGameBackground:
         jsr     twoDigsToPPU
         lda     highScoreScoresA+2
         jsr     twoDigsToPPU
+@skipHighScore:
 .ifdef SPS
         jmp     drawSeedOnBackground
 .else
@@ -50,7 +54,8 @@ gameModeState_initGameBackground:
 @typeB: lda     #$0B
         sta     PPUDATA
         lda     #$20
-        sta     PPUADDR
+        sec
+        bcs     @skipHighScore2
         lda     #$B8
         sta     PPUADDR
         lda     highScoreScoresB
@@ -59,6 +64,7 @@ gameModeState_initGameBackground:
         jsr     twoDigsToPPU
         lda     highScoreScoresB+2
         jsr     twoDigsToPPU
+@skipHighScore2:
         ldx     #$00
 @nextPpuAddress:
         lda     game_typeb_nametable_patch,x
@@ -78,9 +84,9 @@ gameModeState_initGameBackground:
         jmp     @nextPpuData
 
 @endOfPpuPatching:
-        lda     #$23
+        lda     #$20
         sta     PPUADDR
-        lda     #$3B
+        lda     #$65
         sta     PPUADDR
         lda     startHeight
         and     #$0F
@@ -103,7 +109,7 @@ gameModeState_initGameBackground_finish:
         rts
 
 game_typeb_nametable_patch:
-        .byte   $22,$F7,$38,$39,$39,$39,$39,$39
+        .byte   $20,$64,$24,$FD,$39,$39,$39,$39
         .byte   $39,$3A,$FE,$23,$17,$3B,$11,$0E
         .byte   $12,$10,$11,$1D,$3C,$FE,$23,$37
         .byte   $3B,$FF,$FF,$FF,$FF,$FF,$FF,$3C
