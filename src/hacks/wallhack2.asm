@@ -71,3 +71,12 @@ incrementWallHackScroll:
         sta     columnOffset
 @ret:   rts
 
+
+initTasks:
+        lda     #$04
+        sta     playfieldAddr+1
+        jsr     copyPlayfieldColumnToBuffer
+        rts
+
+cleanupTasks:
+        jmp     copyPlayfieldColumnToBuffer

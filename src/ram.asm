@@ -192,41 +192,14 @@ playfield:	.res $C8	; $0400
 .res $38
 playfieldForSecondPlayer:		; $0500
     ; 20 (field stripe) + 4 + 4 ("sprites") + 4 + 4 (clear "sprites") + 6 + 3 + 3 + 8
-
+.res $60
 stripeAddr: .res 2
 stripe: .res 20
-tile1EraseAddr: .res 2
-tile1Erase: .res 1
-tile2EraseAddr: .res 2
-tile2Erase: .res 1
-tile3EraseAddr: .res 2
-tile3Erase: .res 1
-tile4EraseAddr: .res 2
-tile4Erase: .res 1
-tile5EraseAddr: .res 2
-tile5Erase: .res 1
-tile6EraseAddr: .res 2
-tile6Erase: .res 1
-tile7EraseAddr: .res 2
-tile7Erase: .res 1
-tile8EraseAddr: .res 2
-tile8Erase: .res 1
-tile1Addr: .res 2
-tile1: .res 1
-tile2Addr: .res 2
-tile2: .res 1
-tile3Addr: .res 2
-tile3: .res 1
-tile4Addr: .res 2
-tile4: .res 1
-tile5Addr: .res 2
-tile5: .res 1
-tile6Addr: .res 2
-tile6: .res 1
-tile7Addr: .res 2
-tile7: .res 1
-tile8Addr: .res 2
-tile8: .res 1
+tileEraseHi:    .res 16
+tileEraseLo:    .res 16
+tileHi:         .res 16
+tileLo:         .res 16
+tile:           .res 16
 ; addresses are hardcoded
 scoreTiles: .res 6
 linesTiles: .res 3
@@ -238,7 +211,6 @@ animationAddress4: .res 2
 animationTiles: .res 2
 
 .res $24
-.res $80
 
 ; Area for romhacks
 

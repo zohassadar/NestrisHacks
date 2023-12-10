@@ -34,7 +34,7 @@ gameModeState_handleGameOver:
         sta     player2_playState
         lda     #$EF
         ldx     #$04
-        ldy     #$05
+        ldy     #$04
         jsr     memset_page
         lda     #$00
         sta     player1_vramRow

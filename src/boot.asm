@@ -94,8 +94,9 @@ initRamContinued:
         jsr     LAA82
         lda     #$EF
         ldx     #$04
-        ldy     #$05
+        ldy     #$04
         jsr     memset_page
+        jsr     initTasks
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering

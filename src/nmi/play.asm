@@ -310,18 +310,17 @@ mod64A:
         jmp mod64A
 @ret:   rts
 
-copyPlayfieldColumnToVRAM:
+copyPlayfieldColumnToBuffer:
 ; start here
         lda     #$20
         sta     columnAddress+1
         lda     #$c0
         sta     columnAddress
-
 ; figure out which column to focus on
-        ; put >256 bit into carry
+        ; render a column 40 tiles ahead (8 * 40 = $0140)
         lda     ppuScrollX
         clc
-        adc     #$08
+        adc     #$40
         sta     renderOffset
         lda     ppuScrollXHi
         adc     #$01
@@ -347,37 +346,56 @@ copyPlayfieldColumnToVRAM:
         adc     columnAddress
         sta     columnAddress
 
-        lda     currentPpuCtrl
-        ora     #$04
-        sta     PPUCTRL
+        ; lda     currentPpuCtrl
+        ; ora     #$04
+        ; sta     PPUCTRL
 
         lda     columnAddress+1
-        sta     PPUADDR
+        sta     stripeAddr+1
         lda     columnAddress
-        sta     PPUADDR
+        sta     stripeAddr
 
         lda     columnOffset
         sta     playfieldAddr
 
         ldy     #$00
-        ldx     #$14
+        ldx     #$13
 @loop:
         lda     (playfieldAddr),y
-        sta     PPUDATA
+        sta     stripe,x
         lda     playfieldAddr
         clc     
         adc     #$0A
         sta     playfieldAddr
         dex
-        bne     @loop
-        lda     currentPpuCtrl
-        sta     PPUCTRL
+        bpl     @loop
         lda     #$00
         sta     playfieldAddr
         lda     #$20
         sta     vramRow
-
 @ret:   rts
+
+
+
+copyPlayfieldColumnToVRAM:
+        lda     currentPpuCtrl
+        ora     #$04
+        sta     PPUCTRL
+        lda     stripeAddr+1
+        sta     PPUADDR
+        lda     stripeAddr
+        sta     PPUADDR
+        ldx     #$13
+@loop:
+        lda     stripe,x
+        sta     PPUDATA
+        dex
+        bpl     @loop
+        lda     currentPpuCtrl
+        sta     PPUCTRL
+        lda     #$20
+        sta     vramRow
+        rts
 
 copyPlayfieldRowToVRAM:
         ldx     vramRow
