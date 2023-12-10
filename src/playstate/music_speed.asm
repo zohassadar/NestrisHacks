@@ -1,5 +1,6 @@
 
 updateMusicSpeed:
+        rts
         ldx     #$05
         lda     multBy10Table,x
         tay

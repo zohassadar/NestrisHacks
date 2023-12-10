@@ -29,8 +29,8 @@ gameModeState_startButtonHandling:
 
 @pause: lda     #$05
         sta     musicStagingNoiseHi
-        lda     #$05
-        sta     renderMode
+        ; lda     #$05
+        ; sta     renderMode
         jsr     updateAudioAndWaitForNmi
 .ifdef TOURNAMENT
         lda     currentPpuMask
