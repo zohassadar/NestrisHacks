@@ -1,5 +1,6 @@
 
 playState_spawnNextTetrimino:
+        jsr     clearEmptyQueue
         lda     vramRow
         cmp     #$20
         bmi     @ret

@@ -210,8 +210,10 @@ animationAddress2: .res 2
 animationAddress3: .res 2
 animationAddress4: .res 2
 animationTiles: .res 2
+levelPalette: .res 4
+backgroundColor: .res 1
 
-.res 26
+.res 21
 
 ; Area for romhacks
 

@@ -24,6 +24,14 @@ nmi:    pha
         inc     verticalBlankingInterval
 ; cycle wait here and change scroll
         jsr     anydasControllerInput
+
+.repeat 16,index
+        lda     tileHi+index
+        sta     tileEraseHi+index
+        lda     tileLo+index
+        sta     tileEraseLo+index
+.endrepeat
+
         pla
         tay
         pla

@@ -3,7 +3,7 @@ render: lda     renderMode
         .addr   render_mode_legal_and_title_screens
         .addr   render_mode_menu_screens
         .addr   render_mode_congratulations_screen
-        .addr   render_mode_play_and_demo
+        .addr   dump_render_buffer
         .addr   render_mode_ending_animation
         .addr   render_mode_nop
 

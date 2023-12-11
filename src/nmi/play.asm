@@ -1,218 +1,4 @@
 render_mode_play_and_demo:
-        lda     player1_playState
-        cmp     #$04
-        bne     @playStateNotDisplayLineClearingAnimation
-        lda     #$04
-        sta     playfieldAddr+1
-        lda     player1_rowY
-        sta     rowY
-        lda     player1_completedRow
-        sta     completedRow
-        lda     player1_completedRow+1
-        sta     completedRow+1
-        lda     player1_completedRow+2
-        sta     completedRow+2
-        lda     player1_completedRow+3
-        sta     completedRow+3
-        lda     player1_playState
-        sta     playState
-        jsr     updateLineClearingAnimation
-        lda     rowY
-        sta     player1_rowY
-        lda     playState
-        sta     player1_playState
-        lda     #$00
-        sta     player1_vramRow
-        jmp     @renderPlayer2Playfield
-
-@playStateNotDisplayLineClearingAnimation:
-        lda     player1_vramRow
-        sta     vramRow
-        lda     #$04
-        sta     playfieldAddr+1
-        jsr     copyPlayfieldColumnToVRAM
-        ; jsr     copyPlayfieldRowToVRAM
-        ; jsr     copyPlayfieldRowToVRAM
-        ; jsr     copyPlayfieldRowToVRAM
-        lda     vramRow
-        sta     player1_vramRow
-
-        rts
-@renderPlayer2Playfield:
-        lda     numberOfPlayers
-        cmp     #$02
-        bne     @renderLines
-        lda     player2_playState
-        cmp     #$04
-        bne     @player2PlayStateNotDisplayLineClearingAnimation
-        lda     #$05
-        sta     playfieldAddr+1
-        lda     player2_rowY
-        sta     rowY
-        lda     player2_completedRow
-        sta     completedRow
-        lda     player2_completedRow+1
-        sta     completedRow+1
-        lda     player2_completedRow+2
-        sta     completedRow+2
-        lda     player2_completedRow+3
-        sta     completedRow+3
-        lda     player2_playState
-        sta     playState
-        jsr     updateLineClearingAnimation
-        lda     rowY
-        sta     player2_rowY
-        lda     playState
-        sta     player2_playState
-        lda     #$00
-        sta     player2_vramRow
-        jmp     @renderLines
-
-@player2PlayStateNotDisplayLineClearingAnimation:
-        lda     player2_vramRow
-        sta     vramRow
-        lda     #$05
-        sta     playfieldAddr+1
-        jsr     copyPlayfieldRowToVRAM
-        jsr     copyPlayfieldRowToVRAM
-        jsr     copyPlayfieldRowToVRAM
-        jsr     copyPlayfieldRowToVRAM
-        lda     vramRow
-        sta     player2_vramRow
-@renderLines:
-        lda     outOfDateRenderFlags
-        and     #$01
-        beq     @renderLevel
-        lda     numberOfPlayers
-        cmp     #$02
-        beq     @renderLinesTwoPlayers
-        lda     #$20
-        sta     PPUADDR
-        lda     #$70
-        sta     PPUADDR
-        lda     player1_lines+1
-        sta     PPUDATA
-        lda     player1_lines
-        jsr     twoDigsToPPU
-        lda     outOfDateRenderFlags
-        and     #$FE
-        sta     outOfDateRenderFlags
-        jmp     @renderLevel
-
-@renderLinesTwoPlayers:
-        lda     #$20
-        sta     PPUADDR
-        lda     #$68
-        sta     PPUADDR
-        lda     player1_lines+1
-        sta     PPUDATA
-        lda     player1_lines
-        jsr     twoDigsToPPU
-        lda     #$20
-        sta     PPUADDR
-        lda     #$7A
-        sta     PPUADDR
-        lda     player2_lines+1
-        sta     PPUDATA
-        lda     player2_lines
-        jsr     twoDigsToPPU
-        lda     outOfDateRenderFlags
-        and     #$FE
-        sta     outOfDateRenderFlags
-@renderLevel:
-        lda     outOfDateRenderFlags
-        and     #$02
-        beq     @renderScore
-        lda     numberOfPlayers
-        cmp     #$02
-        beq     @renderScore
-        lda     #$20
-        sta     PPUADDR
-        lda     #$64
-        sta     PPUADDR
-        lda     player1_levelNumber
-        jsr     renderByteBCD
-        sec
-        bcs     @skipthis
-        nop
-        nop
-        nop
-        nop
-@skipthis:
-        jsr     updatePaletteForLevel
-        lda     outOfDateRenderFlags
-        and     #$FD
-        sta     outOfDateRenderFlags
-@renderScore:
-        lda     numberOfPlayers
-        cmp     #$02
-        beq     @renderStats
-        lda     outOfDateRenderFlags
-        and     #$04
-        beq     @renderStats
-        lda     #$24
-        sta     PPUADDR
-        lda     #$6e
-        sta     PPUADDR
-        lda     player1_score+2
-        jsr     twoDigsToPPU
-        lda     player1_score+1
-        jsr     twoDigsToPPU
-        lda     player1_score
-        jsr     twoDigsToPPU
-        lda     outOfDateRenderFlags
-        and     #$FB
-        sta     outOfDateRenderFlags
-@renderStats:
-        lda     numberOfPlayers
-        bne     @renderTetrisFlashAndSound
-        beq     @renderTetrisFlashAndSound
-        lda     outOfDateRenderFlags
-        and     #$40
-        beq     @renderTetrisFlashAndSound
-.if .defined(TALLER) .or .defined(ANYDAS)
-        nop
-        ldx     player1_currentPiece
-        lda     tetriminoTypeFromOrientation,x
-.else
-        lda     #$00
-        sta     tmpCurrentPiece
-@renderPieceStat:
-        lda     tmpCurrentPiece
-.endif
-        asl     a
-        tax
-        lda     pieceToPpuStatAddr,x
-        sta     PPUADDR
-        lda     pieceToPpuStatAddr+1,x
-        sta     PPUADDR
-        lda     statsByType+1,x
-        sta     PPUDATA
-        lda     statsByType,x
-        jsr     twoDigsToPPU
-.if .defined(TALLER) .or .defined(ANYDAS)
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-.else
-        inc     tmpCurrentPiece
-        lda     tmpCurrentPiece
-        cmp     #$07
-        bne     @renderPieceStat
-.endif
-        lda     outOfDateRenderFlags
-        and     #$BF
-        sta     outOfDateRenderFlags
-@renderTetrisFlashAndSound:
-        lda     #$3F
-        sta     PPUADDR
-        lda     #$0E
-        sta     PPUADDR
         ldx     #$00
         lda     completedLines
         cmp     #$04
@@ -227,35 +13,50 @@ render_mode_play_and_demo:
         lda     #$09
         sta     soundEffectSlot1Init
 @setPaletteColor:
-        stx     PPUDATA
+        stx     backgroundColor
+
+updatePaletteForLevel:
+        lda     player1_levelNumber
+@mod10: cmp     #$0A
+        bmi     @copyPalettes
+        sec
+        sbc     #$0A
+        jmp     @mod10
+@copyPalettes:
+        asl     a
+        asl     a
+        tax
+        lda     colorTable,x
+        sta     levelPalette
+        lda     colorTable+1,x
+        sta     levelPalette+1
+        lda     colorTable+1+1,x
+        sta     levelPalette+2
+        lda     colorTable+1+1+1,x
+        sta     levelPalette+3
+        lda     generalCounter
         rts
 
-pieceToPpuStatAddr:
-        .dbyt   $2186,$21C6,$2206,$2246
-        .dbyt   $2286,$22C6,$2306
+
+
 levelDisplayTable:
         .byte   $00,$01,$02,$03,$04,$05,$06,$07
         .byte   $08,$09,$10,$11,$12,$13,$14,$15
         .byte   $16,$17,$18,$19,$20,$21,$22,$23
         .byte   $24,$25,$26,$27,$28,$29
-.ifdef TALLER
-unusedMultBy10Table:
-.else
+
 multBy10Table:
-.endif
         .byte   $00,$0A,$14,$1E,$28,$32,$3C,$46
         .byte   $50,$5A,$64,$6E,$78,$82,$8C,$96
         .byte   $A0,$AA,$B4,$BE
-; addresses
-.ifdef TALLER
-.else
+
 vramPlayfieldRows:
-.endif
         .word   $20C2,$20E2,$2102,$2122
         .word   $2142,$2162,$2182,$21A2
         .word   $21C2,$21E2,$2202,$2222
         .word   $2242,$2262,$2282,$22A2
         .word   $22C2,$22E2,$2302,$2322
+
 twoDigsToPPU:
         sta     generalCounter
         and     #$F0
@@ -268,7 +69,6 @@ twoDigsToPPU:
         and     #$0F
         sta     PPUDATA
         rts
-
 
 
 multBy32TableLo:
@@ -284,15 +84,63 @@ mod10A:
         jmp mod10A
 @ret:   rts
 
-mod64A:
-        cmp #$40
-        bcc @ret
-        sec
-        sbc #$40
-        jmp mod64A
-@ret:   rts
 
 copyPlayfieldColumnToBuffer:
+
+        lda     #$00
+        sta     levelTiles
+        ldx     player1_levelNumber
+        lda     levelDisplayTable,x
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     levelTiles+1
+        lda     levelDisplayTable,x
+        and     #$0F
+        sta     levelTiles+2
+
+
+        lda     player1_lines+1
+        sta     linesTiles
+        lda     player1_lines
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     linesTiles+1
+        lda     player1_lines
+        and     #$0F
+        sta     linesTiles+2
+
+        lda     player1_score+2
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     scoreTiles
+        lda     player1_score+2
+        and     #$0F
+        sta     scoreTiles+1
+        lda     player1_score+1
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     scoreTiles+2
+        lda     player1_score+1
+        and     #$0F
+        sta     scoreTiles+3
+        lda     player1_score
+        lsr
+        lsr
+        lsr
+        lsr
+        sta     scoreTiles+4
+        lda     player1_score
+        and     #$0F
+        sta     scoreTiles+5
+
 ; start here
         lda     #$20
         sta     columnAddress+1
@@ -302,7 +150,7 @@ copyPlayfieldColumnToBuffer:
         ; render a column 40 tiles ahead (8 * 40 = $0140)
         lda     ppuScrollX
         clc
-        adc     #$40
+        adc     #$00
         sta     renderOffset
         lda     ppuScrollXHi
         adc     #$01
@@ -337,6 +185,12 @@ copyPlayfieldColumnToBuffer:
         sta     stripeAddr
 
         lda     columnOffset
+        sec
+        sbc     #$08
+        bcs     @store
+        clc
+        adc     #$0A
+@store:
         sta     playfieldAddr
 
         ldy     #$00
@@ -353,12 +207,12 @@ copyPlayfieldColumnToBuffer:
         lda     #$00
         sta     playfieldAddr
         lda     #$20
-        sta     vramRow
+        sta     player1_vramRow
 @ret:   rts
 
 
 
-copyPlayfieldColumnToVRAM:
+dump_render_buffer:
         lda     currentPpuCtrl
         ora     #$04
         sta     PPUCTRL
@@ -376,43 +230,78 @@ copyPlayfieldColumnToVRAM:
         sta     PPUCTRL
 
 ; ---------------------
-        ldx     #$0B
         ldy     #$EF
-@loop2:
-        lda     tileEraseHi,x
+.repeat 16,index
+        lda     tileEraseHi+index
         sta     PPUADDR
-        lda     tileEraseLo,x
+        lda     tileEraseLo+index
         sta     PPUADDR
         sty     PPUDATA
-        dex
-        bpl     @loop2
+.endrepeat
 
-; ---------------------
-        ldx     #$0B
-@loop3:
-        lda     tileHi,x
+.repeat 16,index
+        lda     tileHi+index
         sta     PPUADDR
-        lda     tileLo,x
+        lda     tileLo+index
         sta     PPUADDR
-        lda     tiles,x
+        lda     tiles+index
         sta     PPUDATA
-        dex
-        bpl     @loop3
-;---------------------
+.endrepeat
+
         lda     #$20
-        sta     vramRow
+        sta     PPUADDR
+        lda     #$70
+        sta     PPUADDR
+.repeat 3,index
+        lda     linesTiles+index
+        sta     PPUDATA
+.endrepeat
+
+        lda     #$20
+        sta     PPUADDR
+        lda     #$64
+        sta     PPUADDR
+.repeat 3,index
+        lda     levelTiles+index
+        sta     PPUDATA
+.endrepeat
+
+        lda     #$24
+        sta     PPUADDR
+        lda     #$6e
+        sta     PPUADDR
+.repeat 6,index
+        lda     scoreTiles+index
+        sta     PPUDATA
+.endrepeat
 
 ;---------------------
-        ldx     #$0B
-@loop4:
-        lda     tileHi,x
-        sta     tileEraseHi,x
-        lda     tileLo,x
-        sta     tileEraseLo,x
-        dex
-        bpl     @loop4
+        lda     #$3F
+        sta     PPUADDR
+        lda     #$0E
+        sta     PPUADDR
+        lda     backgroundColor
+        sta     PPUDATA
 
-        rts
+        lda     #$3F
+        sta     PPUADDR
+        lda     #$08
+        sta     PPUADDR
+.repeat 4,index
+        lda     levelPalette+index
+        sta     PPUDATA
+.endrepeat
+
+        lda     #$3F
+        sta     PPUADDR
+        lda     #$18
+        sta     PPUADDR
+.repeat 4,index
+        lda     levelPalette+index
+        sta     PPUDATA
+.endrepeat
+
+@ret:   rts
 
 
 counter := generalCounter2
@@ -449,11 +338,6 @@ stageSpriteForCurrentPiece:
         tay
         lda     effectiveTetriminoXTable,y
         pha
-        cmp     columnOffset
-        bcs     @dontAdd
-        lda     #$0A
-        sta     tileStartingOffset
-@dontAdd:
         inx
         dec     counter
         bne     @stageMino
@@ -479,11 +363,23 @@ stageSpriteForCurrentPiece:
         adc     #$0A
         sta     tileStartingOffset
         jsr     translatePieceIntoBuffer
+        lda     tileStartingOffset
+        clc
+        adc     #$0A
+        sta     tileStartingOffset
+        jsr     translatePieceIntoBuffer
         pla
         sta     tileStartingOffset
         dec     counter
         bne     @loop
-        rts
+        lda     #$20
+        sta     player1_vramRow
+        sta     vramRow
+        lda     playState
+        cmp     #$04
+        bne     @ret
+        inc     playState
+@ret:    rts
 
 ppuAddressHi:
         .byte $20,$20,$21,$21,$21,$21,$21,$21,$21,$21,$22,$22,$22,$22,$22,$22,$22,$22,$23,$23
@@ -491,30 +387,37 @@ ppuAddressLo:
         .byte $c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20
 
 
+clearEmptyQueue:
+        lda     #$24
+        ldx     #$0F
+@loop:
+        sta     tileEraseHi,x
+        dex
+        bpl     @loop
+
+        lda     #$42
+        ldx     #$0F
+@loop2:
+        sta     tileEraseLo,x
+        dex
+        bpl     @loop2
+        rts
+
+
 translatePieceIntoBuffer:
         lda     xPos
         clc
         adc    tileStartingOffset
-        ; sta     tmp3
-;         cmp     columnOffset
-;         bcs     @dontAdd
-;         clc
-;         adc     #$0A
-;         sta     tmp3
-; @dontAdd:
-        ; lda     tileBufferPosition
-        ; ; lsr
-        ; lsr
-        ; tax
-        ; lda     multBy10Table,x
-        ; clc
-        ; adc     tmp3
         sec
         sbc     columnOffset
         asl
         asl
+        clc
         asl
         sta     tmp3    ; This should have the best first position to draw the tile
+        lda     #$00
+        rol
+        pha
 
         ldy     yPos
         lda     ppuAddressHi,y
@@ -526,7 +429,7 @@ translatePieceIntoBuffer:
         clc
         adc     tmp3
         sta     renderOffset
-        lda     #$00
+        pla
         adc     ppuScrollXHi
         lsr
         ; divide by 2 with bit from hi
@@ -560,94 +463,13 @@ translatePieceIntoBuffer:
 
 
 
-
-
-
-
-
+updateLineClearingAnimation:
+        inc     playState
 
 
 copyPlayfieldRowToVRAM:
-        ldx     vramRow
-        cpx     #$15
-        bpl     @ret
-        lda     multBy10Table,x
-        sta     generalCounter2
-        txa
-        asl     a
-        tax
-        lda     vramPlayfieldRows+1,x
-        sta     PPUADDR
-        lda     vramPlayfieldRows,x
-        sta     PPUADDR
-        lda     #$03
-        sta     generalCounter
-@copyRow:
-        ldx     #$0A
-        ldy     generalCounter2
-@copyByte:
-        lda     playfield,y
-        sta     PPUDATA
-        iny
-        dex
-        bne     @copyByte
-        dec     generalCounter
-        bne     @copyRow
-        inc     vramRow
-        lda     vramRow
-.ifdef TALLER
-        cmp     #$18
-.else
-        cmp     #$14
-.endif
-        bmi     @ret
-        lda     #$20
-        sta     vramRow
-@ret:   rts
-
-.ifdef PENGUIN
-        .include "../hacks/penguin_line_clear.asm"
-.else
-        .include "line_clear_animation.asm"
-.endif
-
-; Set Background palette 2 and Sprite palette 2
-updatePaletteForLevel:
-        lda     player1_levelNumber
-@mod10: cmp     #$0A
-        bmi     @copyPalettes
-        sec
-        sbc     #$0A
-        jmp     @mod10
-
-@copyPalettes:
-        asl     a
-        asl     a
-        tax
-        lda     #$00
-        sta     generalCounter
-@copyPalette:
-        lda     #$3F
-        sta     PPUADDR
-        lda     #$08
-        clc
-        adc     generalCounter
-        sta     PPUADDR
-        lda     colorTable,x
-        sta     PPUDATA
-        lda     colorTable+1,x
-        sta     PPUDATA
-        lda     colorTable+1+1,x
-        sta     PPUDATA
-        lda     colorTable+1+1+1,x
-        sta     PPUDATA
-        lda     generalCounter
-        clc
-        adc     #$10
-        sta     generalCounter
-        cmp     #$20
-        bne     @copyPalette
         rts
+
 
 ; 4 bytes per level (bg, fg, c3, c4)
 colorTable:

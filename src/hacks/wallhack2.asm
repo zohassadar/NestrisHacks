@@ -75,4 +75,5 @@ initTasks:
         rts
 
 cleanupTasks:
+        jsr     render_mode_play_and_demo
         jmp     copyPlayfieldColumnToBuffer

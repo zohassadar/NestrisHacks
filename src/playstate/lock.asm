@@ -134,8 +134,8 @@ playState_updateGameOverCurtain:
         tay
         lda     #$00
         sta     generalCounter3
-        lda     #$13
-        sta     currentPiece
+        ; lda     #$13
+        ; sta     currentPiece
 @drawCurtainRow:
         lda     #$4F
         sta     (playfieldAddr),y
