@@ -5,7 +5,7 @@ nmi:    pha
         pha
         jsr     renderAnydasMenu
         jsr     incrementWallHackScroll
-        jsr     restore_ppu_scroll
+        jsr     restore_top_part_scroll
         lda     sleepCounter
         beq     @jumpOverDecrement
         dec     sleepCounter
@@ -33,15 +33,15 @@ nmi:    pha
 .endrepeat
 
 ; this sorta works to change scrolling 
-;         ldy     #$3
-;         ldx     #$F0    
-; @loop:
-;         dex
-;         bne @loop
-;         dey
-;         bne @loop
+        ldy     #$3
+        ldx     #$F0    
+@loop:
+        dex
+        bne @loop
+        dey
+        bne @loop
 
-;         jsr     restore_ppu_scroll
+        jsr     restore_ppu_scroll
 
         pla
         tay

@@ -64,26 +64,26 @@ incrementWallHackScroll:
         adc     #$00
         sta     currentPpuCtrl
 
-;         lda     frameCounter
-;         and     #$01
-;         bne     @skipTopPart
+        lda     frameCounter
+        and     #$01
+        bne     @skipTopPart
 
-;         lda     #$01
-;         clc
-;         adc     topPartPPUScrollX
-;         sta     topPartPPUScrollX
+        lda     #$01
+        clc
+        adc     topPartPPUScrollX
+        sta     topPartPPUScrollX
 
-;         lda     topPartPPUScrollXHi
-;         adc     #$00
-;         and     #$01 ; never let this number get above 511
-;         sta     topPartPPUScrollXHi 
-;         ror
-;         lda     currentPpuCtrl
-;         and     #$FE
-;         adc     #$00
-;         sta     topPartPPUCtrl
+        lda     topPartPPUScrollXHi
+        adc     #$00
+        and     #$01 ; never let this number get above 511
+        sta     topPartPPUScrollXHi 
+        ror
+        lda     currentPpuCtrl
+        and     #$FE
+        adc     #$00
+        sta     topPartPPUCtrl
 
-; @skipTopPart:
+@skipTopPart:
 
 
 ; cycle offset every 8 pixels

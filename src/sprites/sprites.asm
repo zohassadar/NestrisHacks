@@ -216,39 +216,39 @@ sprite15IPieceOffset:
 .else
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite0FTPieceOffset:
-        .byte   $02,$7B,$02,$FC,$02,$7B,$02,$04
-        .byte   $02,$7B,$02,$0C,$0A,$7B,$02,$04
-        .byte   $FF
+        ; .byte   $02,$7B,$02,$FC,$02,$7B,$02,$04
+        ; .byte   $02,$7B,$02,$0C,$0A,$7B,$02,$04
+        ; .byte   $FF
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite10SPieceOffset:
-        .byte   $00,$7D,$02,$06,$00,$7D,$02,$0E
-        .byte   $08,$7D,$02,$FE,$08,$7D,$02,$06
-        .byte   $FF
+        ; .byte   $00,$7D,$02,$06,$00,$7D,$02,$0E
+        ; .byte   $08,$7D,$02,$FE,$08,$7D,$02,$06
+        ; .byte   $FF
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite11ZPieceOffset:
-        .byte   $00,$7C,$02,$FA,$00,$7C,$02,$02
-        .byte   $08,$7C,$02,$02,$08,$7C,$02,$0A
-        .byte   $FF
+        ; .byte   $00,$7C,$02,$FA,$00,$7C,$02,$02
+        ; .byte   $08,$7C,$02,$02,$08,$7C,$02,$0A
+        ; .byte   $FF
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite12JPieceOffset:
-        .byte   $08,$7D,$02,$00,$08,$7D,$02,$08
-        .byte   $08,$7D,$02,$10,$10,$7D,$02,$10
-        .byte   $FF
+        ; .byte   $08,$7D,$02,$00,$08,$7D,$02,$08
+        ; .byte   $08,$7D,$02,$10,$10,$7D,$02,$10
+        ; .byte   $FF
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite13LPieceOffset:
-        .byte   $08,$7C,$02,$F8,$08,$7C,$02,$00
-        .byte   $08,$7C,$02,$08,$10,$7C,$02,$F8
-        .byte   $FF
+        ; .byte   $08,$7C,$02,$F8,$08,$7C,$02,$00
+        ; .byte   $08,$7C,$02,$08,$10,$7C,$02,$F8
+        ; .byte   $FF
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite14OPieceOffset:
-        .byte   $00,$7B,$02,$00,$00,$7B,$02,$08
-        .byte   $08,$7B,$02,$00,$08,$7B,$02,$08
-        .byte   $FF
+        ; .byte   $00,$7B,$02,$00,$00,$7B,$02,$08
+        ; .byte   $08,$7B,$02,$00,$08,$7B,$02,$08
+        ; .byte   $FF
 ; Unused, but referenced from unreferenced_orientationToSpriteTable
 sprite15IPieceOffset:
-        .byte   $08,$7B,$02,$F8,$08,$7B,$02,$00
-        .byte   $08,$7B,$02,$08,$08,$7B,$02,$10
-        .byte   $FF
+        ; .byte   $08,$7B,$02,$F8,$08,$7B,$02,$00
+        ; .byte   $08,$7B,$02,$08,$08,$7B,$02,$10
+        ; .byte   $FF
 .endif
 sprite16KidIcarus1:
         .byte   $F0,$95,$01,$10,$F8,$A3,$01,$00

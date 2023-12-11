@@ -66,7 +66,7 @@ stageSpriteForNextPiece:
         bne     @ret
         lda     #$2A
         sec
-        sbc     ppuScrollX
+        sbc     topPartPPUScrollX
         sta     spriteXOffset
         lda     #$10
         sta     spriteYOffset

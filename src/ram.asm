@@ -243,8 +243,8 @@ topPartPPUScrollXHi: .res 1
 incrementSpeed: .res 1
 
 sprite0State: .res 1 ; 0 = reset, 1 = staged, 2 = nmi happened ready to wait
-
-.res $6f
+bulkCopyOffset: .res 1 ; added to hi byte when doing bulk copy
+.res $6e
 
 ; End romhacks
 

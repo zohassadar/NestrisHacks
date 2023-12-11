@@ -16,3 +16,17 @@ restore_ppu_scroll:
         lda     currentPpuCtrl
         sta     PPUCTRL
         rts
+
+
+
+restore_top_part_scroll:
+        lda     renderMode
+        cmp     #$03
+        bne     restore_ppu_scroll
+        lda     topPartPPUScrollX
+        sta     PPUSCROLL
+        lda     ppuScrollY
+        sta     PPUSCROLL
+        lda     topPartPPUCtrl
+        sta     PPUCTRL
+        rts

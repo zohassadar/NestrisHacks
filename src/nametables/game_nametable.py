@@ -14,14 +14,12 @@ Unless modified, it will reproduce the original.
 
 file = pathlib.Path(__file__)
 output = file.parent / file.name.replace(".py", ".bin")
-
 parser = argparse.ArgumentParser()
 parser.add_argument('-D', '--buildflag', action='append', dest='buildflags', help='Build Flag')
 args = parser.parse_args()
 buildflags = args.buildflags if args.buildflags else []
 
-
-original_sha1sum = "36fa36fcab592f7b1b9373809ccbcdcbfd949e2b"
+original_sha1sum = "609d4e861986caa3d75f55112af30ab8b6f70c22"
 
 characters = (
     #0123456789ABCDEF
@@ -73,9 +71,9 @@ ________________________________
 ________________________________
 ________________________________
 mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-ÃÃÔÑÖÎÕÖÃÔÏÔÏÃÎÖÎÕÖÔÕÕÖÓÜÝÔáÃÔÕß
-ÓÞÏãÃãÃÎßÃÞÖÓÓÓÃãÃÌÍÎÖÃÜÖÔÏãÓÔÕÕ
-ÜÖãÔàÖÓãÔàÖÃãÓãÓÎßÜÝÓÃÞÕÖÃÓÔßÎÖÃ
+ÃÃÔÑÖÎÕÖÎÖÔÏÔÏÔÏÎÕÖÔÕÕÖÃÔÏÔÏÔÏÔÏ
+ÓÞÏãÃãÃÔßÌÍÞÖÞÖÓãÎÖÎÖÃÔàÖÞÖÞÖÞÖÓ
+ÜÖãÔàÖÞÕÖÜÝÔÕÕÖãÔßÔÝÔàÖÔÕÕÖÔÕÕÖã
 
 """
 

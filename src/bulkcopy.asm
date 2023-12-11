@@ -4,6 +4,8 @@ bulkCopyToPpu:
         jmp     copyToPpu
 
 LAA9E:  pha
+        clc
+        adc     bulkCopyOffset
         sta     PPUADDR
         iny
         lda     (tmp1),y

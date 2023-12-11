@@ -23,8 +23,14 @@ gameModeState_initGameBackground:
         .addr   game_palette
         jsr     bulkCopyToPpu
         .addr   game_nametable
+        lda     #$04
+        sta     bulkCopyOffset
+        jsr     bulkCopyToPpu
+        .addr   game_nametable
         jsr     bulkCopyToPpu
         .addr   right_game_nametable
+        lda     #$00
+        sta     bulkCopyOffset
         lda     #$24
         sta     PPUADDR
         lda     #$7a
