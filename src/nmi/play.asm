@@ -36,6 +36,8 @@ render_mode_play_and_demo:
         ; jsr     copyPlayfieldRowToVRAM
         lda     vramRow
         sta     player1_vramRow
+
+        rts
 @renderPlayer2Playfield:
         lda     numberOfPlayers
         cmp     #$02
@@ -372,9 +374,22 @@ copyPlayfieldColumnToVRAM:
         bpl     @loop
         lda     currentPpuCtrl
         sta     PPUCTRL
-;---------------------
-        ldx     #03
+
+; ---------------------
+        ldx     #$0B
+        ldy     #$EF
 @loop2:
+        lda     tileEraseHi,x
+        sta     PPUADDR
+        lda     tileEraseLo,x
+        sta     PPUADDR
+        sty     PPUDATA
+        dex
+        bpl     @loop2
+
+; ---------------------
+        ldx     #$0B
+@loop3:
         lda     tileHi,x
         sta     PPUADDR
         lda     tileLo,x
@@ -382,10 +397,21 @@ copyPlayfieldColumnToVRAM:
         lda     tiles,x
         sta     PPUDATA
         dex
-        bpl     @loop2
+        bpl     @loop3
 ;---------------------
         lda     #$20
         sta     vramRow
+
+;---------------------
+        ldx     #$0B
+@loop4:
+        lda     tileHi,x
+        sta     tileEraseHi,x
+        lda     tileLo,x
+        sta     tileEraseLo,x
+        dex
+        bpl     @loop4
+
         rts
 
 
@@ -398,6 +424,7 @@ tile := generalCounter5
 stageSpriteForCurrentPiece:
         lda     #$00
         sta     tileBufferPosition
+        sta     tileStartingOffset
         lda     currentPiece
         asl     a
         asl     a
@@ -411,25 +438,51 @@ stageSpriteForCurrentPiece:
         lda     orientationTable,x
         clc
         adc     tetriminoY
-        sta     yPos
+        pha
         inx
         lda     orientationTable,x
-        sta     tile ; stage block type of mino
+        pha ; stage block type of mino
         inx
         lda     orientationTable,x
         clc
         adc     tetriminoX
         tay
         lda     effectiveTetriminoXTable,y
-        sta     xPos
-        inx
-        txa
         pha
-        jsr     translatePieceIntoBuffer
-        pla
-        tax
+        cmp     columnOffset
+        bcs     @dontAdd
+        lda     #$0A
+        sta     tileStartingOffset
+@dontAdd:
+        inx
         dec     counter
         bne     @stageMino
+
+        lda     #$04
+        sta     counter
+@loop:
+        pla
+        sta     xPos
+        pla 
+        sta     tile
+        pla
+        sta     yPos
+        jsr     translatePieceIntoBuffer
+        lda     tileStartingOffset
+        pha
+        clc
+        adc     #$0A
+        sta     tileStartingOffset
+        jsr     translatePieceIntoBuffer
+        lda     tileStartingOffset
+        clc
+        adc     #$0A
+        sta     tileStartingOffset
+        jsr     translatePieceIntoBuffer
+        pla
+        sta     tileStartingOffset
+        dec     counter
+        bne     @loop
         rts
 
 ppuAddressHi:
@@ -440,19 +493,28 @@ ppuAddressLo:
 
 translatePieceIntoBuffer:
         lda     xPos
-        cmp     columnOffset
-        bcs     @dontAdd
         clc
-        adc     #$0A
-        sta     xPos
-@dontAdd:
-        lda     xPos
+        adc    tileStartingOffset
+        ; sta     tmp3
+;         cmp     columnOffset
+;         bcs     @dontAdd
+;         clc
+;         adc     #$0A
+;         sta     tmp3
+; @dontAdd:
+        ; lda     tileBufferPosition
+        ; ; lsr
+        ; lsr
+        ; tax
+        ; lda     multBy10Table,x
+        ; clc
+        ; adc     tmp3
         sec
         sbc     columnOffset
         asl
         asl
         asl
-        sta     xPos    ; This should have the best first position to draw the tile
+        sta     tmp3    ; This should have the best first position to draw the tile
 
         ldy     yPos
         lda     ppuAddressHi,y
@@ -462,7 +524,7 @@ translatePieceIntoBuffer:
 
         lda     ppuScrollX
         clc
-        adc     xPos
+        adc     tmp3
         sta     renderOffset
         lda     #$00
         adc     ppuScrollXHi

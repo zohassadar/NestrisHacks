@@ -227,8 +227,8 @@ columnOffset: .res 1 ; number from 0 to 4
 columnAddress: .res 2
 renderOffset: .res 1
 tileBufferPosition: .res 1
-
-.res $75
+tileStartingOffset: .res 1
+.res $74
 
 ; End romhacks
 
