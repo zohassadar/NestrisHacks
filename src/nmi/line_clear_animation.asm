@@ -8,21 +8,14 @@ updateLineClearingAnimation:
         ldx     generalCounter3
         lda     completedRow,x
         beq     @nextRow
-.ifdef UPSIDEDOWN
-        lda     #$13
-        sec
-        sbc     completedRow,x
-.endif
         asl     a
         tay
         lda     vramPlayfieldRows,y
-.ifndef UPSIDEDOWN
         sta     generalCounter
         lda     numberOfPlayers
         cmp     #$01
         bne     @twoPlayers
         lda     generalCounter
-.endif
         clc
         adc     #$06
         sta     generalCounter
@@ -31,11 +24,9 @@ updateLineClearingAnimation:
         lda     playfieldAddr+1
         cmp     #$04
         bne     @player2
-.ifndef UPSIDEDOWN
         lda     generalCounter
         sec
         sbc     #$02
-.endif
         sta     generalCounter
         jmp     @updateVRAM
 @player2:
@@ -80,8 +71,3 @@ leftColumns:
         .byte   $04,$03,$02,$01,$00
 rightColumns:
         .byte   $05,$06,$07,$08,$09
-
-.ifdef UPSIDEDOWN
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00
-.endif
