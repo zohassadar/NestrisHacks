@@ -95,6 +95,7 @@ gameModeState_initGameBackground_finish:
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering
+        jsr     stageSpriteForNextPiece
         jsr     updateAudioWaitForNmiAndResetOamStaging
         lda     #$01
         sta     player1_playState

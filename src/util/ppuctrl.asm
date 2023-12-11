@@ -4,6 +4,22 @@ updateAudioWaitForNmiAndResetOamStaging:
         jsr     cleanupTasks
         lda     #$00
         sta     verticalBlankingInterval
+
+        lda     sprite0State
+        cmp     #$03
+        bne     @checkForNmi
+        lsr     sprite0State
+
+@sprite0Wait:
+        bit     PPUSTATUS
+        bvc     @sprite0Wait
+
+        lda     #$00
+        sta     PPUSCROLL
+        sta     PPUSCROLL
+        lda     currentPpuCtrl
+        sta     PPUCTRL
+
         nop
 @checkForNmi:
         lda     verticalBlankingInterval

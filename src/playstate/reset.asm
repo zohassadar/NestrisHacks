@@ -9,5 +9,6 @@ gameModeState_checkForResetKeyCombo:
 
 @reset: jsr     updateAudio2
         lda     #$00
+        sta     sprite0State
         sta     gameMode
         rts

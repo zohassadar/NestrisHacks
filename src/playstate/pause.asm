@@ -31,7 +31,7 @@ gameModeState_startButtonHandling:
         sta     musicStagingNoiseHi
         ; lda     #$05
         ; sta     renderMode
-        jsr     updateAudioAndWaitForNmi
+        jsr     updateAudioWaitForNmiAndResetOamStaging
 .ifdef TOURNAMENT
         lda     currentPpuMask
 .else
