@@ -181,15 +181,19 @@ currentPpuCtrl:	.res 1	; $00FF
 
 .bss
 stack:	.res $100	; $0100
+.align $100
 oamStaging:	.res $100	; $0200
 
-renderStripe: .res $14 ; $0300
-renderAddress: .res $2 ; $0300
-.res $DA
+renderedPlayfield: .res 200
+.res 40
+
+
 statsByType:	.res $0E	; $03F0
 .res 2
+.align $100
 playfield:	.res $C8	; $0400
 .res $38
+.align $100
 playfieldForSecondPlayer:		; $0500
     ; 20 (field stripe) + 4 + 4 ("sprites") + 4 + 4 (clear "sprites") + 6 + 3 + 3 + 8
 .res $60
@@ -198,6 +202,9 @@ stripe: .res 20
 .res 10
 tileEraseHi:    .res 16
 tileEraseLo:    .res 16
+animationLo: .res 4
+animationHi: .res 4
+animationTiles: .res 2
 tileHi:         .res 16
 tileLo:         .res 16
 tiles:           .res 16
@@ -205,11 +212,6 @@ tiles:           .res 16
 scoreTiles: .res 6
 linesTiles: .res 3
 levelTiles: .res 2
-animationAddress1: .res 2
-animationAddress2: .res 2
-animationAddress3: .res 2
-animationAddress4: .res 2
-animationTiles: .res 2
 levelPalette: .res 4
 backgroundColor: .res 1
 
@@ -218,6 +220,7 @@ backgroundColor: .res 1
 ; Area for romhacks
 
 ; SPS Variables
+.align $100
 sps_menu: .res $1                ; $0600
 menuSeedCursorIndex: .res 1      ; $0601
 menuMoveThrottle: .res 1         ; $0602
@@ -235,7 +238,10 @@ tileStartingOffset: .res 1
 topPartPPUCtrl: .res 1
 topPartPPUScrollX: .res 1
 topPartPPUScrollXHi: .res 1
-.res $71
+
+incrementSpeed: .res 1
+
+.res $70
 
 ; End romhacks
 
@@ -304,6 +310,7 @@ soundEffectSlot4Playing:	.res 1	; $06FC
 currentlyPlayingMusicTrack:	.res 1	; $06FD
 .res 1
 unreferenced_soundRngTmp:  .res 1  ; $06FF
+.align $100
 highScoreNames:	.res $30	; $0700
 highScoreScoresA:	.res $C	; $0730
 highScoreScoresB:	.res $C	; $073C

@@ -107,6 +107,7 @@ playState_lockTetrimino:
         jsr     updatePlayfield
         jsr     updateMusicSpeed
         inc     playState
+        jsr     copyPlayfieldToRenderRam
 @ret:   rts
 
 playState_updateGameOverCurtain:
@@ -271,16 +272,12 @@ playState_checkForCompletedRows:
         lda     garbageLines,y
         clc
         adc     pendingGarbageInactivePlayer
-.ifndef PENGUIN
-        ; removes 2 bytes to account for additional 2 bytes below
-        sta     pendingGarbageInactivePlayer
-.endif
         lda     #$00
         sta     vramRow
-.ifdef PENGUIN
-        lda     #$14
-.endif
+        lda     #$40
         sta     rowY
+        lda     #$01
+        sta     incrementSpeed
         lda     completedLines
         cmp     #$04
         bne     @skipTetrisSoundEffect
@@ -290,6 +287,8 @@ playState_checkForCompletedRows:
         inc     playState
         lda     completedLines
         bne     @ret
+        lda     #$00
+        sta     incrementSpeed
         inc     playState
         lda     #$07
         sta     soundEffectSlot1Init

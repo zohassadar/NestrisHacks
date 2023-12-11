@@ -84,9 +84,7 @@ mod10A:
         jmp mod10A
 @ret:   rts
 
-
 copyPlayfieldColumnToBuffer:
-
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         lsr
@@ -182,6 +180,9 @@ copyPlayfieldColumnToBuffer:
         lda     columnAddress
         sta     stripeAddr
 
+        lda     #$03
+        sta     playfieldAddr+1
+
         lda     columnOffset
         sec
         sbc     #$08
@@ -204,6 +205,7 @@ copyPlayfieldColumnToBuffer:
         bpl     @loop
         lda     #$00
         sta     playfieldAddr
+        inc     playfieldAddr+1
         lda     #$20
         sta     player1_vramRow
 @ret:   rts
@@ -299,6 +301,18 @@ dump_render_buffer:
         sta     PPUDATA
 .endrepeat
 
+; .repeat 4,index
+;         lda     animationHi+index
+;         sta     PPUADDR
+;         lda     animationLo+index
+;         sta     PPUADDR
+; .repeat 2,i
+;         lda     animationTiles+i
+;         sta     PPUDATA
+; .endrepeat
+; .endrepeat
+
+
 @ret:   rts
 
 
@@ -309,6 +323,11 @@ xPos := generalCounter4
 tile := generalCounter5
 
 stageSpriteForCurrentPiece:
+        lda     playState
+        cmp     #$04
+        bne     @notAnimation
+        jsr     updateLineClearingAnimation
+@notAnimation:
         lda     #$00
         sta     tileBufferPosition
         sta     tileStartingOffset
@@ -373,16 +392,76 @@ stageSpriteForCurrentPiece:
         lda     #$20
         sta     player1_vramRow
         sta     vramRow
-        lda     playState
-        cmp     #$04
-        bne     @ret
-        inc     playState
+        ; lda     playState
+        ; cmp     #$04
+        ; bne     @ret
+        ; inc     playState
 @ret:    rts
 
 ppuAddressHi:
         .byte $20,$20,$21,$21,$21,$21,$21,$21,$21,$21,$22,$22,$22,$22,$22,$22,$22,$22,$23,$23
 ppuAddressLo:
         .byte $c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20
+
+updateLineClearingAnimation:
+        dec     rowY
+        bne     @checkForTail
+        beq     @finishUp
+
+@checkForTail:
+        cmp     #$04
+        bne     @ret2
+        jmp     copyPlayfieldToRenderRam
+
+@finishUp:
+        inc     playState
+        lda     #$00
+        sta     incrementSpeed
+@ret2:  rts
+
+        lda     #$01
+        sta     rowY
+        lda     playState
+        cmp     #$04
+        bne     @ret
+        lda     #$FE
+        sta     animationTiles+1
+
+        ldx     #$03
+@loop:
+        lda     completedRow,x
+        beq     @nextRow
+        lda     ppuAddressHi,x
+        sta     animationHi,x
+        lda     ppuAddressLo,x
+        sta     animationLo,x
+@nextRow:
+        dex
+        bpl     @loop     
+        inc     rowY
+        bne     @ret
+        inc     playState
+@ret:   rts
+
+reset_animation:
+        lda     #$24
+        ldx     #$03
+@loop:
+        sta     animationHi,x
+        dex
+        bpl     @loop
+
+        lda     #$42
+        ldx     #$03
+@loop2:
+        sta     animationLo,x
+        dex
+        bpl     @loop2
+        lda     #$FF
+        sta     animationTiles
+        sta     animationTiles+1
+        rts
+
 
 
 clearEmptyQueue:
@@ -461,11 +540,15 @@ translatePieceIntoBuffer:
 
 
 
-updateLineClearingAnimation:
-        inc     playState
 
-
-copyPlayfieldRowToVRAM:
+copyPlayfieldToRenderRam:
+        ldx #0
+@loop:
+        lda     playfield,x
+        sta     renderedPlayfield,x
+        inx
+        cpx     #200
+        bne     @loop
         rts
 
 

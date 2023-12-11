@@ -33,6 +33,12 @@ wallHackyStageSprite:
         jsr     stageSpriteForCurrentPiece
         rts
 
+
+andValuesSlowFast:
+        .byte   $FF,$FC
+incValuesSlowFast:
+        .byte   $01,$04
+
 incrementWallHackScroll:
 ; modify this so it is cycle count consistent
         lda     gameMode
@@ -41,9 +47,11 @@ incrementWallHackScroll:
         lda     playState
         cmp     #$0A
         beq     @ret
-        lda     #$02
+        ldx     incrementSpeed
+        lda     andValuesSlowFast,x
+        and     ppuScrollX
         clc
-        adc     ppuScrollX
+        adc     incValuesSlowFast,x
         sta     ppuScrollX
 
         lda     ppuScrollXHi
@@ -99,4 +107,7 @@ initTasks:
 
 cleanupTasks:
         jsr     render_mode_play_and_demo
-        jmp     copyPlayfieldColumnToBuffer
+        jsr     copyPlayfieldColumnToBuffer
+        jsr     reset_animation
+        ; jmp     updateLineClearingAnimation
+        rts
