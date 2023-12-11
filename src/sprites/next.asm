@@ -49,15 +49,13 @@ L8B9D:  lda     orientationTable,y
 stageSpriteForNextPiece:
         lda     displayNextPiece
         bne     @ret
-        lda     #$7D
+        lda     #$2A
+        sec
+        sbc     ppuScrollX
         sta     spriteXOffset
         lda     #$10
         sta     spriteYOffset
-.ifdef SOMETIMES_WRONG_NEXTBOX
-        ldx     displayedNextPiece
-.else
         ldx     nextPiece
-.endif
         lda     orientationToSpriteTable,x
         sta     spriteIndexInOamContentLookup
         jmp     loadSpriteIntoOamStaging

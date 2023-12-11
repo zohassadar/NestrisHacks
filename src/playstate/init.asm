@@ -25,9 +25,9 @@ gameModeState_initGameBackground:
         .addr   game_nametable
         jsr     bulkCopyToPpu
         .addr   right_game_nametable
-        lda     #$20
+        lda     #$24
         sta     PPUADDR
-        lda     #$68
+        lda     #$7a
         sta     PPUADDR
         lda     gameType
         bne     @typeB
@@ -35,7 +35,7 @@ gameModeState_initGameBackground:
         sta     PPUDATA
         lda     #$24
         sta     PPUADDR
-        lda     #$61
+        lda     #$6d
         sta     PPUADDR
         lda     highScoreScoresA
         jsr     twoDigsToPPU
@@ -54,7 +54,7 @@ gameModeState_initGameBackground:
         sta     PPUDATA
         lda     #$24
         sta     PPUADDR
-        lda     #$61
+        lda     #$6d
         sta     PPUADDR
         lda     highScoreScoresB
         jsr     twoDigsToPPU

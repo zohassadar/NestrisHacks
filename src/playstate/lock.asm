@@ -254,8 +254,8 @@ playState_checkForCompletedRows:
         iny
         cpy     #$0A
         bne     @clearRowTopRow
-        lda     #$13
-        sta     currentPiece
+        ; lda     #$13
+        ; sta     currentPiece
         jmp     @incrementLineIndex
 
 @rowNotComplete:

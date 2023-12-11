@@ -204,7 +204,7 @@ tiles:           .res 16
 ; addresses are hardcoded
 scoreTiles: .res 6
 linesTiles: .res 3
-levelTiles: .res 3
+levelTiles: .res 2
 animationAddress1: .res 2
 animationAddress2: .res 2
 animationAddress3: .res 2
@@ -213,7 +213,7 @@ animationTiles: .res 2
 levelPalette: .res 4
 backgroundColor: .res 1
 
-.res 21
+.res 22
 
 ; Area for romhacks
 

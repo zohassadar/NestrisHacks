@@ -5,7 +5,7 @@ renderAnydasMenu:
         beq @continueRendering
         jmp @clearOAMStagingAndReturn
 @continueRendering:
-        lda #$26
+        lda #$22
         sta PPUADDR
         lda #$70
         sta PPUADDR
@@ -15,7 +15,7 @@ renderAnydasMenu:
         lda #$FF
         sta PPUDATA
 
-        lda #$26
+        lda #$22
         sta PPUADDR
         lda #$90
         sta PPUADDR
@@ -25,7 +25,7 @@ renderAnydasMenu:
         lda #$FF
         sta PPUDATA
 
-        lda #$26
+        lda #$22
         sta PPUADDR
         lda #$B5
         sta PPUADDR

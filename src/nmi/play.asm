@@ -87,18 +87,16 @@ mod10A:
 
 copyPlayfieldColumnToBuffer:
 
-        lda     #$00
-        sta     levelTiles
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         lsr
         lsr
         lsr
         lsr
-        sta     levelTiles+1
+        sta     levelTiles
         lda     levelDisplayTable,x
         and     #$0F
-        sta     levelTiles+2
+        sta     levelTiles+1
 
 
         lda     player1_lines+1
@@ -248,9 +246,9 @@ dump_render_buffer:
         sta     PPUDATA
 .endrepeat
 
-        lda     #$20
+        lda     #$24
         sta     PPUADDR
-        lda     #$70
+        lda     #$7A
         sta     PPUADDR
 .repeat 3,index
         lda     linesTiles+index
@@ -259,16 +257,16 @@ dump_render_buffer:
 
         lda     #$20
         sta     PPUADDR
-        lda     #$64
+        lda     #$7C
         sta     PPUADDR
-.repeat 3,index
+.repeat 2,index
         lda     levelTiles+index
         sta     PPUDATA
 .endrepeat
 
-        lda     #$24
+        lda     #$20
         sta     PPUADDR
-        lda     #$6e
+        lda     #$6f
         sta     PPUADDR
 .repeat 6,index
         lda     scoreTiles+index

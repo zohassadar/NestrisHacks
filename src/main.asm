@@ -54,8 +54,8 @@ gameModeState_vblankThenRunState2:
         rts
 
 playState_unassignOrientationId:
-        lda     #$13
-        sta     currentPiece
+        ; lda     #$13
+        ; sta     currentPiece
         rts
 
         inc     gameModeState

@@ -150,6 +150,9 @@ build_gfx () {
     done
 
     }
+
+build_gfx
+
 # touch this file to store the last modified / checked date
 touch "$0"
 
