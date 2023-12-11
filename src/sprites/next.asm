@@ -47,6 +47,19 @@ L8B9D:  lda     orientationTable,y
 
 
 stageSpriteForNextPiece:
+
+        ; test out sprite 0 someday
+        ; lda     #$04
+        ; sta     oamStagingLength
+        ; lda     #$A0
+        ; sta     oamStaging+0
+        ; lda     #$00
+        ; sta     oamStaging+1
+        ; lda     #$00
+        ; sta     oamStaging+2
+        ; lda     #$02
+        ; sta     oamStaging+3
+        
         lda     displayNextPiece
         bne     @ret
         lda     #$2A

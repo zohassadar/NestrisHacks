@@ -69,6 +69,7 @@ initRamContinued:
         sty     PPUSCROLL
         lda     #$90
         sta     currentPpuCtrl
+        sta     topPartPPUCtrl ; unused
         sta     PPUCTRL
         lda     #$06
         sta     PPUMASK

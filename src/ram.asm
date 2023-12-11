@@ -230,7 +230,12 @@ columnAddress: .res 2
 renderOffset: .res 1
 tileBufferPosition: .res 1
 tileStartingOffset: .res 1
-.res $74
+
+; unused but maybe someday
+topPartPPUCtrl: .res 1
+topPartPPUScrollX: .res 1
+topPartPPUScrollXHi: .res 1
+.res $71
 
 ; End romhacks
 
