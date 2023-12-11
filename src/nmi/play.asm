@@ -398,8 +398,14 @@ stageSpriteForCurrentPiece:
         ; inc     playState
 @ret:    rts
 
+
+offsetPpuAddresHi:
+        .byte $24,$24
 ppuAddressHi:
         .byte $20,$20,$21,$21,$21,$21,$21,$21,$21,$21,$22,$22,$22,$22,$22,$22,$22,$22,$23,$23
+
+offsetPpuAddresLo:
+        .byte $42,$42
 ppuAddressLo:
         .byte $c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20
 
@@ -496,10 +502,13 @@ translatePieceIntoBuffer:
         rol
         pha
 
-        ldy     yPos
-        lda     ppuAddressHi,y
+        lda     yPos
+        clc
+        adc     #$02
+        tay
+        lda     offsetPpuAddresHi,y
         sta     columnAddress+1
-        lda     ppuAddressLo,y
+        lda     offsetPpuAddresLo,y
         sta     columnAddress
 
         lda     ppuScrollX
@@ -534,6 +543,10 @@ translatePieceIntoBuffer:
         lda     columnAddress+1
         sta     tileHi,x
         lda     tile
+        cpy     #$02
+        bcs     @store
+        lda     #$ef
+@store:
         sta     tiles,x
         inc     tileBufferPosition
         rts
