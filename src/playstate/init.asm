@@ -125,36 +125,33 @@ gameModeState_initGameState:
         sta     $03EF,x
         dex
         bne     @initStatsByType
-.ifdef WALLHACK2
-        lda     #$08
-.else
-        lda     #$05
-.endif
+        lda     #$08 ; wallhack2 !
         sta     player1_tetriminoX
         sta     player2_tetriminoX
         lda     #$00
         sta     player1_tetriminoY
 
-;         sta     playfieldAddr
-;         lda     #$04
-;         sta     playfieldAddr+1
+        sta     playfieldAddr
+        lda     #$04
+        sta     playfieldAddr+1
 
-;         ldx     #$14
-; @loop:
-;         lda     #$0
-;         tay
-;         sta     (playfieldAddr),y ; todo remove this debug
-;         lda     #$09
-;         tay
-;         sta     (playfieldAddr),y ; todo remove this debug
-;         lda     playfieldAddr
-;         clc
-;         adc     #$0A
-;         sta     playfieldAddr
-;         dex
-;         bne     @loop
+        ldx     #$14
+@loop:
+        lda     #$0
+        tay
+        sta     (playfieldAddr),y ; todo remove this debug
+        lda     #$09
+        tay
+        sta     (playfieldAddr),y ; todo remove this debug
+        lda     playfieldAddr
+        clc
+        adc     #$0A
+        sta     playfieldAddr
+        dex
+        bne     @loop
         
-        txa
+        jsr     copyPlayfieldToRenderRam
+        lda     #$00
         sta     player1_vramRow
         sta     player2_vramRow
         sta     player1_fallTimer

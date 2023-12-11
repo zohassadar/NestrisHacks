@@ -286,7 +286,14 @@ playState_checkForCompletedRows:
 @skipTetrisSoundEffect:
         inc     playState
         lda     completedLines
-        bne     @ret
+        beq     @reset
+        lda     #$13
+        sta     currentPiece
+        lda     #$00
+        sta     tetriminoY
+        jsr     copyPlayfieldToRenderRam
+        jmp     clearEmptyQueue
+@reset:
         lda     #$00
         sta     incrementSpeed
         inc     playState

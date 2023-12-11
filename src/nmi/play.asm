@@ -323,14 +323,10 @@ xPos := generalCounter4
 tile := generalCounter5
 
 stageSpriteForCurrentPiece:
-        lda     playState
-        cmp     #$04
-        bne     @notAnimation
-        jsr     updateLineClearingAnimation
-@notAnimation:
         lda     #$00
         sta     tileBufferPosition
         sta     tileStartingOffset
+        jsr     updateLineClearingAnimation
         lda     currentPiece
         asl     a
         asl     a
@@ -400,75 +396,33 @@ stageSpriteForCurrentPiece:
 
 
 offsetPpuAddresHi:
-        .byte $24,$24
+        .byte $20,$20
 ppuAddressHi:
         .byte $20,$20,$21,$21,$21,$21,$21,$21,$21,$21,$22,$22,$22,$22,$22,$22,$22,$22,$23,$23
 
 offsetPpuAddresLo:
-        .byte $42,$42
+        .byte $40,$40
 ppuAddressLo:
         .byte $c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20,$40,$60,$80,$a0,$c0,$e0,$00,$20
 
 updateLineClearingAnimation:
-        dec     rowY
-        bne     @checkForTail
-        beq     @finishUp
-
-@checkForTail:
+        lda     playState
         cmp     #$04
-        bne     @ret2
-        jmp     copyPlayfieldToRenderRam
+        beq     @animation
+        ; placeholder
+        rts
+@animation:
+        dec     rowY
+        beq     @finish
 
-@finishUp:
+        ; placeholder
+        rts
+
+@finish:
         inc     playState
         lda     #$00
         sta     incrementSpeed
-@ret2:  rts
-
-        lda     #$01
-        sta     rowY
-        lda     playState
-        cmp     #$04
-        bne     @ret
-        lda     #$FE
-        sta     animationTiles+1
-
-        ldx     #$03
-@loop:
-        lda     completedRow,x
-        beq     @nextRow
-        lda     ppuAddressHi,x
-        sta     animationHi,x
-        lda     ppuAddressLo,x
-        sta     animationLo,x
-@nextRow:
-        dex
-        bpl     @loop     
-        inc     rowY
-        bne     @ret
-        inc     playState
-@ret:   rts
-
-reset_animation:
-        lda     #$24
-        ldx     #$03
-@loop:
-        sta     animationHi,x
-        dex
-        bpl     @loop
-
-        lda     #$42
-        ldx     #$03
-@loop2:
-        sta     animationLo,x
-        dex
-        bpl     @loop2
-        lda     #$FF
-        sta     animationTiles
-        sta     animationTiles+1
         rts
-
-
 
 clearEmptyQueue:
         lda     #$24

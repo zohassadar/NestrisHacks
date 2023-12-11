@@ -108,6 +108,5 @@ initTasks:
 cleanupTasks:
         jsr     render_mode_play_and_demo
         jsr     copyPlayfieldColumnToBuffer
-        jsr     reset_animation
         ; jmp     updateLineClearingAnimation
         rts
