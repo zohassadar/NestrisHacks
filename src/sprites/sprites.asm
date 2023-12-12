@@ -14,13 +14,8 @@ oamContentLookup:
         .addr   sprite0CIPiece
         .addr   sprite0EHighScoreNameCursor
         .addr   sprite0EHighScoreNameCursor
-.ifdef PENGUIN
-        .addr   sprite0FPenguineLineClear1
-        .addr   sprite10PenguineLineClear2
-.else
-        .addr   sprite0FTPieceOffset
+        .addr   sprite0FWin
         .addr   sprite10SPieceOffset
-.endif
         .addr   sprite11ZPieceOffset
         .addr   sprite12JPieceOffset
         .addr   sprite13LPieceOffset
@@ -143,6 +138,10 @@ sprite0CIPiece:
         .byte   $FF
 sprite0EHighScoreNameCursor:
         .byte   $00,$FC,$21,$00,$FF
+sprite0FWin:
+        .byte   $00,$20,$00,$00,$00,$12,$00,$08
+        .byte   $00,$17,$00,$10,$00,$28,$00,$18
+        .byte   $00,$28,$00,$20,$FF
 .ifdef PENGUIN
 ; Penguins used for line clear are modified from ending screen penguin
 ; Priority and palette are changed from $21 to $03
