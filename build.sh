@@ -151,7 +151,7 @@ build_gfx () {
 
     }
 
-# build_gfx
+[[ -n $1 ]] && build_gfx
 
 # touch this file to store the last modified / checked date
 touch "$0"
