@@ -39,14 +39,21 @@ andValuesSlowFast:
 incValuesSlowFast:
         .byte   $01,$04
 
+
+resetScroll:
+        lda     #$00
+        sta     ppuScrollX
+        lda     currentPpuCtrl
+        and     #$FE
+        sta     currentPpuCtrl
+        rts
+
+
 incrementWallHackScroll:
 ; modify this so it is cycle count consistent
-        lda     gameMode
-        cmp     #$04
-        bne     @ret
-        lda     playState
-        cmp     #$0A
-        beq     @ret
+        lda     renderMode
+        cmp     #$03
+        bne     resetScroll
         ldx     incrementSpeed
         lda     andValuesSlowFast,x
         and     ppuScrollX

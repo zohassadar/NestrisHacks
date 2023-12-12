@@ -159,22 +159,23 @@ gameModeState_initGameState:
         lda     #$04
         sta     playfieldAddr+1
 
-        ldx     #$14
-@loop:
-        lda     #$0
-        tay
-        sta     (playfieldAddr),y ; todo remove this debug
-        lda     #$09
-        tay
-        sta     (playfieldAddr),y ; todo remove this debug
-        lda     playfieldAddr
-        clc
-        adc     #$0A
-        sta     playfieldAddr
-        dex
-        bne     @loop
+;         ldx     #$14
+; @loop:
+;         lda     #$0
+;         tay
+;         sta     (playfieldAddr),y ; todo remove this debug
+;         lda     #$09
+;         tay
+;         sta     (playfieldAddr),y ; todo remove this debug
+;         lda     playfieldAddr
+;         clc
+;         adc     #$0A
+;         sta     playfieldAddr
+;         dex
+;         bne     @loop
         
         lda     #$00
+        sta     sprite0State
 
         sta     ppuScrollX
         sta     ppuScrollXHi
