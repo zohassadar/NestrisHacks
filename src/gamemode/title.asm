@@ -24,6 +24,12 @@ gameMode_titleScreen:
         .addr   menu_palette
         jsr     copyRleNametableToPpu
         .addr   title_screen_nametable
+        lda     #$24
+        sta     addrOff
+        jsr     copyRleNametableToPpuOffset
+        .addr   title_screen_nametable
+        lda     #$00
+        sta     addrOff
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering

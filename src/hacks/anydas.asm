@@ -31,15 +31,18 @@ renderAnydasMenu:
         sta PPUADDR
         lda anydasARECharge
         bne @areChargeOn
+@areChargeOff:
         lda #$0F
         sta PPUDATA
         sta PPUDATA
         bne @drawArrow
+
 @areChargeOn:
         lda #$17
         sta PPUDATA
         lda #$FF
         sta PPUDATA
+
 @drawArrow:
         lda #$FF
         sta PPUDATA
@@ -67,6 +70,9 @@ renderAnydasMenu:
         lda #$00
         sta oamStagingLength
         jmp render
+
+
+
 
 anydasControllerInput:
         jsr pollController

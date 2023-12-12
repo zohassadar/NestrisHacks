@@ -38,7 +38,12 @@ resetOAMStaging:
         inx
         inx
         bne @hideY
-        rts
+
+        lda     gameMode
+        cmp     #$01
+        bne     @ret
+        jsr     stageTitleSprites
+@ret:   rts
 
 updateAudioAndWaitForNmi:
         jsr     updateAudio_jmp
