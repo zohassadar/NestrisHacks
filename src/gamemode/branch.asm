@@ -36,8 +36,8 @@ gameModeState_updatePlayer2:
 gameMode_playAndEndingHighScore:
         lda     gameModeState
         jsr     switch_s_plus_2a
+        .addr   hehnop
         .addr   gameModeState_initGameBackground
-        .addr   gameModeState_initGameState
         .addr   gameModeState_updateCountersAndNonPlayerState
         .addr   gameModeState_handleGameOver
         .addr   gameModeState_updatePlayer1
@@ -45,3 +45,8 @@ gameMode_playAndEndingHighScore:
         .addr   gameModeState_checkForResetKeyCombo
         .addr   gameModeState_startButtonHandling
         .addr   gameModeState_vblankThenRunState2
+
+
+hehnop:
+        inc gameModeState
+        nop

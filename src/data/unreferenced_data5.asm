@@ -67,19 +67,19 @@ orientationToNextOffsetTableY:
         .byte   $3,$0,$4,$6 ; l
         .byte   $7,$2 ; i
 .else
-        .byte   $FF,$FF,$FF,$FF,$EF,$7F,$FF,$FF
-        .byte   $FF,$FF,$7D,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $00,$00,$00,$00,$00,$00,$00,$00
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FB,$FF,$FF,$FF,$FF,$BF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $BF,$FF,$FF,$7F,$FF,$FF,$FF,$FF
-        .byte   $00,$00,$00,$00,$00,$00
+        ; .byte   $FF,$FF,$FF,$FF,$EF,$7F,$FF,$FF
+        ; .byte   $FF,$FF,$7D,$FF,$FF,$FF,$FF,$FF
+        ; .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        ; .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        ; .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        ; .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        ; .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        ; .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        ; .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        ; .byte   $FF,$FB,$FF,$FF,$FF,$FF,$BF,$FF
+        ; .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        ; .byte   $BF,$FF,$FF,$7F,$FF,$FF,$FF,$FF
+        ; .byte   $00,$00,$00,$00,$00,$00
 .endif
 
 

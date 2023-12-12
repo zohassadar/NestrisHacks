@@ -14,7 +14,7 @@ output = file.parent / file.name.replace(".py", ".bin")
 
 starting_addresses = [(32, 96)]  # fmt: skip
 lengths = [32]
-table = """NEXT_____TOP_000000_LINES_000_A_"""
+table = """NEXT_____TOP_000000_LEVEL_00_A__"""
 if __name__ == "__main__":
     try:
         nametable_builder.build_nametable(

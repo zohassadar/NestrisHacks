@@ -51,11 +51,7 @@ multBy10Table:
         .byte   $A0,$AA,$B4,$BE
 
 vramPlayfieldRows:
-        .word   $20C2,$20E2,$2102,$2122
-        .word   $2142,$2162,$2182,$21A2
-        .word   $21C2,$21E2,$2202,$2222
-        .word   $2242,$2262,$2282,$22A2
-        .word   $22C2,$22E2,$2302,$2322
+
 
 twoDigsToPPU:
         sta     generalCounter
@@ -248,18 +244,18 @@ dump_render_buffer:
         sta     PPUDATA
 .endrepeat
 
-        lda     #$24
+        lda     #$20
         sta     PPUADDR
-        lda     #$7A
+        lda     #$7C
         sta     PPUADDR
 .repeat 3,index
         lda     linesTiles+index
         sta     PPUDATA
 .endrepeat
 
-        lda     #$20
+        lda     #$24
         sta     PPUADDR
-        lda     #$7C
+        lda     #$7A
         sta     PPUADDR
 .repeat 2,index
         lda     levelTiles+index
@@ -441,6 +437,32 @@ clearEmptyQueue:
         rts
 
 
+
+resetStagingBuffer:
+        lda     #$24
+        ldx     #$0F
+@loop:
+        sta     tileHi,x
+        dex
+        bpl     @loop
+
+        lda     #$42
+        ldx     #$0F
+@loop2:
+        sta     tileLo,x
+        dex
+        bpl     @loop2
+
+
+        lda     #$EF
+        ldx     #$0F
+@loop3:
+        sta     tiles,x
+        dex
+        bpl     @loop3
+        rts
+
+
 translatePieceIntoBuffer:
         lda     xPos
         clc
@@ -517,6 +539,53 @@ copyPlayfieldToRenderRam:
         cpx     #200
         bne     @loop
         rts
+
+
+renderEntirePlayfield:
+        lda     #$04
+        sta     playfieldAddr+1
+        lda     #$00
+        sta     playfieldAddr
+        lda     #$00
+        sta     counter
+        ldx     #$00
+@loop:
+        ldx     #$20
+        ldy     counter 
+        lda     ppuAddressHi,y
+        sta     PPUADDR
+        lda     ppuAddressLo,y
+        sta     PPUADDR
+        ldy     #$00
+@innerLoop:
+        lda     (playfieldAddr),y
+        sta     PPUDATA
+        iny
+        cpy     #$0a
+        bne     @noresetY
+        ldy     #$00
+@noresetY:
+        dex
+        bne     @innerLoop
+        lda     playfieldAddr
+        clc
+        adc     #$0A
+        sta     playfieldAddr
+        inc     counter
+        lda     counter
+        cmp     #$14
+        bne     @loop
+        lda     #$00
+        sta     playfieldAddr
+        sta     counter
+        lda     #$00
+        sta     PPUADDR
+        sta     PPUADDR
+        rts
+
+
+
+
 
 
 ; 4 bytes per level (bg, fg, c3, c4)

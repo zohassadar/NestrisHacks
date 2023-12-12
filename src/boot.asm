@@ -57,6 +57,7 @@ initRamContinued:
         lda     #$9A
         sta     initMagic+4
 @continueWarmBootInit:
+        jsr     clearEmptyQueue
         ldx     #$89
         stx     rng_seed
         dex

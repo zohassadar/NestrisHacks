@@ -31,9 +31,10 @@ gameModeState_initGameBackground:
         .addr   right_game_nametable
         lda     #$00
         sta     bulkCopyOffset
+
         lda     #$24
         sta     PPUADDR
-        lda     #$7a
+        lda     #$7D
         sta     PPUADDR
         lda     gameType
         bne     @typeB
@@ -56,8 +57,8 @@ gameModeState_initGameBackground:
         jmp     gameModeState_initGameBackground_finish
 .endif
 
-@typeB: lda     #$0B
-        sta     PPUDATA
+@typeB: 
+        ; sta     PPUDATA
         lda     #$24
         sta     PPUADDR
         lda     #$6d
@@ -69,35 +70,51 @@ gameModeState_initGameBackground:
         lda     highScoreScoresB+2
         jsr     twoDigsToPPU
 @skipHighScore2:
-        ldx     #$00
-@nextPpuAddress:
-        lda     game_typeb_nametable_patch,x
-        inx
-        sta     PPUADDR
-        lda     game_typeb_nametable_patch,x
-        inx
-        sta     PPUADDR
-@nextPpuData:
-        lda     game_typeb_nametable_patch,x
-        inx
-        cmp     #$FE
-        beq     @nextPpuAddress
-        cmp     #$FD
-        beq     @endOfPpuPatching
-        sta     PPUDATA
-        jmp     @nextPpuData
+;         ldx     #$00
+; @nextPpuAddress:
+;         lda     game_typeb_nametable_patch,x
+;         inx
+;         sta     PPUADDR
+;         lda     game_typeb_nametable_patch,x
+;         inx
+;         sta     PPUADDR
+; @nextPpuData:
+;         lda     game_typeb_nametable_patch,x
+;         inx
+;         cmp     #$FE
+;         beq     @nextPpuAddress
+;         cmp     #$FD
+;         beq     @endOfPpuPatching
+;         sta     PPUDATA
+;         jmp     @nextPpuData
 
-@endOfPpuPatching:
-        lda     #$20
+; @endOfPpuPatching:
+        lda     #$24
         sta     PPUADDR
-        lda     #$65
+        lda     #$7C
         sta     PPUADDR
+        lda     #$24
+        sta     PPUDATA
         lda     startHeight
         and     #$0F
         sta     PPUDATA
         jmp     gameModeState_initGameBackground_finish
 
 gameModeState_initGameBackground_finish:
+
+        jsr     gameModeState_initGameState
+        jsr     resetStagingBuffer
+        jsr     copyPlayfieldToRenderRam
+        jsr     renderEntirePlayfield
+
+        ; jsr     bulkCopyToPpu
+        ; .addr   game_nametable+1050
+        ; lda     #$04
+        ; sta     bulkCopyOffset
+        ; jsr     bulkCopyToPpu
+        ; .addr   game_nametable+1050
+        ; lda     #$00
+        ; sta     bulkCopyOffset
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging
         jsr     updateAudioWaitForNmiAndEnablePpuRendering
@@ -105,21 +122,21 @@ gameModeState_initGameBackground_finish:
         jsr     updateAudioWaitForNmiAndResetOamStaging
         lda     #$01
         sta     player1_playState
-        sta     player2_playState
         lda     player1_startLevel
         sta     player1_levelNumber
-        lda     player2_startLevel
-        sta     player2_levelNumber
         inc     gameModeState
         rts
 
 game_typeb_nametable_patch:
-        .byte   $20,$64,$24,$FD,$39,$39,$39,$39
+        .byte   $20,$7E,$24,$FD,$39,$39,$39,$39
         .byte   $39,$3A,$FE,$23,$17,$3B,$11,$0E
         .byte   $12,$10,$11,$1D,$3C,$FE,$23,$37
         .byte   $3B,$FF,$FF,$FF,$FF,$FF,$FF,$3C
         .byte   $FE,$23,$57,$3D,$3E,$3E,$3E,$3E
         .byte   $3E,$3E,$3F,$FD
+
+
+
 gameModeState_initGameState:
         lda     #$EF
         ldx     #$04
@@ -157,7 +174,19 @@ gameModeState_initGameState:
         dex
         bne     @loop
         
-        jsr     copyPlayfieldToRenderRam
+        lda     #$00
+
+        sta     ppuScrollX
+        sta     ppuScrollXHi
+        sta     ppuScrollY
+        sta     columnOffset
+        sta     topPartPPUScrollX
+        sta     topPartPPUScrollXHi
+        lda     currentPpuCtrl
+        and     #$FE
+        sta     currentPpuCtrl
+
+
         lda     #$00
         sta     player1_vramRow
         sta     player2_vramRow
@@ -168,13 +197,8 @@ gameModeState_initGameState:
         sta     player1_score
         sta     player1_score+1
         sta     player1_score+2
-        sta     player2_score
-        sta     player2_score+1
-        sta     player2_score+2
         sta     player1_lines
         sta     player1_lines+1
-        sta     player2_lines
-        sta     player2_lines+1
         sta     twoPlayerPieceDelayCounter
         sta     lineClearStatsByType
         sta     lineClearStatsByType+1
@@ -230,7 +254,7 @@ gameModeState_initGameState:
 @skipTypeBInit:
         lda     #$47
         sta     outOfDateRenderFlags
-        jsr     updateAudioWaitForNmiAndResetOamStaging
+        ; jsr     updateAudioWaitForNmiAndResetOamStaging
 .ifdef SPS
         jsr     resetBSeed
 .else
@@ -239,8 +263,9 @@ gameModeState_initGameState:
         ldx     musicType
         lda     musicSelectionTable,x
         jsr     setMusicTrack
-        inc     gameModeState
+        ; inc     gameModeState
         rts
+        jmp     copyPlayfieldToRenderRam
 
 ; Copies $60 to $40
 makePlayer1Active:
@@ -285,11 +310,6 @@ makePlayer2Active:
         sta     heldButtons
         ldx     #$1F
 @whileXNotNeg1:
-        lda     player2_tetriminoX,x
-        sta     tetriminoX,x
-        dex
-        cpx     #$FF
-        bne     @whileXNotNeg1
         rts
 
 ; Copies $40 to $60
@@ -411,17 +431,17 @@ typeBGuaranteeBlank:
         tay
         lda     #$EF
         sta     playfield,y
-        jsr     updateAudioWaitForNmiAndResetOamStaging
+        ; jsr     updateAudioWaitForNmiAndResetOamStaging
         dec     generalCounter
         bne     typeBRows
 
 initCopyPlayfieldToPlayer2:  
-        ldx     #$C8
-copyPlayfieldToPlayer2:  
-        lda     playfield,x
-        sta     playfieldForSecondPlayer,x
-        dex
-        bne     copyPlayfieldToPlayer2
+;         ldx     #$C8
+; copyPlayfieldToPlayer2:  
+;         lda     playfield,x
+;         sta     playfieldForSecondPlayer,x
+;         dex
+;         bne     copyPlayfieldToPlayer2
 
 ; Player1 Blank Lines
         ldx     player1_startHeight
@@ -436,15 +456,15 @@ typeBBlankInitPlayer1:
         bne     typeBBlankInitPlayer1
 
 ; Player2 Blank Lines
-        ldx     player2_startHeight
-        lda     typeBBlankInitCountByHeightTable,x
-        tay
-        lda     #$EF
-typeBBlankInitPlayer2:  
-        sta     playfieldForSecondPlayer,y
-        dey
-        cpy     #$FF
-        bne     typeBBlankInitPlayer2
+;         ldx     player2_startHeight
+;         lda     typeBBlankInitCountByHeightTable,x
+;         tay
+;         lda     #$EF
+; typeBBlankInitPlayer2:  
+;         sta     playfieldForSecondPlayer,y
+;         dey
+;         cpy     #$FF
+;         bne     typeBBlankInitPlayer2
 endTypeBInit:  
         rts
 
