@@ -51,7 +51,7 @@ stageSpriteForNextPiece:
         sta     sprite0Staging+0
         lda     #$36
         sta     sprite0Staging+1
-        lda     #$03
+        lda     #$43
         sta     sprite0Staging+2
         lda     #$10
         sta     sprite0Staging+3
