@@ -74,6 +74,7 @@ if __name__ == "__main__":
             original_sha1sum,
             lengths,
             starting_addresses,
+            compress=False,
         )
     except Exception as exc:
         print(

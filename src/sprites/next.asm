@@ -47,13 +47,14 @@ L8B9D:  lda     orientationTable,y
 
 
 stageSpriteForNextPiece:
+;       ; effort could go into making sure this gets hidden during rocket & high score screens
         lda     #$CF
         sta     sprite0Staging+0
         lda     #$36
         sta     sprite0Staging+1
         lda     #$43
         sta     sprite0Staging+2
-        lda     #$10
+        lda     #$00
         sta     sprite0Staging+3
         sec
         rol     sprite0State

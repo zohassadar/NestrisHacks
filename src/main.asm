@@ -132,6 +132,7 @@ unreferenced_data1:
 
 .ifdef TOURNAMENT
         .include "hacks/tourney.asm"
+        .include "hacks/rle.asm"
 .endif
 
 

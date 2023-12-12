@@ -299,7 +299,7 @@ highScoreEntryScreen:
 .endif
         jsr     bulkCopyToPpu
         .addr   menu_palette
-        jsr     bulkCopyToPpu
+        jsr     copyRleNametableToPpu
         .addr   enter_high_score_nametable
         lda     #$20
         sta     PPUADDR

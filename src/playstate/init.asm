@@ -21,16 +21,20 @@ gameModeState_initGameBackground:
 
         jsr     bulkCopyToPpu
         .addr   game_palette
-        jsr     bulkCopyToPpu
+
+        jsr     copyRleNametableToPpu
         .addr   game_nametable
-        lda     #$04
-        sta     bulkCopyOffset
-        jsr     bulkCopyToPpu
+
+
+        lda     #$24
+        sta     addrOff
+        jsr     copyRleNametableToPpuOffset
         .addr   game_nametable
-        jsr     bulkCopyToPpu
+
+        lda     #$24
+        sta     addrOff
+        jsr     copyRleNametableToPpuOffset
         .addr   right_game_nametable
-        lda     #$00
-        sta     bulkCopyOffset
 
         lda     #$24
         sta     PPUADDR
@@ -195,11 +199,16 @@ gameModeState_initGameState:
         sta     player2_fallTimer
         sta     pendingGarbage
         sta     pendingGarbageInactivePlayer
+        lda     #$99
         sta     player1_score
         sta     player1_score+1
         sta     player1_score+2
+        lda     #$00
         sta     player1_lines
         sta     player1_lines+1
+        sta     player2_score
+        sta     player2_score+1
+        sta     player2_score+2
         sta     twoPlayerPieceDelayCounter
         sta     lineClearStatsByType
         sta     lineClearStatsByType+1
@@ -248,7 +257,7 @@ gameModeState_initGameState:
 .ifdef B_TYPE_DEBUG
         lda     #$00
 .else
-        lda     #$25
+        lda     #$00
 .endif
         sta     player1_lines
         sta     player2_lines

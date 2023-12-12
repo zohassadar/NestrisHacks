@@ -22,7 +22,7 @@ gameMode_titleScreen:
 .endif
         jsr     bulkCopyToPpu
         .addr   menu_palette
-        jsr     bulkCopyToPpu
+        jsr     copyRleNametableToPpu
         .addr   title_screen_nametable
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging

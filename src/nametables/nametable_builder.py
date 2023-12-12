@@ -65,6 +65,33 @@ class Args(argparse.Namespace):
     characters: str
     skip_attrs: bool
 
+def konami_compression(buffer: bytearray):
+    """
+    https://github.com/kirjavascript/TetrisGYM/blob/master/src/nametables/rle.js
+    """
+    buffer = bytearray(buffer)
+    i = 0
+    compressed = bytearray()
+    while True:
+        if i >= len(buffer):
+            break
+        num = buffer[i]
+        for peek in range(1,min(0x81, (len(buffer) - i) + 1)):
+            if (len(buffer) - (i + peek)) > 0 and num != buffer[i+peek]:
+                break
+        if peek - 1:
+            compressed.extend([peek, num])
+            i+=peek
+            continue
+        for peek in range(min(0x80, (len(buffer) - i) + 1)):
+            if (len(buffer) - (i + peek)) > 0 and buffer[i+peek] == buffer[i+peek+1]:
+                break
+        compressed.extend([0x80+peek])
+        compressed.extend(buffer[i:i+peek])
+        i+=peek
+    compressed.append(0xff)
+    return compressed
+
 
 def extract_bytes_from_nametable(
     nametable_filename: str,
@@ -248,6 +275,7 @@ def build_nametable(
     original_sha1sum: str,
     lengths: list[int],
     starting_addresses: list[tuple[int, int]],
+    compress: bool = True,
 ) -> None:
     validate_characters(characters)
     logger.debug(f"Read {len(lengths)} lengths")
@@ -266,12 +294,15 @@ def build_nametable(
 
     output_bytes = []
     for length, starting_address in zip(lengths, starting_addresses):
-        output_bytes.extend(starting_address)
-        output_bytes.append(length)
+        if not compress:
+            output_bytes.extend(starting_address)
+            output_bytes.append(length)
         output_bytes.extend(table_bytes[:length])
         table_bytes = table_bytes[length:]
-
-    output_bytes.append(255)
+    if not compress:
+        output_bytes.append(255)
+    else:
+        output_bytes = konami_compression(output_bytes)
 
     output_data = bytes(output_bytes)
     sha1sum = hashlib.sha1(output_data).hexdigest()

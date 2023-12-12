@@ -21,7 +21,7 @@ gameMode_gameTypeMenu:
         jsr     disableNmi
         jsr     bulkCopyToPpu
         .addr   menu_palette
-        jsr     bulkCopyToPpu
+        jsr     copyRleNametableToPpu
         .addr   game_type_menu_nametable
 .ifdef CNROM
         ; 82ed

@@ -20,7 +20,7 @@ gameMode_legalScreen:
 .endif
         jsr     bulkCopyToPpu
         .addr   legal_screen_palette
-        jsr     bulkCopyToPpu
+        jsr     copyRleNametableToPpu
         .addr   legal_screen_nametable
         jsr     waitForVBlankAndEnableNmi
         jsr     updateAudioWaitForNmiAndResetOamStaging

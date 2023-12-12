@@ -36,7 +36,7 @@ gameMode_levelMenu:
 .endif
         jsr     bulkCopyToPpu
         .addr   menu_palette
-        jsr     bulkCopyToPpu
+        jsr     copyRleNametableToPpu
         .addr   level_menu_nametable
         lda     gameType
         bne     @skipTypeBHeightDisplay
