@@ -18,7 +18,7 @@ shift_tetrimino:
         bpl     shift_ret
         lda     anydasARRValue
         sta     autorepeatX
-        jmp     checkFor0Arr
+        jmp     buttonHeldDown
 @resetAutorepeatX:
         lda     anydasDASValue
 .else

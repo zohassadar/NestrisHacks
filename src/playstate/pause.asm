@@ -43,17 +43,11 @@ gameModeState_startButtonHandling:
         ldy     #$02
         jsr     memset_page
 @pauseLoop:
-.ifdef TOURNAMENT
-        lda     #PAUSE_SPRITE_X
+        lda     frameCounter
         sta     spriteXOffset
         lda     #PAUSE_SPRITE_Y
         sta     spriteYOffset
-.else
-        lda     #$70
-        sta     spriteXOffset
-        lda     #$77
-        sta     spriteYOffset
-.endif
+
         lda     #$05
         sta     spriteIndexInOamContentLookup
         jsr     stageSpritesThenloadSprites
