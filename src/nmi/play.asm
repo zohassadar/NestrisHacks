@@ -227,7 +227,7 @@ dump_render_buffer:
 
 ; ---------------------
         ldy     #$EF
-.repeat 16,index
+.repeat 20,index
         lda     tileEraseHi+index
         sta     PPUADDR
         lda     tileEraseLo+index
@@ -235,7 +235,7 @@ dump_render_buffer:
         sty     PPUDATA
 .endrepeat
 
-.repeat 16,index
+.repeat 20,index
         lda     tileHi+index
         sta     PPUADDR
         lda     tileLo+index
@@ -377,6 +377,11 @@ stageSpriteForCurrentPiece:
         adc     #$0A
         sta     tileStartingOffset
         jsr     translatePieceIntoBuffer
+        lda     tileStartingOffset
+        clc
+        adc     #$0A
+        sta     tileStartingOffset
+        jsr     translatePieceIntoBuffer
         pla
         sta     tileStartingOffset
         dec     counter
@@ -407,11 +412,10 @@ updateLineClearingAnimation:
         beq     @animation
         ; placeholder
         rts
+
 @animation:
         dec     rowY
         beq     @finish
-
-        ; placeholder
         rts
 
 @finish:
@@ -422,14 +426,14 @@ updateLineClearingAnimation:
 
 clearEmptyQueue:
         lda     #$24
-        ldx     #$0F
+        ldx     #$13
 @loop:
         sta     tileEraseHi,x
         dex
         bpl     @loop
 
         lda     #$42
-        ldx     #$0F
+        ldx     #$13
 @loop2:
         sta     tileEraseLo,x
         dex
@@ -440,14 +444,14 @@ clearEmptyQueue:
 
 resetStagingBuffer:
         lda     #$24
-        ldx     #$0F
+        ldx     #$13
 @loop:
         sta     tileHi,x
         dex
         bpl     @loop
 
         lda     #$42
-        ldx     #$0F
+        ldx     #$13
 @loop2:
         sta     tileLo,x
         dex
@@ -455,7 +459,7 @@ resetStagingBuffer:
 
 
         lda     #$EF
-        ldx     #$0F
+        ldx     #$13
 @loop3:
         sta     tiles,x
         dex

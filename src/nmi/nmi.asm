@@ -19,7 +19,7 @@ nmi:    pha
         jsr     generateNextPseudorandomNumber
         inc     verticalBlankingInterval
 
-.repeat 16,index
+.repeat 20,index
         lda     tileHi+index
         sta     tileEraseHi+index
         lda     tileLo+index

@@ -274,7 +274,7 @@ playState_checkForCompletedRows:
         adc     pendingGarbageInactivePlayer
         lda     #$00
         sta     vramRow
-        lda     #$40
+        lda     #$48
         sta     rowY
         lda     #$01
         sta     incrementSpeed
@@ -287,12 +287,13 @@ playState_checkForCompletedRows:
         inc     playState
         lda     completedLines
         beq     @reset
-        lda     #$13
-        sta     currentPiece
-        lda     #$00
-        sta     tetriminoY
-        jsr     copyPlayfieldToRenderRam
-        jmp     clearEmptyQueue
+        ; lda     #$13
+        ; sta     currentPiece
+        ; lda     #$00
+        ; sta     tetriminoY
+        jmp     copyPlayfieldToRenderRam
+        ; jmp     clearEmptyQueue
+        ; rts
 @reset:
         lda     #$00
         sta     incrementSpeed

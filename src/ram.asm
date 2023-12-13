@@ -201,14 +201,11 @@ playfieldForSecondPlayer:		; $0500
 stripeAddr: .res 2
 stripe: .res 20
 .res 10
-tileEraseHi:    .res 16
-tileEraseLo:    .res 16
-animationLo: .res 4
-animationHi: .res 4
-animationTiles: .res 2
-tileHi:         .res 16
-tileLo:         .res 16
-tiles:           .res 16
+tileEraseHi:    .res 20
+tileEraseLo:    .res 20
+tileHi:         .res 20
+tileLo:         .res 20
+tiles:           .res 20
 ; addresses are hardcoded
 scoreTiles: .res 6
 linesTiles: .res 3
@@ -216,7 +213,7 @@ levelTiles: .res 2
 levelPalette: .res 4
 backgroundColor: .res 1
 
-.res 22
+.res 12
 
 ; Area for romhacks
 

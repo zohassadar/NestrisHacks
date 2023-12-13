@@ -44,5 +44,12 @@ playState_player2ControlsActiveTetrimino:
 
 
 playState_duringLineClear:
-        jsr     copyPlayfieldToRenderRam
-        rts
+        lda     rowY
+        cmp     #$44
+        bne     @ret
+        lda     #$13
+        sta     currentPiece
+        lda     #$00
+        sta     tetriminoY
+        jsr     clearEmptyQueue
+@ret:   rts
