@@ -28,9 +28,9 @@
 ;   $FF     End
 ;   > $80   Next (n-128) bytes are literal
 
-addrLo  := $0000
-addrHi  := addrLo+1
-addrOff := addrLo+2
+; addrLo  := $00
+; addrHi  := addrLo+1
+; addrOff = $03
 
 copyRleNametableToPpu:
         lda     #$20

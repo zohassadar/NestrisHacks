@@ -1,5 +1,9 @@
         .setcpu "6502"
 
+addrLo  := $00
+addrHi  := addrLo+1
+addrOff = $03
+
 .include "compat.asm"
 .include "constants.asm"
 .include "charmap.asm"

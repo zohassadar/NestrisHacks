@@ -199,7 +199,7 @@ gameModeState_initGameState:
         sta     player2_fallTimer
         sta     pendingGarbage
         sta     pendingGarbageInactivePlayer
-        lda     #$99
+        ; lda     #$99
         sta     player1_score
         sta     player1_score+1
         sta     player1_score+2
@@ -257,7 +257,7 @@ gameModeState_initGameState:
 .ifdef B_TYPE_DEBUG
         lda     #$00
 .else
-        lda     #$00
+        lda     #$25
 .endif
         sta     player1_lines
         sta     player2_lines

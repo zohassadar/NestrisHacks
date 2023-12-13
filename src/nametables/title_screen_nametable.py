@@ -79,9 +79,9 @@ characters = (
 
 
 
-print('    .byte  ' + ','.join(f'${y:02x}' for y in ys))
-print('    .byte  ' + ','.join(f'${x:02x}' for x in xs))
-print('    .byte  ' + ','.join(f'${tile:02x}' for tile in tiles))
+# print('    .byte  ' + ','.join(f'${y:02x}' for y in ys))
+# print('    .byte  ' + ','.join(f'${x:02x}' for x in xs))
+# print('    .byte  ' + ','.join(f'${tile:02x}' for tile in tiles))
 
 
 41
