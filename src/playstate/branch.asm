@@ -45,8 +45,12 @@ playState_player2ControlsActiveTetrimino:
 
 playState_duringLineClear:
         lda     rowY
+        cmp     #$40
+        beq     @clearPiece
         cmp     #$44
         bne     @ret
+        jmp     copyPlayfieldToRenderRam    
+@clearPiece:
         lda     #$13
         sta     currentPiece
         lda     #$00

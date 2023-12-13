@@ -291,9 +291,9 @@ playState_checkForCompletedRows:
         ; sta     currentPiece
         ; lda     #$00
         ; sta     tetriminoY
-        jmp     copyPlayfieldToRenderRam
+        ; jmp     copyPlayfieldToRenderRam
         ; jmp     clearEmptyQueue
-        ; rts
+        rts
 @reset:
         lda     #$00
         sta     incrementSpeed
