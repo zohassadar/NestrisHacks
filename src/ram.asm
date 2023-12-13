@@ -228,6 +228,7 @@ menuMoveThrottle: .res 1         ; $0602
 menuThrottleTmp: .res 1          ; $0603
 seedVersion: .res 1              ; $0604
 
+ppuScrollXLo: .res 1
 ppuScrollXHi: .res 1
 columnOffset: .res 1 ; number from 0 to 4
 columnAddress: .res 2
@@ -244,7 +245,7 @@ incrementSpeed: .res 1
 
 sprite0State: .res 1 ; 0 = reset, 1 = staged, 2 = nmi happened ready to wait
 bulkCopyOffset: .res 1 ; added to hi byte when doing bulk copy
-.res $6e
+.res $6d
 
 ; End romhacks
 

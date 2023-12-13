@@ -34,10 +34,15 @@ wallHackyStageSprite:
         rts
 
 
-andValuesSlowFast:
+andValuesSlowFastHi:
         .byte   $FF,$FC
-incValuesSlowFast:
-        .byte   $01,$04
+andValuesSlowFastLo:
+        .byte   $FF,$00
+
+incValuesSlowFastHi:
+        .byte   $00,$04
+incValuesSlowFastLo:
+        .byte   $80,$00
 
 
 resetScroll:
@@ -55,10 +60,16 @@ incrementWallHackScroll:
         cmp     #$03
         bne     resetScroll
         ldx     incrementSpeed
-        lda     andValuesSlowFast,x
-        and     ppuScrollX
         clc
-        adc     incValuesSlowFast,x
+        lda     andValuesSlowFastLo,x
+        and     ppuScrollXLo
+        adc     incValuesSlowFastLo,x
+        sta     ppuScrollXLo
+        php
+        
+        lda     andValuesSlowFastHi,x  
+        and     ppuScrollX
+        adc     incValuesSlowFastHi,x
         sta     ppuScrollX
 
         lda     ppuScrollXHi
@@ -71,9 +82,9 @@ incrementWallHackScroll:
         adc     #$00
         sta     currentPpuCtrl
 
-        lda     frameCounter
-        and     #$01
-        bne     @skipTopPart
+        ; lda     frameCounter
+        ; and     #$03
+        ; bne     @skipTopPart
 
         lda     #$01
         clc
@@ -91,9 +102,12 @@ incrementWallHackScroll:
         sta     topPartPPUCtrl
 
 @skipTopPart:
-
-
 ; cycle offset every 8 pixels
+        plp
+        bcs     @inc
+        lda     incrementSpeed
+        beq     @ret
+@inc:
         lda     ppuScrollX
         and     #$07
         bne     @ret
