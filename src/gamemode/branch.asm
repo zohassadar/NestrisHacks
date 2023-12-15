@@ -19,7 +19,9 @@ gameModeState_updatePlayer1:
         jsr     stageSpriteForCurrentPiece
         jsr     savePlayer1State
         jsr     stageSpriteForNextPiece
+        pha
         jsr     setScrollSpeed
+        pla
         inc     gameModeState
         rts
 
