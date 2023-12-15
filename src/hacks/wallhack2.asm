@@ -41,9 +41,26 @@ andValuesSlowFastLo:
 
 incValuesSlowFastHi:
         .byte   $00,$04
-incValuesSlowFastLo:
-        .byte   $80,$00
 
+
+scrollSpeedTable:
+        .byte $38,$40,$48,$50,$58,$60,$68,$70,$78,$80
+
+setScrollSpeed:
+        ldx     incrementSpeed
+        dex
+        beq     @fast 
+        lda     player1_levelNumber
+        cmp     #$14
+        bcc     @shiftAndLoad     
+        lda     #$13
+@shiftAndLoad:
+        lsr
+        tay
+        ldx     scrollSpeedTable,y
+@fast:
+        stx     scrollSpeed
+        rts
 
 resetScroll:
         lda     #$00
@@ -63,7 +80,7 @@ incrementWallHackScroll:
         clc
         lda     andValuesSlowFastLo,x
         and     ppuScrollXLo
-        adc     incValuesSlowFastLo,x
+        adc     scrollSpeed
         sta     ppuScrollXLo
         php
         

@@ -246,16 +246,16 @@ dump_render_buffer:
 
         lda     #$20
         sta     PPUADDR
-        lda     #$7C
+        lda     #$6A
         sta     PPUADDR
 .repeat 3,index
         lda     linesTiles+index
         sta     PPUDATA
 .endrepeat
 
-        lda     #$24
+        lda     #$20
         sta     PPUADDR
-        lda     #$7A
+        lda     #$64
         sta     PPUADDR
 .repeat 2,index
         lda     levelTiles+index
@@ -264,7 +264,7 @@ dump_render_buffer:
 
         lda     #$20
         sta     PPUADDR
-        lda     #$6f
+        lda     #$79
         sta     PPUADDR
 .repeat 6,index
         lda     scoreTiles+index

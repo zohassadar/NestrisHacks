@@ -112,3 +112,5 @@ initRamContinued:
         sta     numberOfPlayers
         lda     #$00
         sta     frameCounter+1
+        lda     #$10
+        sta     scrollSpeed

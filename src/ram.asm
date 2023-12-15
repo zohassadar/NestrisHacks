@@ -212,8 +212,8 @@ linesTiles: .res 3
 levelTiles: .res 2
 levelPalette: .res 4
 backgroundColor: .res 1
-
-.res 12
+scrollSpeed: .res 1
+.res 11
 
 ; Area for romhacks
 

@@ -34,26 +34,26 @@ gameModeState_initGameBackground:
         lda     #$24
         sta     addrOff
         jsr     copyRleNametableToPpuOffset
-        .addr   right_game_nametable
+        .addr   game_nametable
 
-        lda     #$24
-        sta     PPUADDR
-        lda     #$7D
-        sta     PPUADDR
-        lda     gameType
-        bne     @typeB
-        lda     #$0A
-        sta     PPUDATA
-        lda     #$24
-        sta     PPUADDR
-        lda     #$6d
-        sta     PPUADDR
-        lda     highScoreScoresA
-        jsr     twoDigsToPPU
-        lda     highScoreScoresA+1
-        jsr     twoDigsToPPU
-        lda     highScoreScoresA+2
-        jsr     twoDigsToPPU
+        ; lda     #$24
+        ; sta     PPUADDR
+        ; lda     #$7D
+        ; sta     PPUADDR
+        ; lda     gameType
+        ; bne     @typeB
+        ; lda     #$0A
+        ; sta     PPUDATA
+        ; lda     #$24
+        ; sta     PPUADDR
+        ; lda     #$6d
+        ; sta     PPUADDR
+        ; lda     highScoreScoresA
+        ; jsr     twoDigsToPPU
+        ; lda     highScoreScoresA+1
+        ; jsr     twoDigsToPPU
+        ; lda     highScoreScoresA+2
+        ; jsr     twoDigsToPPU
 @skipHighScore:
 .ifdef SPS
         jmp     drawSeedOnBackground
@@ -63,16 +63,16 @@ gameModeState_initGameBackground:
 
 @typeB: 
         ; sta     PPUDATA
-        lda     #$24
-        sta     PPUADDR
-        lda     #$6d
-        sta     PPUADDR
-        lda     highScoreScoresB
-        jsr     twoDigsToPPU
-        lda     highScoreScoresB+1
-        jsr     twoDigsToPPU
-        lda     highScoreScoresB+2
-        jsr     twoDigsToPPU
+        ; lda     #$24
+        ; sta     PPUADDR
+        ; lda     #$6d
+        ; sta     PPUADDR
+        ; lda     highScoreScoresB
+        ; jsr     twoDigsToPPU
+        ; lda     highScoreScoresB+1
+        ; jsr     twoDigsToPPU
+        ; lda     highScoreScoresB+2
+        ; jsr     twoDigsToPPU
 @skipHighScore2:
 ;         ldx     #$00
 ; @nextPpuAddress:
@@ -93,15 +93,15 @@ gameModeState_initGameBackground:
 ;         jmp     @nextPpuData
 
 ; @endOfPpuPatching:
-        lda     #$24
-        sta     PPUADDR
-        lda     #$7C
-        sta     PPUADDR
-        lda     #$24
-        sta     PPUDATA
-        lda     startHeight
-        and     #$0F
-        sta     PPUDATA
+        ; lda     #$24
+        ; sta     PPUADDR
+        ; lda     #$7C
+        ; sta     PPUADDR
+        ; lda     #$24
+        ; sta     PPUDATA
+        ; lda     startHeight
+        ; and     #$0F
+        ; sta     PPUDATA
         jmp     gameModeState_initGameBackground_finish
 
 gameModeState_initGameBackground_finish:
@@ -163,21 +163,21 @@ gameModeState_initGameState:
         lda     #$04
         sta     playfieldAddr+1
 
-;         ldx     #$14
-; @loop:
-;         lda     #$0
-;         tay
-;         sta     (playfieldAddr),y ; todo remove this debug
-;         lda     #$09
-;         tay
-;         sta     (playfieldAddr),y ; todo remove this debug
-;         lda     playfieldAddr
-;         clc
-;         adc     #$0A
-;         sta     playfieldAddr
-;         dex
-;         bne     @loop
-        
+        lda     heldButtons_player1
+        and     #BUTTON_SELECT
+        beq     @noColumn
+        ldx     #$13
+        ldy     #$A
+@loop:
+        lda     #$7B
+        sta     (playfieldAddr),y ; todo remove this debug
+        lda     playfieldAddr
+        clc
+        adc     #$0A
+        sta     playfieldAddr
+        dex
+        bne     @loop
+@noColumn:
         lda     #$00
         sta     sprite0State
 

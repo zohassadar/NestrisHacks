@@ -94,6 +94,7 @@ gameMode_levelMenu_processPlayer1Navigation:
         cmp     #$10
         bne     @checkBPressed
         lda     heldButtons_player1
+        and     #BUTTON_START+BUTTON_A
         cmp     #$90
         bne     @startAndANotPressed
         lda     player1_startLevel

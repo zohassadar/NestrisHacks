@@ -172,8 +172,8 @@ unreferenced_data1:
 
 .segment        "unreferenced_data4": absolute
 .include "data/unreferenced_data4.asm"
-right_game_nametable:
-.incbin "nametables/right_game_nametable.bin"
+; right_game_nametable:
+; .incbin "nametables/right_game_nametable.bin"
 ; End of "unreferenced_data4" segment
 .code
 
