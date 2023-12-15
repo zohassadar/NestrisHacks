@@ -31,7 +31,7 @@ nmi:    pha
         bne     @noGameModeScroll
 ; this sorta works to change scrolling 
         ldy     #$3
-        ldx     #$EE    
+        ldx     #$8E    
 @loop:
         dex
         bne @loop
