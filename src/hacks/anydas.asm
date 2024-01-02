@@ -181,7 +181,7 @@ checkFor0Arr:
         dec     tetriminoX
 @shiftBackToRight:
         inc     tetriminoX
-        lda     anydasDASValue
+        lda     #$01
         sta     autorepeatX
 @leftNotPressed:
         rts
