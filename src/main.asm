@@ -103,7 +103,11 @@ game_nametable:
 .ifdef TALLER
         .incbin "nametables/taller_game_nametable.bin"
 .else
+    .ifdef TWELVE
+        .incbin "nametables/game_12wide_nametable.bin"
+    .else
         .incbin "nametables/game_nametable.bin"
+    .endif
 .endif
 enter_high_score_nametable:
         .incbin "nametables/enter_high_score_nametable.bin"

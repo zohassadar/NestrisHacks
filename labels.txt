@@ -9,6 +9,7 @@ al 008914 .drop_tetrimino
 al 0089AE .shift_tetrimino
 al 008BE5 .orientationToSpriteTable
 al 008BF8 .unreferenced_orientationToSpriteTable
+al 00948B .isPositionValid
 al 009522 .@playStateNotDisplayLineClearingAnimation
 al 009D51 .pollControllerButtons
 al 00A344 .render_mode_congratulations_screen

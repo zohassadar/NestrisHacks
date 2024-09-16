@@ -82,6 +82,7 @@ get_labels () {
         "shift_tetrimino"
         "rotate_tetrimino"
         "drop_tetrimino"
+        "isPositionValid"
         "game_palette"
         "gameModeState_initGameBackground"
         "playState_playerControlsActiveTetrimino"
