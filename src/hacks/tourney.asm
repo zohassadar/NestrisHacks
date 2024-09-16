@@ -28,3 +28,7 @@ render_endingSkippable_B:
         inc     player2_score
 @ret:   rts
 
+clearLineCounterThenUpdateAudio2:
+        lda #$00
+        sta player1_completedLines
+        jmp updateAudio2
