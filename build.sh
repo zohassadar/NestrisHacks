@@ -19,6 +19,7 @@ hacks=(
     "wallhack2"
     "warp7"
     "wrongnext"
+    "twelve"
     )
 
 variations=(
@@ -52,7 +53,7 @@ variations=(
     "-l -m 3 -H penguin -H anydas -H wallhack2"
     "-l -m 3 -H penguin -H sps -H wallhack2"
     "-l -m 3 -H penguin -H anydas -H sps -H wallhack2"
-    
+
     "-l -m 3 -H wallhack2"
     "-l -m 3 -H wallhack2 -H anydas"
     "-l -m 3 -H wallhack2 -H sps"
@@ -81,7 +82,6 @@ get_labels () {
         "shift_tetrimino"
         "rotate_tetrimino"
         "drop_tetrimino"
-        "isPositionValid"
         "game_palette"
         "gameModeState_initGameBackground"
         "playState_playerControlsActiveTetrimino"
@@ -151,12 +151,18 @@ get_flag_opts (){
                 exit
                 ;;
             H)
-                case "${OPTARG}" in 
+                case "${OPTARG}" in
                 "anydas")
                     echo "Anydas enabled"
                     omit_ud1
                     buildflags+=("-D ANYDAS")
                     name_modifiers+=("Any")
+                    ;;
+                "twelve")
+                    echo "12 Wide enabled"
+                    omit_ud1
+                    buildflags+=("-D TWELVE")
+                    name_modifiers+=("12Wide")
                     ;;
                 "half")
                     echo "28 1/2 enabled"
@@ -229,7 +235,7 @@ get_flag_opts (){
                 name_modifiers+=("S")
                 ;;
             m)
-                case "${OPTARG}" in 
+                case "${OPTARG}" in
                 1)
                     echo "Default MMC1 selected"
                     ;;
@@ -250,13 +256,13 @@ get_flag_opts (){
             s)
                 setsha1=1
                 ;;
-            v) 
-                set -x 
+            v)
+                set -x
                 verbose=1
                 ;;
             *)
                 help
-                exit 1 
+                exit 1
                 ;;
         esac
     done

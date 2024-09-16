@@ -97,7 +97,11 @@ render_mode_play_and_demo:
 .else
         lda     #$20
         sta     PPUADDR
+.ifdef TWELVE
+        lda     #$72
+.else
         lda     #$73
+.endif
 .endif
         sta     PPUADDR
         lda     player1_lines+1
@@ -283,8 +287,13 @@ render_mode_play_and_demo:
         rts
 
 pieceToPpuStatAddr:
+.ifdef TWELVE
+        .dbyt   $2184,$21C4,$2204,$2244
+        .dbyt   $2284,$22C4,$2304
+.else
         .dbyt   $2186,$21C6,$2206,$2246
         .dbyt   $2286,$22C6,$2306
+.endif
 levelDisplayTable:
         .byte   $00,$01,$02,$03,$04,$05,$06,$07
         .byte   $08,$09,$10,$11,$12,$13,$14,$15
@@ -329,7 +338,11 @@ copyPlayfieldRowToVRAM:
         cpx     #$15
 .endif
         bpl     @ret
+.ifdef TWELVE
+        lda     multBy12Table,x
+.else
         lda     multBy10Table,x
+.endif
 .ifdef UPSIDEDOWN
         clc
         adc     #$9
@@ -381,10 +394,18 @@ copyPlayfieldRowToVRAM:
 @onePlayer:
         lda     vramPlayfieldRows,x
         clc
+.ifdef TWELVE
+        adc     #$04
+.else
         adc     #$06
+.endif
         sta     PPUADDR
 @copyRow:
+.ifdef TWELVE
+        ldx     #$0C
+.else
         ldx     #$0A
+.endif
 @copyByte:
         lda     (playfieldAddr),y
         sta     PPUDATA

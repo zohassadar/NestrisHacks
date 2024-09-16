@@ -4,7 +4,11 @@ stageSpriteForCurrentPiece:
         asl     a
         asl     a
         asl     a
+.ifdef TWELVE
+        adc     #$50
+.else
         adc     #$60
+.endif
         sta     generalCounter3 ; x position of center block
 .ifdef UPSIDEDOWN
         bne     @calculateYPixel
@@ -45,7 +49,7 @@ stageSpriteForCurrentPiece:
         sta     generalCounter5
         clc
         lda     generalCounter5
-.else   
+.else
         nop
         nop
         clc

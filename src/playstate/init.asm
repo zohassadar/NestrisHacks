@@ -25,7 +25,11 @@ gameModeState_initGameBackground:
         .addr   game_nametable
         lda     #$20
         sta     PPUADDR
+.ifdef TWELVE
+        lda     #$81  ; "A" or "B" 2 tiles to the left
+.else
         lda     #$83
+.endif
         sta     PPUADDR
         lda     gameType
         bne     @typeB
@@ -131,10 +135,17 @@ gameModeState_initGameState:
         lda     #$00
         sta     player1_tetriminoY
         sta     player2_tetriminoY
+.ifdef TWELVE
+        lda     #$13
+        sta     player1_vramRow
+        lda     #$00
+        sta     player1_fallTimer
+.else
         sta     player1_vramRow
         sta     player2_vramRow
         sta     player1_fallTimer
         sta     player2_fallTimer
+.endif
         sta     pendingGarbage
         sta     pendingGarbageInactivePlayer
         sta     player1_score
@@ -310,7 +321,7 @@ initPlayfieldForTypeB:
         lda     #$0C
         sta     generalCounter  ; decrements
 
-typeBRows:  
+typeBRows:
         lda     generalCounter
         beq     initCopyPlayfieldToPlayer2
 .ifdef TALLER
@@ -324,10 +335,14 @@ typeBRows:
         lda     #$00
         sta     player1_vramRow
         sta     player2_vramRow
+.ifdef TWELVE
+        lda     #$0B
+.else
         lda     #$09
+.endif
         sta     generalCounter3 ; column
 
-typeBGarbageInRow:  
+typeBGarbageInRow:
 .ifdef SPS
         ldx     bSeedSource
 .else
@@ -346,7 +361,11 @@ typeBGarbageInRow:
         lda     rngTable,y
         sta     generalCounter4 ; random square or blank
         ldx     generalCounter2
+.ifdef TWELVE
+        lda     multBy12Table,x
+.else
         lda     multBy10Table,x
+.endif
         clc
         adc     generalCounter3
         tay
@@ -357,7 +376,7 @@ typeBGarbageInRow:
         dec     generalCounter3
         jmp     typeBGarbageInRow
 
-typeBGuaranteeBlank:  
+typeBGuaranteeBlank:
 .ifdef SPS
         ldx     bSeedSource
 .else
@@ -372,12 +391,20 @@ typeBGuaranteeBlank:
         lda     rng_seed
 .endif
         and     #$0F
+.ifdef TWELVE
+        cmp     #$0C
+.else
         cmp     #$0A
+.endif
         bpl     typeBGuaranteeBlank
 
         sta     generalCounter5 ; blanked column
         ldx     generalCounter2
+.ifdef TWELVE
+        lda     multBy12Table,x
+.else
         lda     multBy10Table,x
+.endif
         clc
         adc     generalCounter5
         tay
@@ -387,9 +414,9 @@ typeBGuaranteeBlank:
         dec     generalCounter
         bne     typeBRows
 
-initCopyPlayfieldToPlayer2:  
+initCopyPlayfieldToPlayer2:
         ldx     #$C8
-copyPlayfieldToPlayer2:  
+copyPlayfieldToPlayer2:
         lda     playfield,x
         sta     playfieldForSecondPlayer,x
         dex
@@ -401,7 +428,7 @@ copyPlayfieldToPlayer2:
         tay
         lda     #$EF
 
-typeBBlankInitPlayer1:  
+typeBBlankInitPlayer1:
         sta     playfield,y
         dey
         cpy     #$FF
@@ -412,19 +439,23 @@ typeBBlankInitPlayer1:
         lda     typeBBlankInitCountByHeightTable,x
         tay
         lda     #$EF
-typeBBlankInitPlayer2:  
+typeBBlankInitPlayer2:
         sta     playfieldForSecondPlayer,y
         dey
         cpy     #$FF
         bne     typeBBlankInitPlayer2
-endTypeBInit:  
+endTypeBInit:
         rts
 
 typeBBlankInitCountByHeightTable:
 .ifdef TALLER
         .byte   $F0,$D2,$BE,$A0,$8C,$78
 .else
+    .ifdef TWELVE
+        .byte   $F0,$CC,$B4,$90,$78,$60
+    .else
         .byte   $C8,$AA,$96,$78,$64,$50
+    .endif
 .endif
 rngTable:
         .byte   $EF,$7B,$EF,$7C,$7D,$7D,$EF

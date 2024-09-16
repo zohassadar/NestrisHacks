@@ -1,6 +1,149 @@
-.ifndef TWELVE
-playState_lockTetrimino:
+
+
+isPositionValid:
+.ifdef WALLHACK2
+        jmp     @skipOverWallhack2Padding
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00,$00
+        .byte   $00,$00,$00,$00,$00,$00,$00
+@skipOverWallhack2Padding:
+        ldy     currentPiece
+        ldx     multBy12Table,y
+        lda     #$04
+        sta     generalCounter3
+; Checks one square within the tetrimino
+@checkSquare:
+        lda     orientationTable,x
+        clc
+        adc     tetriminoY
+        tay
+        clc
+        adc     #$02
+        cmp     #$16
+        bcs     @invalid
+        tya
+        asl
+        sta     generalCounter4
+        asl
+        asl
+        clc
+        adc     generalCounter4
+        sta     generalCounter4
+        inx
+        inx
+        lda     tetriminoX
+        clc
+        adc     orientationTable,x
+        tay
+        lda     effectiveTetriminoXTable,y
+        lda     generalCounter4
+        clc
+        adc     effectiveTetriminoXTable,y
+        tay
+        lda     playfield,y
+        bpl     @invalid
+.else
+        lda     tetriminoY
+        asl     a
+        sta     generalCounter
+        asl     a
+        asl     a
+        clc
+        adc     generalCounter
+        clc                      ; mod
+        adc     generalCounter   ; mod
+        adc     tetriminoX
+        sta     generalCounter
+        lda     currentPiece
+        asl     a
+        asl     a
+        sta     generalCounter2
+        asl     a
+        clc
+        adc     generalCounter2
+        tax
+        ldy     #$00
+        lda     #$04
+        sta     generalCounter3
+; Checks one square within the tetrimino
+@checkSquare:
+
+    ; reset check to zero
+        lda    #$00
+        sta    topRowValidityCheck
+
+        lda     orientationTable,x
+        clc
+        adc     tetriminoY
+; modified start
+        tay
+; Set 1 if tetriminoY with offset is negative -1 or negative -2
+        cmp     #$FE
+        bcc     @yOffsetIsNotNegative
+
+        lda     topRowValidityCheck
+        ora     #$01
+        sta     topRowValidityCheck
+        @yOffsetIsNotNegative:
+        tya
+        clc
+; modified end
+        adc     #$02
+.ifdef TALLER
+        cmp     #$1A
+.else
+        cmp     #$16
 .endif
+        bcs     @invalid
+        lda     orientationTable,x
+        asl     a
+        sta     generalCounter4
+        asl     a
+        asl     a
+        clc
+        adc     generalCounter4
+        clc                     ; mod
+        adc     generalCounter4 ; mod
+        clc
+        adc     generalCounter
+        sta     selectingLevelOrHeight
+        inx
+        inx
+        lda     orientationTable,x
+        clc
+        adc     selectingLevelOrHeight
+        tay
+        lda     (playfieldAddr),y
+        cmp     #$EF
+        ; bcc     @invalid          ; mod
+        bcc     @invalidByCollision ; mod
+@possiblyNotInvalid:                ; mod
+        lda     orientationTable,x
+        clc
+        adc     tetriminoX
+        cmp     #$0C                ; mod
+        bcs     @invalid
+.endif
+        inx
+        dec     generalCounter3
+        bne     @checkSquare
+        lda     #$00
+        sta     generalCounter
+        rts
+
+@invalidByCollision:
+        ; Set 2 if invalid due to collision (x is between 0 and 29 and Y is negative)
+        lda     topRowValidityCheck
+        ora     #$02
+        cmp     #$03
+        beq     @possiblyNotInvalid
+
+@invalid:
+        lda     #$FF
+        sta     generalCounter
+        rts
+
+playState_lockTetrimino:
 .ifdef AEPPOZ
         jsr     checkPositionAndMaybeEndGame
 .else
@@ -64,6 +207,8 @@ playState_lockTetrimino:
         asl     a
         clc
         adc     generalCounter
+        clc                     ; mod
+        adc     generalCounter  ; mod
         adc     tetriminoX
         sta     generalCounter
         lda     currentPiece
@@ -86,6 +231,8 @@ playState_lockTetrimino:
         asl     a
         clc
         adc     generalCounter4
+        clc                         ; mod
+        adc     generalCounter4     ; mod
         clc
         adc     generalCounter
         sta     selectingLevelOrHeight
@@ -110,102 +257,18 @@ playState_lockTetrimino:
         inc     playState
 @ret:   rts
 
-playState_updateGameOverCurtain:
-.ifndef TOURNAMENT
-        lda     curtainRow
-  .ifdef TALLER
-        cmp     #$18
-  .else
-        cmp     #$14
-  .endif
-        beq     @curtainFinished
-        lda     frameCounter
-        and     #$03
-.else
-        lda     newlyPressedButtons_player1
-        and     #BUTTON_START
-        beq     @ret
-        jmp     @endingAnimationCheck
-        nop
-.endif
-        bne     @ret
-        ldx     curtainRow
-        bmi     @incrementCurtainRow
-.ifdef TWELVE
-        lda     multBy12Table,x
-.else
-        lda     multBy10Table,x
-.endif
-        tay
-        lda     #$00
-        sta     generalCounter3
-        lda     #$13
-        sta     currentPiece
-@drawCurtainRow:
-        lda     #$4F
-        sta     (playfieldAddr),y
-        iny
-        inc     generalCounter3
-        lda     generalCounter3
-.ifdef TWELVE
-        cmp     #$0C
-.else
-        cmp     #$0A
-.endif
-        bne     @drawCurtainRow
-        lda     curtainRow
-        sta     vramRow
-@incrementCurtainRow:
-        inc     curtainRow
-        lda     curtainRow
-        cmp     #$14
-        bne     @ret
-@ret:   rts
 
-@curtainFinished:
-.ifdef TOURNAMENT
-@endingAnimationCheck:
-        lda     newlyPressedButtons_player1
-        cmp     #$10
-        bne     @startNotPressed
-        lda     gameType
-        bne     @bGameOrUnder30K
-        lda     player1_score+2
-        cmp     #$03
-        bcc     @bGameOrUnder30K
-        jsr     endingAnimation_maybe
-@bGameOrUnder30K:
-        jmp     @exitGame
-@startNotPressed:  rts
-        .byte $00,$00,$00,$00,$00,$00
-.else
-        lda     numberOfPlayers
-        cmp     #$02
-        beq     @exitGame
-        lda     player1_score+2
-        cmp     #$03
-        bcc     @checkForStartButton
-        lda     #$80
-        jsr     sleep_for_a_vblanks
-        jsr     endingAnimation_maybe
-        jmp     @exitGame
+multBy12Table:
+        .byte   $00,$0C,$18,$24,$30,$3C,$48,$54
+        .byte   $60,$6C,$78,$84,$90,$9C,$A8,$B4
+        .byte   $C0,$CC,$D8,$E4
 
-@checkForStartButton:
-        lda     newlyPressedButtons_player1
-        cmp     #$10
-        bne     @ret2
-.endif
-@exitGame:
-        lda     #$00
-        sta     playState
-        sta     newlyPressedButtons_player1
-@ret2:  rts
+leftColumns:
+        .byte   $05,$04,$03,$02,$01,$00
+rightColumns:
+        .byte   $06,$07,$08,$09,$0A,$0B
 
-.ifndef TWELVE
 playState_checkForCompletedRows:
-.else
-playstate_checkForCompletedRowsUnused:
-.endif
         lda     vramRow
         cmp     #$20
         bpl     @updatePlayfieldComplete
@@ -227,9 +290,11 @@ playstate_checkForCompletedRowsUnused:
         asl     a
         clc
         adc     generalCounter
+        clc                         ; mod
+        adc     generalCounter      ; mod
         sta     generalCounter
         tay
-        ldx     #$0A
+        ldx     #$0C   ; mod
 @checkIfRowComplete:
         lda     (playfieldAddr),y
         cmp     #$EF
@@ -252,7 +317,7 @@ playstate_checkForCompletedRowsUnused:
         dey
 @movePlayfieldDownOneRow:
         lda     (playfieldAddr),y
-        ldx     #$0A
+        ldx     #$0C                    ; mod
         stx     playfieldAddr
         sta     (playfieldAddr),y
         lda     #$00
@@ -265,7 +330,7 @@ playstate_checkForCompletedRowsUnused:
 @clearRowTopRow:
         sta     (playfieldAddr),y
         iny
-        cpy     #$0A
+        cpy     #$0C                    ; mod
         bne     @clearRowTopRow
         lda     #$13
         sta     currentPiece

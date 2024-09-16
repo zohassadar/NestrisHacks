@@ -21,14 +21,14 @@ levelOffset: .res $1                ; $0020
 
 ; SPS
 set_seed_input: .res $3          ; $0021
-bseed_input: .res $2  
+bseed_input: .res $2
 set_seed: .res $3                ; $0024
-bseed: .res $2  
-bSeedSource: .res 1 
-bseedCopy: .res 1   
+bseed: .res $2
+bSeedSource: .res 1
+bseedCopy: .res 1
 displayedNextPiece: .res 1       ; $0027
-
-.res $04
+topRowValidityCheck: .res 1      ; $0028
+.res $03
 halfSpeed: .res $1                  ; $0032
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034

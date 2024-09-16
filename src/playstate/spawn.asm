@@ -33,7 +33,11 @@ playState_spawnNextTetrimino:
 .ifdef WALLHACK2
         lda     #$08
 .else
+    .ifdef TWELVE
+        lda     #$06
+    .else
         lda     #$05
+    .endif
 .endif
         sta     tetriminoX
 .ifdef RANDO

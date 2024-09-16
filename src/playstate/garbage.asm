@@ -8,7 +8,11 @@ playState_receiveGarbage:
         lda     vramRow
         cmp     #$20
         bmi     @delay
+.ifdef TWELVE
+        lda     multBy12Table,y
+.else
         lda     multBy10Table,y
+.endif
         sta     generalCounter2
         lda     #$00
         sta     generalCounter

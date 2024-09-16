@@ -24,7 +24,11 @@ updateLineClearingAnimation:
         lda     generalCounter
 .endif
         clc
+.ifdef TWELVE
+        adc     #$04
+.else
         adc     #$06
+.endif
         sta     generalCounter
         jmp     @updateVRAM
 @twoPlayers:
@@ -71,14 +75,22 @@ updateLineClearingAnimation:
         bne     @whileCounter3LessThan4
         inc     rowY
         lda     rowY
+.ifdef TWELVE
+        cmp     #$06
+.else
         cmp     #$05
+.endif
         bmi     @ret
         inc     playState
 @ret:   rts
 
+.ifndef TWELVE
 leftColumns:
+.endif
         .byte   $04,$03,$02,$01,$00
+.ifndef TWELVE
 rightColumns:
+.endif
         .byte   $05,$06,$07,$08,$09
 
 .ifdef UPSIDEDOWN

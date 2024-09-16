@@ -133,7 +133,9 @@ unreferenced_data1:
 .ifdef TOURNAMENT
         .include "hacks/tourney.asm"
 .endif
-
+.ifdef TWELVE
+        .include "hacks/12wide.asm"
+.endif
 
 .if .defined(SPS) .or .defined(ANYDAS)
         .include "hacks/menudas.asm"

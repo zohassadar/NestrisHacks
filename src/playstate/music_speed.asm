@@ -1,9 +1,17 @@
 
 updateMusicSpeed:
         ldx     #$05
+.ifdef TWELVE
+        lda     multBy12Table,x
+.else
         lda     multBy10Table,x
+.endif
         tay
+.ifdef TWELVE
+        ldx     #$0C
+.else
         ldx     #$0A
+.endif
 @checkForBlockInRow:
         lda     (playfieldAddr),y
         cmp     #$EF

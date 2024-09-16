@@ -1,5 +1,6 @@
-
+.ifndef TWELVE
 isPositionValid:
+.endif
 .ifdef WALLHACK2
         jmp     @skipOverWallhack2Padding
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
@@ -36,11 +37,11 @@ isPositionValid:
         tay
         lda     effectiveTetriminoXTable,y
         lda     generalCounter4
-        clc     
+        clc
         adc     effectiveTetriminoXTable,y
         tay
         lda     playfield,y
-        bpl     @invalid 
+        bpl     @invalid
 .else
         lda     tetriminoY
         asl     a
