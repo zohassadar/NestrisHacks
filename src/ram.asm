@@ -4,7 +4,17 @@ tmp2:	.res $1	                    ; $0001
 tmp3:	.res $1	                    ; $0002
 .res $2                             ; $0003
 tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
-.res $E                             ; $0006
+
+; for triplewide
+effectiveTetriminoX: .res $1        ; $0006
+leftPlayfieldAddr: .res $1          ; $0007
+centerPlayfieldAddr: .res $1        ; $0008
+rightPlayfieldAddr: .res $1         ; $0009
+renderedVramRow: .res $1            ; $000a
+renderedPlayfield: .res $1          ; $000B
+currentPlayfield: .res $1           ; $000C
+
+.res $7                             ; $000D
 patchToPpuAddr: .res $1             ; $0014
 .res $2                             ; $0015
 rng_seed: .res $2	                ; $0017
@@ -182,11 +192,20 @@ currentPpuCtrl:	.res 1	; $00FF
 .bss
 stack:	.res $100	; $0100
 oamStaging:	.res $100	; $0200
+leftPlayfield:
 .res $F0
+
+.ifdef TRIPLEWIDE
+.res $0E
+.else
 statsByType:	.res $0E	; $03F0
+.endif
+
 .res 2
+centerPlayfield:
 playfield:	.res $C8	; $0400
 .res $38
+rightPlayfield:
 playfieldForSecondPlayer:	.res $C8	; $0500
 .res $38
 
@@ -273,4 +292,9 @@ highScoreScoresA:	.res $C	; $0730
 highScoreScoresB:	.res $C	; $073C
 highScoreLevels:	.res $08	; $0748
 initMagic:	.res $05	; $0750
-.res $AB
+.res $9B
+.ifdef TRIPLEWIDE
+statsByType: .res $10
+.else
+.res $10
+.endif

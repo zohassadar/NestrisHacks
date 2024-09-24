@@ -19,6 +19,7 @@ hacks=(
     "wallhack2"
     "warp7"
     "wrongnext"
+    "triple"
     "twelve"
     )
 
@@ -196,6 +197,12 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D TALLER")
                     name_modifiers+=("Tall")
+                    ;;
+                "triple")
+                    echo "TRIPLE ENABLED"
+                    omit_ud1
+                    buildflags+=("-D TRIPLEWIDE")
+                    name_modifiers+=("30Wide")
                     ;;
                 "tourney")
                     echo "Tournament Enabled"
