@@ -339,6 +339,7 @@ multBy10Table:
         .byte   $A0,$AA,$B4,$BE
 ; addresses
 .ifdef TALLER
+.elseif .defined(TRIPLEWIDE)
 .else
 vramPlayfieldRows:
 .endif

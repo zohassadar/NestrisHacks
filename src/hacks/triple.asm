@@ -11,6 +11,7 @@ triplewide_nt:
     .byte $2F,$A0,$01,$35 ; lower left corner
     .byte $2F,$BF,$01,$37 ; lower right corner
     .byte $2F,$A1,$5E,$36 ; bottom border
+    .byte $2C,$44,$04,$1D,$22,$19,$0E ; "TYPE"
     .byte $2F,$C0,$48,$FF ; info attributes
     .byte $2F,$C8,$78,$AA ; playfield attributes
     .byte $FF
@@ -43,6 +44,9 @@ dataAddresses:
         .byte  <row5Data
 
 render_mode_play_and_demo_or_dump:
+        lda     playState
+        cmp     #$04
+        beq     @ret
         lda     vramDumpNeeded
         beq     @ret
         jmp     vramRowDump
@@ -245,6 +249,6 @@ isPositionValid:
         rts
 
 
-.repeat 34
+.repeat 21
 nop
 .endrepeat

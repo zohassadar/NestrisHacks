@@ -1,5 +1,7 @@
 .ifndef TWELVE
+.ifndef TRIPLEWIDE
 playState_lockTetrimino:
+.endif
 .endif
 .ifdef AEPPOZ
         jsr     checkPositionAndMaybeEndGame
@@ -202,7 +204,11 @@ playState_updateGameOverCurtain:
 @ret2:  rts
 
 .ifndef TWELVE
+.ifndef TRIPLEWIDE
 playState_checkForCompletedRows:
+.else
+playstate_checkForCompletedRowsUnused:
+.endif
 .else
 playstate_checkForCompletedRowsUnused:
 .endif

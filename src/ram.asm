@@ -7,12 +7,7 @@ tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
 
 ; for triplewide
 effectiveTetriminoX: .res $1        ; $0006
-leftPlayfieldAddr: .res $1          ; $0007
-centerPlayfieldAddr: .res $1        ; $0008
-rightPlayfieldAddr: .res $1         ; $0009
-renderedVramRow: .res $1            ; $000a
-renderedPlayfield: .res $1          ; $000B
-currentPlayfield: .res $1           ; $000C
+.res $6
 vramDumpNeeded: .res $1                ; $000D
 
 

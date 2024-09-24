@@ -26,6 +26,8 @@ updateLineClearingAnimation:
         clc
 .ifdef TWELVE
         adc     #$04
+.elseif .defined(TRIPLEWIDE)
+        adc     #$00
 .else
         adc     #$06
 .endif
@@ -77,6 +79,8 @@ updateLineClearingAnimation:
         lda     rowY
 .ifdef TWELVE
         cmp     #$06
+.elseif .defined(TRIPLEWIDE)
+        cmp     #$0F
 .else
         cmp     #$05
 .endif
@@ -85,11 +89,15 @@ updateLineClearingAnimation:
 @ret:   rts
 
 .ifndef TWELVE
+.ifndef TRIPLEWIDE
 leftColumns:
+.endif
 .endif
         .byte   $04,$03,$02,$01,$00
 .ifndef TWELVE
+.ifndef TRIPLEWIDE
 rightColumns:
+.endif
 .endif
         .byte   $05,$06,$07,$08,$09
 
