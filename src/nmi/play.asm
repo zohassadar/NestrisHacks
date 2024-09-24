@@ -30,6 +30,11 @@ render_mode_play_and_demo:
         sta     vramRow
         lda     #$04
         sta     playfieldAddr+1
+.ifdef TRIPLEWIDE
+        .repeat 12
+        nop
+        .endrepeat
+.else
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
 .ifdef TALLER
@@ -38,6 +43,7 @@ render_mode_play_and_demo:
 .else
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
+.endif
 .endif
 @carryOn:
         lda     vramRow

@@ -16,7 +16,11 @@ branchOnGameMode:
 gameModeState_updatePlayer1:
         jsr     makePlayer1Active
         jsr     branchOnPlayStatePlayer1
+.ifndef TRIPLEWIDE
         jsr     stageSpriteForCurrentPiece
+.else
+        jsr     stageSpriteThenVramRows
+.endif
         jsr     savePlayer1State
         jsr     stageSpriteForNextPiece
         inc     gameModeState

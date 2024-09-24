@@ -13,8 +13,10 @@ rightPlayfieldAddr: .res $1         ; $0009
 renderedVramRow: .res $1            ; $000a
 renderedPlayfield: .res $1          ; $000B
 currentPlayfield: .res $1           ; $000C
+vramDumpNeeded: .res $1                ; $000D
 
-.res $7                             ; $000D
+
+.res $6                             ; $000E
 patchToPpuAddr: .res $1             ; $0014
 .res $2                             ; $0015
 rng_seed: .res $2	                ; $0017
@@ -190,7 +192,20 @@ currentPpuMask:	.res 1	; $00FE
 currentPpuCtrl:	.res 1	; $00FF
 
 .bss
-stack:	.res $100	; $0100
+stack:
+.ifdef TRIPLEWIDE
+row1Address:
+row1Data := row1Address + 2
+row2Address := row1Data + 30
+row2Data := row2Address + 2
+row3Address := row2Data + 30
+row3Data := row3Address + 2
+row4Address := row3Data + 30
+row4Data := row4Address + 2
+row5Address := row4Data + 30
+row5Data := row5Address + 2
+.endif
+.res $100	; $0100
 oamStaging:	.res $100	; $0200
 leftPlayfield:
 .res $F0
