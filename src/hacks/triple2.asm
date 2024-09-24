@@ -180,3 +180,91 @@ playState_checkForCompletedRows:
         lda     #$07
         sta     soundEffectSlot1Init
 @ret:   rts
+
+playState_updateGameOverCurtain:
+.ifndef TOURNAMENT
+        lda     curtainRow
+        cmp     #$1A
+        beq     @curtainFinished
+        lda     frameCounter
+        and     #$03
+.else
+        lda     newlyPressedButtons_player1
+        and     #BUTTON_START
+        beq     @ret
+        jmp     @endingAnimationCheck
+        nop
+.endif
+        bne     @ret
+        lda     curtainRow
+        bmi     @incrementCurtainRow
+        asl
+        sta     generalCounter
+        asl
+        asl
+        adc     generalCounter
+        tay
+        lda     #$00
+        sta     generalCounter3
+        lda     #$13
+        sta     currentPiece
+@drawCurtainRow:
+        lda     #$4F
+        sta     leftPlayfield,y
+        sta     centerPlayfield,y
+        sta     rightPlayfield,y
+        iny
+        inc     generalCounter3
+        lda     generalCounter3
+.ifdef TWELVE
+        cmp     #$0C
+.else
+        cmp     #$0A
+.endif
+        bne     @drawCurtainRow
+        lda     curtainRow
+        sta     vramRow
+@incrementCurtainRow:
+        inc     curtainRow
+        lda     curtainRow
+        cmp     #$14
+        bne     @ret
+@ret:   rts
+@curtainFinished:
+.ifdef TOURNAMENT
+@endingAnimationCheck:
+        lda     newlyPressedButtons_player1
+        cmp     #$10
+        bne     @startNotPressed
+        lda     gameType
+        bne     @bGameOrUnder30K
+        lda     player1_score+2
+        cmp     #$03
+        bcc     @bGameOrUnder30K
+        jsr     endingAnimation_maybe
+@bGameOrUnder30K:
+        jmp     @exitGame
+@startNotPressed:  rts
+        .byte $00,$00,$00,$00,$00,$00
+.else
+        lda     numberOfPlayers
+        cmp     #$02
+        beq     @exitGame
+        lda     player1_score+2
+        cmp     #$03
+        bcc     @checkForStartButton
+        lda     #$80
+        jsr     sleep_for_a_vblanks
+        jsr     endingAnimation_maybe
+        jmp     @exitGame
+
+@checkForStartButton:
+        lda     newlyPressedButtons_player1
+        cmp     #$10
+        bne     @ret2
+.endif
+@exitGame:
+        lda     #$00
+        sta     playState
+        sta     newlyPressedButtons_player1
+@ret2:  rts

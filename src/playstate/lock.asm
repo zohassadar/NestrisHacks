@@ -112,7 +112,11 @@ playState_lockTetrimino:
         inc     playState
 @ret:   rts
 
+.ifdef TRIPLEWIDE
+playState_updateGameOverCurtain_unused:
+.else
 playState_updateGameOverCurtain:
+.endif
 .ifndef TOURNAMENT
         lda     curtainRow
   .ifdef TALLER
