@@ -93,7 +93,11 @@ initRamContinued:
         lda     #$2C
         jsr     LAA82
         lda     #$EF
+.ifdef TRIPLE
+        ldx     #$03
+.else
         ldx     #$04
+.endif
         ldy     #$05
         jsr     memset_page
         jsr     waitForVBlankAndEnableNmi

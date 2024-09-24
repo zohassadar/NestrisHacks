@@ -107,6 +107,8 @@ level_menu_nametable:
 game_nametable:
 .ifdef TALLER
         .incbin "nametables/taller_game_nametable.bin"
+.elseif .defined(TRIPLEWIDE)
+        .include "hacks/triple.asm"
 .else
     .ifdef TWELVE
         .incbin "nametables/game_12wide_nametable.bin"

@@ -21,12 +21,20 @@ gameModeState_initGameBackground:
 
         jsr     bulkCopyToPpu
         .addr   game_palette
+.ifdef TRIPLEWIDE
+        jsr     initTripleWide
+        nop
+        nop
+.else
         jsr     bulkCopyToPpu
         .addr   game_nametable
+.endif
         lda     #$20
         sta     PPUADDR
 .ifdef TWELVE
         lda     #$81  ; "A" or "B" 2 tiles to the left
+.elseif .defined(TRIPLEWIDE)
+        lda     #$43
 .else
         lda     #$83
 .endif
@@ -35,10 +43,19 @@ gameModeState_initGameBackground:
         bne     @typeB
         lda     #$0A
         sta     PPUDATA
+
+; any unintended consequences of writing to CHR ROM?
+.ifdef TRIPLEWIDE
+        lda     #$00
+        sta     PPUADDR
+        lda     #$00
+        sta     PPUADDR
+.else
         lda     #$20
         sta     PPUADDR
         lda     #$B8
         sta     PPUADDR
+.endif
         lda     highScoreScoresA
         jsr     twoDigsToPPU
         lda     highScoreScoresA+1
@@ -53,10 +70,17 @@ gameModeState_initGameBackground:
 
 @typeB: lda     #$0B
         sta     PPUDATA
+.ifdef TRIPLEWIDE
+        lda     #$00
+        sta     PPUADDR
+        lda     #$00
+        sta     PPUADDR
+.else
         lda     #$20
         sta     PPUADDR
         lda     #$B8
         sta     PPUADDR
+.endif
         lda     highScoreScoresB
         jsr     twoDigsToPPU
         lda     highScoreScoresB+1
@@ -82,10 +106,17 @@ gameModeState_initGameBackground:
         jmp     @nextPpuData
 
 @endOfPpuPatching:
+.ifdef TRIPLEWIDE
+        lda     #$20
+        sta     PPUADDR
+        lda     #$48
+        sta     PPUADDR
+.else
         lda     #$23
         sta     PPUADDR
         lda     #$3B
         sta     PPUADDR
+.endif
         lda     startHeight
         and     #$0F
         sta     PPUDATA
@@ -107,7 +138,13 @@ gameModeState_initGameBackground_finish:
         rts
 
 game_typeb_nametable_patch:
-        .byte   $22,$F7,$38,$39,$39,$39,$39,$39
+        .byte   $22,$F7
+.ifdef TRIPLEWIDE
+        .byte   $FD  ; skip over this if triplewide
+.else
+        .byte   $38
+.endif
+        .byte   $39,$39,$39,$39,$39
         .byte   $39,$3A,$FE,$23,$17,$3B,$11,$0E
         .byte   $12,$10,$11,$1D,$3C,$FE,$23,$37
         .byte   $3B,$FF,$FF,$FF,$FF,$FF,$FF,$3C
@@ -115,14 +152,19 @@ game_typeb_nametable_patch:
         .byte   $3E,$3E,$3F,$FD
 gameModeState_initGameState:
         lda     #$EF
+.ifdef TRIPLEWIDE
+        ldx     #$03
+        ldy     #$05
+.else
         ldx     #$04
         ldy     #$04
+.endif
         jsr     memset_page
         ldx     #$0F
         lda     #$00
 ; statsByType
 @initStatsByType:
-        sta     $03EF,x
+        sta     statsByType-1,x
         dex
         bne     @initStatsByType
 .ifdef WALLHACK2
