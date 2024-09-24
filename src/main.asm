@@ -99,6 +99,11 @@ game_type_menu_nametable:
         .incbin "nametables/game_type_menu_nametable.bin"
 level_menu_nametable:
         .incbin "nametables/level_menu_nametable.bin"
+.code
+
+; triplewide doesn't need a nametable, but needs a lot of space for rendering
+; recycling this space and keeping it in the same spot
+.segment        "GAME_NT_chunk": absolute
 game_nametable:
 .ifdef TALLER
         .incbin "nametables/taller_game_nametable.bin"
@@ -109,6 +114,9 @@ game_nametable:
         .incbin "nametables/game_nametable.bin"
     .endif
 .endif
+.code
+
+.segment        "PRG_chunk1a": absolute
 enter_high_score_nametable:
         .incbin "nametables/enter_high_score_nametable.bin"
 high_scores_nametable:
