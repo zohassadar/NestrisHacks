@@ -6,6 +6,8 @@ stageSpriteForCurrentPiece:
         asl     a
 .ifdef TWELVE
         adc     #$50
+.elseif .defined(TRIPLEWIDE)
+        adc     #$08
 .else
         adc     #$60
 .endif
@@ -39,6 +41,8 @@ stageSpriteForCurrentPiece:
         rol     a
         rol     a
 .ifdef TALLER
+        adc     #$1F
+.elseif .defined(TRIPLEWIDE)
         adc     #$1F
 .else
         adc     #$2F
@@ -95,6 +99,8 @@ stageSpriteForCurrentPiece:
 .else
 
 .ifdef TALLER
+        cmp     #$1F
+.elseif .defined(TRIPLEWIDE)
         cmp     #$1F
 .else
         cmp     #$2F

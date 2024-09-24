@@ -148,3 +148,103 @@ vramRowDump:
         lda     #$00
         sta     vramDumpNeeded
         rts
+
+
+effectiveTetriminoXTable:
+        .byte   $00,$01,$02,$03,$04,$05,$06,$07,$08,$09
+        .byte   $00,$01,$02,$03,$04,$05,$06,$07,$08,$09
+        .byte   $00,$01,$02,$03,$04,$05,$06,$07,$08,$09
+
+tetriminoXPlayfieldTable:
+        .byte   $03,$03,$03,$03,$03,$03,$03,$03,$03,$03
+        .byte   $04,$04,$04,$04,$04,$04,$04,$04,$04,$04
+        .byte   $05,$05,$05,$05,$05,$05,$05,$05,$05,$05
+
+isPositionValid:
+        lda     currentPiece
+        asl     a
+        asl     a
+        sta     generalCounter2
+        asl     a
+        clc
+        adc     generalCounter2
+        tax
+        lda     #$04
+        ldy     #$00
+        sta     generalCounter3
+@newcheckSquare:
+; reset check to zero
+        lda    #$00
+        sta    topRowValidityCheck
+        lda     orientationTable,x
+        clc
+        adc     tetriminoY
+        adc     #$02
+        cmp     #$1B
+        bcs     @invalid
+        clc
+        lda     tetriminoY
+        adc     orientationTable,x
+        sta     generalCounter4
+
+; Set 1 if tetriminoY with offset is negative -1 or negative -2
+        cmp     #$FE
+        bcc     @yOffsetIsNotNegative
+        lda     topRowValidityCheck
+        ora     #$01
+        sta     topRowValidityCheck
+@yOffsetIsNotNegative:
+        lda     generalCounter4
+        asl     a
+        sta     generalCounter4
+        asl     a
+        asl     a
+        adc     generalCounter4
+        sta     generalCounter4
+        inx
+        inx
+        lda     tetriminoX
+        clc
+        adc     orientationTable,x
+
+; Invalid if TetriminoX with offset applied is between 0 and 29
+        cmp     #$1e
+        bcs     @invalid
+        tay
+        lda     tetriminoXPlayfieldTable,y
+        sta     playfieldAddr+1
+        lda     effectiveTetriminoXTable,y
+        sta     effectiveTetriminoX
+
+
+        lda     generalCounter4
+        clc
+        adc     effectiveTetriminoX
+        tay
+        lda     (playfieldAddr),y
+        cmp     #$EF
+        bne     @invalidByCollision
+
+@notActuallyInvalid:
+        inx
+        dec     generalCounter3
+        bne     @newcheckSquare
+
+        lda     #$00
+        rts
+
+@invalidByCollision:
+        ; Set 2 if invalid due to collision (x is between 0 and 29 and Y is negative)
+        lda     topRowValidityCheck
+        ora     #$02
+        cmp     #$03
+        beq     @notActuallyInvalid
+
+@invalid:
+        lda     #$FF
+        rts
+
+
+.repeat 34
+nop
+.endrepeat

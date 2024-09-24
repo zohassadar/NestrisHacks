@@ -1,5 +1,7 @@
 .ifndef TWELVE
+.ifndef TRIPLEWIDE
 isPositionValid:
+.endif
 .endif
 .ifdef WALLHACK2
         jmp     @skipOverWallhack2Padding

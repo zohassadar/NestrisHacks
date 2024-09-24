@@ -172,6 +172,8 @@ gameModeState_initGameState:
 .else
     .ifdef TWELVE
         lda     #$06
+    .elseif .defined(TRIPLEWIDE)
+        lda     #$0F
     .else
         lda     #$05
     .endif

@@ -105,6 +105,8 @@ render_mode_play_and_demo:
         sta     PPUADDR
 .ifdef TWELVE
         lda     #$72
+.elseif .defined(TRIPLEWIDE)
+        lda     #$54
 .else
         lda     #$73
 .endif
@@ -147,9 +149,15 @@ render_mode_play_and_demo:
         cmp     #$02
         beq     @renderScore
 .ifdef ANYDAS
+.ifdef TRIPLEWIDE
+        lda     #$20
+        sta     PPUADDR
+        lda     #$49
+.else
         lda     #$22
         sta     PPUADDR
         lda     #$B9
+.endif
         sta     PPUADDR
         lda     player1_levelNumber
         jsr     renderByteBCD
@@ -164,9 +172,15 @@ render_mode_play_and_demo:
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         sta     generalCounter
+.ifdef TRIPLEWIDE
+        lda     #$20
+        sta     PPUADDR
+        lda     #$4A
+.else
         lda     #$22
         sta     PPUADDR
         lda     #$BA
+.endif
         sta     PPUADDR
         lda     generalCounter
         jsr     twoDigsToPPU
@@ -182,9 +196,15 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$04
         beq     @renderStats
+.ifdef TRIPLEWIDE
+        lda     #$20
+        sta     PPUADDR
+        lda     #$58
+.else
         lda     #$21
         sta     PPUADDR
         lda     #$18
+.endif
         sta     PPUADDR
         lda     player1_score+2
         jsr     twoDigsToPPU
@@ -296,6 +316,10 @@ pieceToPpuStatAddr:
 .ifdef TWELVE
         .dbyt   $2184,$21C4,$2204,$2244
         .dbyt   $2284,$22C4,$2304
+.elseif .defined(TRIPLEWIDE)
+
+        .dbyt   $0000,$0000,$0000,$0000
+        .dbyt   $0000,$0000,$0000
 .else
         .dbyt   $2186,$21C6,$2206,$2246
         .dbyt   $2286,$22C6,$2306

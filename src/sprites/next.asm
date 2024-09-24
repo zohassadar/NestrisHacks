@@ -1,4 +1,4 @@
-        
+
 ; This is unused code
         lda     spriteIndexInOamContentLookup
         asl     a
@@ -49,9 +49,15 @@ L8B9D:  lda     orientationTable,y
 stageSpriteForNextPiece:
         lda     displayNextPiece
         bne     @ret
+.ifdef TRIPLEWIDE
+        lda     #$78
+        sta     spriteXOffset
+        lda     #$0A
+.else
         lda     #$C8
         sta     spriteXOffset
         lda     #$77
+.endif
         sta     spriteYOffset
 .ifdef SOMETIMES_WRONG_NEXTBOX
         ldx     displayedNextPiece
