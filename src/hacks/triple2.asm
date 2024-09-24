@@ -268,3 +268,33 @@ playState_updateGameOverCurtain:
         sta     playState
         sta     newlyPressedButtons_player1
 @ret2:  rts
+
+
+initTripleWideTypeB:
+    lda #$03
+    sta playfieldAddr+1
+    jsr initPlayfieldIfTypeB
+    jsr updateAudioWaitForNmiAndResetOamStaging
+    lda #$04
+    sta playfieldAddr+1
+    jsr initPlayfieldIfTypeB
+    jsr updateAudioWaitForNmiAndResetOamStaging
+    lda #$05
+    sta playfieldAddr+1
+    jsr initPlayfieldIfTypeB
+    jsr updateAudioWaitForNmiAndResetOamStaging
+    lda #$04
+    sta playfieldAddr+1
+    rts
+
+
+.repeat 200
+nop
+.endrepeat
+
+
+multBy10Table:
+        .byte   $00,$0A,$14,$1E,$28,$32,$3C,$46
+        .byte   $50,$5A,$64,$6E,$78,$82,$8C,$96
+        .byte   $A0,$AA,$B4,$BE,$C8,$D2,$DC,$E6
+        .byte   $F0

@@ -59,6 +59,8 @@ CNROM_SPRITE1 := $08
 
 .ifdef TWELVE
 PAUSE_SPRITE_X := $6C
+.elseif .defined(TRIPLEWIDE)
+PAUSE_SPRITE_X := $6C
 .else
 PAUSE_SPRITE_X := $74
 .endif

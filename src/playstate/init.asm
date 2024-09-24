@@ -265,7 +265,11 @@ gameModeState_initGameState:
 .ifdef SPS
         jsr     resetBSeed
 .else
+.ifndef TRIPLEWIDE
         jsr     initPlayfieldIfTypeB
+.else
+        jsr     initTripleWideTypeB
+.endif
 .endif
         ldx     musicType
         lda     musicSelectionTable,x
@@ -374,6 +378,8 @@ typeBRows:
         beq     initCopyPlayfieldToPlayer2
 .ifdef TALLER
         lda     #$18
+.elseif .defined(TRIPLEWIDE)
+        lda     #$19
 .else
         lda     #$14
 .endif
@@ -418,7 +424,12 @@ typeBGarbageInRow:
         adc     generalCounter3
         tay
         lda     generalCounter4
+.ifndef TRIPLEWIDE
         sta     playfield,y
+.else
+        sta     (playfieldAddr),y
+        nop
+.endif
         lda     generalCounter3
         beq     typeBGuaranteeBlank
         dec     generalCounter3
@@ -457,18 +468,36 @@ typeBGuaranteeBlank:
         adc     generalCounter5
         tay
         lda     #$EF
+.ifndef TRIPLEWIDE
         sta     playfield,y
+.else
+        sta     (playfieldAddr),y
+        nop
+.endif
+        .ifndef TRIPLEWIDE
         jsr     updateAudioWaitForNmiAndResetOamStaging
+        .else
+        nop
+        nop
+        nop
+        .endif
         dec     generalCounter
         bne     typeBRows
 
 initCopyPlayfieldToPlayer2:
+.ifndef TRIPLEWIDE
         ldx     #$C8
 copyPlayfieldToPlayer2:
         lda     playfield,x
         sta     playfieldForSecondPlayer,x
         dex
         bne     copyPlayfieldToPlayer2
+.else
+.repeat 11
+        nop
+.endrepeat
+.endif
+
 
 ; Player1 Blank Lines
         ldx     player1_startHeight
@@ -477,12 +506,18 @@ copyPlayfieldToPlayer2:
         lda     #$EF
 
 typeBBlankInitPlayer1:
+.ifndef TRIPLEWIDE
         sta     playfield,y
+.else
+        sta     (playfieldAddr),y
+        nop
+.endif
         dey
         cpy     #$FF
         bne     typeBBlankInitPlayer1
 
 ; Player2 Blank Lines
+.ifndef TRIPLEWIDE
         ldx     player2_startHeight
         lda     typeBBlankInitCountByHeightTable,x
         tay
@@ -492,6 +527,11 @@ typeBBlankInitPlayer2:
         dey
         cpy     #$FF
         bne     typeBBlankInitPlayer2
+.else
+.repeat 16
+        nop
+.endrepeat
+.endif
 endTypeBInit:
         rts
 
@@ -501,6 +541,8 @@ typeBBlankInitCountByHeightTable:
 .else
     .ifdef TWELVE
         .byte   $F0,$CC,$B4,$90,$78,$60
+    .elseif .defined(TRIPLEWIDE)
+        .byte   $fa,$dc,$c8,$aa,$96,$82
     .else
         .byte   $C8,$AA,$96,$78,$64,$50
     .endif
