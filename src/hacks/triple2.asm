@@ -288,13 +288,28 @@ initTripleWideTypeB:
     rts
 
 
-.repeat 200
-nop
-.endrepeat
-
 
 multBy10Table:
         .byte   $00,$0A,$14,$1E,$28,$32,$3C,$46
         .byte   $50,$5A,$64,$6E,$78,$82,$8C,$96
         .byte   $A0,$AA,$B4,$BE,$C8,$D2,$DC,$E6
         .byte   $F0
+
+sleep_for_14_vblanks_alt:
+        lda     #$0E
+sleep_for_a_vblanks_alt:
+        sta     sleepCounter
+@sleepALoop:
+        jsr     stageVramRows
+        jsr     updateAudioWaitForNmiAndResetOamStaging
+        lda     newlyPressedButtons_player1
+        and     #BUTTON_START
+        bne     @sleepAReturn
+        lda     sleepCounter
+        bne     @sleepALoop
+@sleepAReturn:
+        rts
+
+.repeat 200
+nop
+.endrepeat

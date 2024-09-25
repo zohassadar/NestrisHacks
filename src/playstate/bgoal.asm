@@ -18,11 +18,19 @@ playState_bTypeGoalCheck:
 
 @graphicCopied:  lda     #$00
         sta     player1_vramRow
+.ifdef TRIPLEWIDE
+        jsr     sleep_for_14_vblanks_alt
+.else
         jsr     sleep_for_14_vblanks
+.endif
         lda     #$00
         sta     renderMode
         lda     #$80
+.ifdef TRIPLEWIDE
+        jsr     sleep_for_a_vblanks_alt
+.else
         jsr     sleep_for_a_vblanks
+.endif
         jsr     endingAnimation_maybe
         lda     #$00
         sta     playState

@@ -1,6 +1,10 @@
 updateLineClearingAnimation:
         lda     frameCounter
+.ifndef TRIPLEWIDE
         and     #$03
+.else
+        and     #$01
+.endif
         bne     @ret
         lda     #$00
         sta     generalCounter3

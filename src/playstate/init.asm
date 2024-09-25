@@ -160,6 +160,15 @@ gameModeState_initGameState:
         ldy     #$04
 .endif
         jsr     memset_page
+.ifdef TRIPLEWIDE
+        ldx     #$A0
+        lda     #$00
+; blank vram render queue
+@blankRenderQueue:
+        sta     stack-1,x
+        dex
+        bne     @blankRenderQueue
+.else
         ldx     #$0F
         lda     #$00
 ; statsByType
@@ -167,6 +176,7 @@ gameModeState_initGameState:
         sta     statsByType-1,x
         dex
         bne     @initStatsByType
+.endif
 .ifdef WALLHACK2
         lda     #$08
 .else
