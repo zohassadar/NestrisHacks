@@ -1,5 +1,5 @@
 
-stageSpriteForCurrentPiece:
+stageSpriteForCurrentPieceActual:
         lda     tetriminoX
         asl     a
         asl     a
@@ -35,14 +35,14 @@ stageSpriteForCurrentPiece:
         sta     generalCounter3 ; and player 2's field is more to the right
 .endif
 @calculateYPixel:
-        clc
         lda     tetriminoY
-        rol     a
-        rol     a
-        rol     a
+        asl     a
+        asl     a
+        asl     a
 .ifdef TALLER
         adc     #$1F
 .elseif .defined(TRIPLEWIDE)
+        clc
         adc     #$1F
 .else
         adc     #$2F
@@ -58,10 +58,10 @@ stageSpriteForCurrentPiece:
         nop
         clc
 .endif
-        rol     a
-        rol     a
+        asl     a
+        asl     a
         sta     generalCounter
-        rol     a
+        asl     a
         adc     generalCounter
         tax ; x contains index into orientation table
         ldy     oamStagingLength
@@ -85,7 +85,8 @@ stageSpriteForCurrentPiece:
         inc     oamStagingLength
         iny
         inx
-        lda     orientationTable,x
+        lda     currentTile
+        nop
         sta     oamStaging,y ; stage block type of mino
         inc     oamStagingLength
         iny

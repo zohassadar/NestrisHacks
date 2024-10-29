@@ -178,7 +178,15 @@ unreferenced_data1:
 
 
 .segment        "PRG_chunk2": absolute
+.ifdef TRIPLEWIDE
+demoButtonsTable:
+demoTetriminoTypeTable:
+.include "hacks/triple3.asm"
+.else
 .include "data/demo_data.asm"
+.endif
+.code
+.segment        "PRG_chunkSound": absolute
 .include "sound.asm"
 ; End of "PRG_chunk2" segment
 .code

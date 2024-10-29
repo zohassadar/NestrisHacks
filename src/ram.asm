@@ -11,7 +11,14 @@ effectiveTetriminoX: .res $1        ; $0006
 vramDumpNeeded: .res $1                ; $000D
 
 
-.res $6                             ; $000E
+currentTile: .res $1                             ; $000E
+bigFlag: .res 1
+backupX: .res 1
+backupY: .res 1
+backupPiece: .res 1
+orientIndex: .res 1
+
+
 patchToPpuAddr: .res $1             ; $0014
 .res $2                             ; $0015
 rng_seed: .res $2	                ; $0017
@@ -35,7 +42,8 @@ bSeedSource: .res 1
 bseedCopy: .res 1
 displayedNextPiece: .res 1       ; $0027
 topRowValidityCheck: .res 1      ; $0028
-.res $03
+tetrisSound: .res 1
+.res $02
 halfSpeed: .res $1                  ; $0032
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034
@@ -50,7 +58,6 @@ autorepeatX: .res 1 	            ; $0046
 startLevel:	.res $1	                ; $0047
 playState: .res $1	                ; $0048
 vramRow: .res $1	                ; $0049
-completedRow: .res $4	            ; $004A
 autorepeatY: .res $1	            ; $004E
 holdDownPoints:	.res $1	            ; $004F
 lines: .res $2	                    ; $0050
@@ -61,6 +68,7 @@ lineIndex: .res $1	                ; $0057
 curtainRow:	.res $1	                ; $0058
 startHeight: .res $1	            ; $0059
 garbageHole: .res $1	            ; $005A
+completedRow: .res $4	            ; $004A
 .res $5
 player1_tetriminoX:	.res 1	        ; $0060
 player1_tetriminoY:	.res 1	        ; $0061
@@ -72,7 +80,6 @@ player1_autorepeatX:	.res 1	; $0066
 player1_startLevel:	.res 1	; $0067
 player1_playState:	.res 1	; $0068
 player1_vramRow:	.res 1	; $0069
-player1_completedRow:	.res 4	; $006A
 player1_autorepeatY:	.res 1	; $006E
 player1_holdDownPoints:	.res 1	; $006F
 player1_lines:	.res 2	; $0070
@@ -83,6 +90,7 @@ player1_completedLines:	.res 1	; $0076
 player1_curtainRow:	.res 1	; $0078
 player1_startHeight:	.res 1	; $0079
 player1_garbageHole:	.res 1	; $007A
+player1_completedRow:	.res 4	; $006A
 .res 5
 player2_tetriminoX:	.res 1	; $0080
 player2_tetriminoY:	.res 1	; $0081
@@ -94,7 +102,6 @@ player2_autorepeatX:	.res 1	; $0086
 player2_startLevel:	.res 1	; $0087
 player2_playState:	.res 1	; $0088
 player2_vramRow:	.res 1	; $0089
-player2_completedRow:	.res 4	; $008A
 player2_autorepeatY:	.res 1	; $008E
 player2_holdDownPoints:	.res 1	; $008F
 player2_lines:	.res 2	; $0090
@@ -105,6 +112,7 @@ player2_completedLines:	.res 1	; $0096
 player2_curtainRow:	.res 1	; $0098
 player2_startHeight:	.res 1	; $0099
 player2_garbageHole:	.res 1	; $009A
+player2_completedRow:	.res 4	; $008A
 .res 5
 spriteXOffset:	.res 1	; $00A0
 spriteYOffset:	.res 1	; $00A1

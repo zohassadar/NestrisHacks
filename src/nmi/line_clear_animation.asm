@@ -8,7 +8,7 @@ updateLineClearingAnimation:
         bne     @ret
         lda     #$00
         sta     generalCounter3
-@whileCounter3LessThan4:
+@whileCounter3LessThan8:
         ldx     generalCounter3
         lda     completedRow,x
         beq     @nextRow
@@ -77,8 +77,8 @@ updateLineClearingAnimation:
 @nextRow:
         inc     generalCounter3
         lda     generalCounter3
-        cmp     #$04
-        bne     @whileCounter3LessThan4
+        cmp     #$08
+        bne     @whileCounter3LessThan8
         inc     rowY
         lda     rowY
 .ifdef TWELVE

@@ -164,7 +164,7 @@ tetriminoXPlayfieldTable:
         .byte   $04,$04,$04,$04,$04,$04,$04,$04,$04,$04
         .byte   $05,$05,$05,$05,$05,$05,$05,$05,$05,$05
 
-isPositionValid:
+isPositionValidActual:
         lda     currentPiece
         asl     a
         asl     a
@@ -183,16 +183,16 @@ isPositionValid:
         lda     orientationTable,x
         clc
         adc     tetriminoY
-        adc     #$02
-        cmp     #$1B
+        adc     #$04
+        cmp     #$1D
         bcs     @invalid
         clc
         lda     tetriminoY
         adc     orientationTable,x
         sta     generalCounter4
 
-; Set 1 if tetriminoY with offset is negative -1 or negative -2
-        cmp     #$FE
+; Set 1 if tetriminoY with offset is negative -1 or negative -2 (or -3 or -4!)
+        cmp     #$FC
         bcc     @yOffsetIsNotNegative
         lda     topRowValidityCheck
         ora     #$01

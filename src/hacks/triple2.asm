@@ -14,7 +14,10 @@ playState_lockTetrimino:
 @notGameOver:
         lda     vramRow
         cmp     #$20
-        bmi     @ret
+        bmi     lockRet
+        jmp     bigOrRegularLockCheck
+
+actualLock:
         lda     currentPiece
         asl     a
         asl     a
@@ -51,18 +54,25 @@ playState_lockTetrimino:
 
         tay
         dex
+        bit     bigFlag
+        bmi     @loadAlternateTile
         lda     orientationTable,x
+        bne     @storeTile
+@loadAlternateTile:
+        lda     currentTile
+@storeTile:
         sta     (playfieldAddr),y
         inx
         inx
         dec     generalCounter3
         bne     @newlocksquare
-        lda     #$00
-        sta     lineIndex
-        jsr     updatePlayfield
-        jsr     updateMusicSpeed
-        inc     playState
-@ret:   rts
+;        lda     #$00
+;        sta     lineIndex
+;        jsr     updatePlayfield
+;        jsr     updateMusicSpeed
+;        inc     playState
+lockRet:
+        rts
 
 
 vramPlayfieldRows:
@@ -161,14 +171,18 @@ playState_checkForCompletedRows:
 @incrementLineIndex:
         inc     lineIndex
         lda     lineIndex
-        cmp     #$04
-        bmi     @ret
+        cmp     #$08
+        beq     @finished
+        lsr
+        bcc     @ret
+        jmp     @updatePlayfieldComplete
 
+@finished:
         lda     #$00
         sta     vramRow
         sta     rowY
         lda     completedLines
-        cmp     #$04
+        cmp     tetrisSound
         bne     @skipTetrisSoundEffect
         lda     #$04
         sta     soundEffectSlot1Init
@@ -310,6 +324,22 @@ sleep_for_a_vblanks_alt:
 @sleepAReturn:
         rts
 
+updatePlayfield:
+        ldx     tetriminoY
+        dex
+        dex
+        dex
+        dex
+        dex
+        dex
+        txa
+        bpl     @rowInRange
+        lda     #$00
+@rowInRange:
+        cmp     vramRow
+        bpl     @ret
+        sta     vramRow
+@ret:   rts
 .repeat 200
 nop
 .endrepeat

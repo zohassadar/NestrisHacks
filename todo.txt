@@ -1,0 +1,28 @@
+40
+100
+300
+1200
+2200
+3300
+4500
+6600
+
+maybe new score table?
+
+
+todo:
+
+line clear animation when big tetris
+lock tetrimino when above playfield (need to disappear the pieces if above)
+
+
+set big/regular variables:
+tetrisSound
+updatePlayfield dexes
+
+menu for big probability
+
+test regular mode!
+
+
+restore level 0 to $30

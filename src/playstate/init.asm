@@ -209,9 +209,15 @@ gameModeState_initGameState:
         sta     player1_score
         sta     player1_score+1
         sta     player1_score+2
+.ifdef TRIPLEWIDE
+        lda     #$80
+        sta     bigFlag   ; temporary onning of flag
+        lda     #$00
+.else
         sta     player2_score
         sta     player2_score+1
         sta     player2_score+2
+.endif
         sta     player1_lines
         sta     player1_lines+1
         sta     player2_lines
