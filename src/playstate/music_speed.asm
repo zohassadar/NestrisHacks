@@ -1,21 +1,24 @@
 
 updateMusicSpeed:
-        ldx     #$05
+        ; ldx     #$05
 .ifdef TWELVE
         lda     multBy12Table,x
 .else
-        lda     multBy10Table,x
+        ; lda     multBy10Table,x
 .endif
-        tay
+        ldy     #50
 .ifdef TWELVE
         ldx     #$0C
 .else
         ldx     #$0A
 .endif
 @checkForBlockInRow:
-        lda     (playfieldAddr),y
-        cmp     #$EF
+        lda     leftPlayfield,y
+        ora     rightPlayfield,y
+        ora     centerPlayfield,y
+        and     #$10
         bne     @foundBlockInRow
+
         iny
         dex
         bne     @checkForBlockInRow
@@ -25,8 +28,8 @@ updateMusicSpeed:
         sta     allegro
         ldx     musicType
         lda     musicSelectionTable,x
-        jsr     setMusicTrack
-        jmp     @ret
+        jmp     setMusicTrack
+        ; jmp     @ret
 
 @foundBlockInRow:
         lda     allegro
