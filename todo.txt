@@ -1,20 +1,4 @@
-40
-100
-300
-1200
-2200
-3300
-4500
-6600
-
-maybe new score table?
-
-
 todo:
-
-set big/regular variables:
-tetrisSound
-updatePlayfield dexes
 
 menu for big probability
 
@@ -22,12 +6,5 @@ test regular mode!
 
 
 restore level 0 to $30
-
-shift pieces one to the right when big
-
-
-new set of next box pieces
-
-set currentTile in sprite routine for regular mode
 
 0-arr efficiency??

@@ -62,9 +62,10 @@ stageSpriteForNextPiece:
 .ifdef SOMETIMES_WRONG_NEXTBOX
         ldx     displayedNextPiece
 .else
-        ldx     nextPiece
+        ldy     nextPiece
 .endif
-        lda     orientationToSpriteTable,x
+        lda     (orientationToSpriteTable),y
+        nop
         sta     spriteIndexInOamContentLookup
         jmp     loadSpriteIntoOamStaging
 

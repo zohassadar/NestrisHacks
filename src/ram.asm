@@ -2,12 +2,14 @@
 tmp1:	.res $1	                    ; $0000
 tmp2:	.res $1	                    ; $0001
 tmp3:	.res $1	                    ; $0002
-.res $2                             ; $0003
+pointsTable: .res $2                ; $0003 used for big/normal scoring
 tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
 
 ; for triplewide
 effectiveTetriminoX: .res $1        ; $0006
-.res $6
+orientationToSpriteTable: .res 2   ; to stage different sprites
+nextBigFlag: .res 1
+.res $3
 vramDumpNeeded: .res $1                ; $000D
 
 
@@ -150,7 +152,8 @@ musicType:	.res 1	; $00C2
 sleepCounter:	.res 1	; $00C3
 ending:	.res 1	; $00C4
 ending_customVars:	.res 1	; $00C5
-.res 6
+.res 5
+displayNextPiece:	.res 1	; $00CB
 ending_currentSprite: .res 1 ;$00CC
 ending_typeBCathedralFrameDelayCounter: .res 1 ; $00CD
 demo_heldButtons:	.res 1	; $00CE
@@ -163,10 +166,8 @@ highScoreEntryNameOffsetForLetter:	.res 1	; $00D4
 highScoreEntryRawPos:	.res 1	; $00D5
 highScoreEntryNameOffsetForRow:	.res 1	; $00D6
 highScoreEntryCurrentLetter:	.res 1	; $00D7
-lineClearStatsByType:	.res 1	; $00D8
+lineClearStatsByType:	.res 8	; $00D8
 
-.res 6
-displayNextPiece:	.res 1	; $00DF
 AUDIOTMP1:	.res 1	; $00E0
 AUDIOTMP2:	.res 1	; $00E1
 AUDIOTMP3:	.res 1	; $00E2

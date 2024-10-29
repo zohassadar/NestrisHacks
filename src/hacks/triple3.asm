@@ -149,3 +149,76 @@ isPositionValid:
     jsr isPositionValidActual
 @ret:
     jmp restoreBackups
+
+
+
+chooseNextTetrimino:
+
+; move flag over
+    lda nextBigFlag
+    sta bigFlag
+
+; default not big
+    lda #$00
+    sta nextBigFlag
+    lda #<orientationToSpriteTableRegular
+    sta orientationToSpriteTable
+    lda #>orientationToSpriteTableRegular
+    sta orientationToSpriteTable+1
+
+; condition (maybe tweak this??)
+    lda rng_seed+1
+    eor frameCounter
+    eor spawnCount
+    lsr
+    lsr
+    and #$0F
+    cmp #$7
+    bcs @nextNotBig
+
+; setup vars for next piece
+    lda #$08
+    sta nextBigFlag
+    lda #<orientationToSpriteTableBig
+    sta orientationToSpriteTable
+    lda #>orientationToSpriteTableBig
+    sta orientationToSpriteTable+1
+
+@nextNotBig:
+
+; default for current piece
+    lda #$04
+    sta tetrisSound
+    lda #<pointsTableRegular
+    sta pointsTable
+    lda #>pointsTableRegular
+    sta pointsTable+1
+
+; check flag
+    lda bigFlag
+    beq @notBig
+
+; big vars for current piece
+    lda #$80
+    sta bigFlag
+    lda #$08
+    sta tetrisSound
+    lda #$10
+    sta tetriminoX
+    sta player1_tetriminoX
+    lda #<pointsTableBig
+    sta pointsTable
+    lda #>pointsTableBig
+    sta pointsTable+1
+
+@notBig:
+    jmp chooseNextTetriminoActual
+
+pointsTableRegular:
+        .word   $0000,$0040,$0100,$0300
+        .word   $1200
+
+pointsTableBig:
+        .word   $0000,$0040,$0060,$0100
+        .word   $0150,$0300,$0450,$1200
+        .word   $6600

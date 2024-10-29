@@ -335,10 +335,13 @@ updatePlayfield:
         ldx     tetriminoY
         dex
         dex
+        bit     bigFlag  ; keep timing the same for normal pieces
+        bpl     @notBig
         dex
         dex
         dex
         dex
+@notBig:
         txa
         bpl     @rowInRange
         lda     #$00
@@ -347,6 +350,7 @@ updatePlayfield:
         bpl     @ret
         sta     vramRow
 @ret:   rts
+
 .repeat 200
 nop
 .endrepeat

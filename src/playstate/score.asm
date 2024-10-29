@@ -126,8 +126,9 @@ addLineClearPoints:
         inc     generalCounter
 L9C37:  lda     completedLines
         asl     a
-        tax
-        lda     pointsTable,x
+        tay
+        lda     (pointsTable),y
+        nop
         clc
         adc     score
         sta     score
@@ -137,8 +138,9 @@ L9C37:  lda     completedLines
         adc     #$60
         sta     score
         inc     score+1
-L9C4E:  inx
-        lda     pointsTable,x
+L9C4E:  iny
+        lda     (pointsTable),y
+        nop
         clc
         adc     score+1
         sta     score+1
@@ -195,6 +197,6 @@ L9C94:  dec     generalCounter
         inc     playState
         rts
 
-pointsTable:
+pointsTableUnused:
         .word   $0000,$0040,$0100,$0300
         .word   $1200

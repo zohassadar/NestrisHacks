@@ -89,7 +89,7 @@ playState_spawnNextTetrimino:
         sta     autorepeatY
 @ret:   rts
 
-chooseNextTetrimino:
+chooseNextTetriminoActual:
         lda     gameMode
         cmp     #$05
         bne     pickRandomTetrimino
