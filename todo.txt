@@ -12,10 +12,6 @@ maybe new score table?
 
 todo:
 
-line clear animation when big tetris
-lock tetrimino when above playfield (need to disappear the pieces if above)
-
-
 set big/regular variables:
 tetrisSound
 updatePlayfield dexes
@@ -31,3 +27,7 @@ shift pieces one to the right when big
 
 
 new set of next box pieces
+
+set currentTile in sprite routine for regular mode
+
+0-arr efficiency??

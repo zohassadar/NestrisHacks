@@ -32,6 +32,12 @@ actualLock:
         clc
         lda     tetriminoY
         adc     orientationTable,x
+
+; don't put pieces above the visible playfield!
+        bpl     @lock
+        inx
+        bne     @noLock
+@lock:
         asl     a
         sta     generalCounter
         asl     a
@@ -62,6 +68,7 @@ actualLock:
         lda     currentTile
 @storeTile:
         sta     (playfieldAddr),y
+@noLock:
         inx
         inx
         dec     generalCounter3
@@ -100,7 +107,7 @@ playState_checkForCompletedRows:
 @updatePlayfieldComplete:
         lda     tetriminoY
         sec
-        sbc     #$02
+        sbc     #$04
         bpl     @yInRange
         lda     #$00
 @yInRange:

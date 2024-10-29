@@ -109,6 +109,11 @@ bigOrRegularLockCheck:
 stageSpriteForCurrentPiece:
     lda bigFlag
     bne @big
+
+; very inefficient but will do for now to make sure currentTile is properly set
+    jsr setupBackups
+    jsr restoreBackups
+
     jmp stageSpriteForCurrentPieceActual
 @big:
     ;lda currentPiece
