@@ -26,3 +26,8 @@ test regular mode!
 
 
 restore level 0 to $30
+
+shift pieces one to the right when big
+
+
+new set of next box pieces
