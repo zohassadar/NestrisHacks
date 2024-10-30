@@ -154,8 +154,6 @@ checkFor0Arr:
         lda     anydasARRValue
         ; disable 0 arr for the time being
         ; beq     @zeroArr
-        nop
-        nop
         jmp     buttonHeldDown
 @zeroArr:
         lda     heldButtons

@@ -7,18 +7,18 @@ tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
 
 ; for triplewide
 effectiveTetriminoX: .res $1        ; $0006
-orientationToSpriteTable: .res 2   ; to stage different sprites
-nextBigFlag: .res 1
+orientationToSpriteTable: .res 2    ; $0007 to stage different sprites
+nextBigFlag: .res 1                 ; $0009
 .res $3
-vramDumpNeeded: .res $1                ; $000D
+vramDumpNeeded: .res $1             ; $000D
 
 
-currentTile: .res $1                             ; $000E
-bigFlag: .res 1
-backupX: .res 1
-backupY: .res 1
-backupPiece: .res 1
-orientIndex: .res 1
+currentTile: .res $1                ; $000E
+bigFlag: .res 1                     ; $000F
+backupX: .res 1                     ; $0010
+backupY: .res 1                     ; $0011
+backupPiece: .res 1                 ; $0012
+orientIndex: .res 1                 ; $0013
 
 
 patchToPpuAddr: .res $1             ; $0014
@@ -37,14 +37,14 @@ levelOffset: .res $1                ; $0020
 
 ; SPS
 set_seed_input: .res $3          ; $0021
-bseed_input: .res $2
-set_seed: .res $3                ; $0024
-bseed: .res $2
-bSeedSource: .res 1
-bseedCopy: .res 1
-displayedNextPiece: .res 1       ; $0027
-topRowValidityCheck: .res 1      ; $0028
-tetrisSound: .res 1
+bseed_input: .res $2             ; $0024
+set_seed: .res $3                ; $0026
+bseed: .res $2                   ; $0029
+bSeedSource: .res 1              ; $002B
+bseedCopy: .res 1                ; $002C
+displayedNextPiece: .res 1       ; $002D
+topRowValidityCheck: .res 1      ; $002E
+tetrisSound: .res 1              ; $002F
 .res $02
 halfSpeed: .res $1                  ; $0032
 verticalBlankingInterval:.res $1	; $0033
@@ -60,17 +60,17 @@ autorepeatX: .res 1 	            ; $0046
 startLevel:	.res $1	                ; $0047
 playState: .res $1	                ; $0048
 vramRow: .res $1	                ; $0049
-autorepeatY: .res $1	            ; $004E
-holdDownPoints:	.res $1	            ; $004F
-lines: .res $2	                    ; $0050
-rowY: .res $1	                    ; $0052
-score: .res $3	                    ; $0053
-completedLines:	.res 1	            ; $0056
-lineIndex: .res $1	                ; $0057
-curtainRow:	.res $1	                ; $0058
-startHeight: .res $1	            ; $0059
-garbageHole: .res $1	            ; $005A
-completedRow: .res $4	            ; $004A
+autorepeatY: .res $1	            ; $004A
+holdDownPoints:	.res $1	            ; $004B
+lines: .res $2	                    ; $004C
+rowY: .res $1	                    ; $004E
+score: .res $3	                    ; $004F
+completedLines:	.res 1	            ; $0052
+lineIndex: .res $1	                ; $0053
+curtainRow:	.res $1	                ; $0054
+startHeight: .res $1	            ; $0055
+garbageHole: .res $1	            ; $0056
+completedRow: .res $4	            ; $0057
 .res $5
 player1_tetriminoX:	.res 1	        ; $0060
 player1_tetriminoY:	.res 1	        ; $0061
@@ -82,17 +82,17 @@ player1_autorepeatX:	.res 1	; $0066
 player1_startLevel:	.res 1	; $0067
 player1_playState:	.res 1	; $0068
 player1_vramRow:	.res 1	; $0069
-player1_autorepeatY:	.res 1	; $006E
-player1_holdDownPoints:	.res 1	; $006F
-player1_lines:	.res 2	; $0070
-player1_rowY:	.res 1	; $0072
-player1_score:	.res 3	; $0073
-player1_completedLines:	.res 1	; $0076
+player1_autorepeatY:	.res 1	; $006A
+player1_holdDownPoints:	.res 1	; $006B
+player1_lines:	.res 2	; $006C
+player1_rowY:	.res 1	; $006E
+player1_score:	.res 3	; $006F
+player1_completedLines:	.res 1	; $0072
 .res 1
-player1_curtainRow:	.res 1	; $0078
-player1_startHeight:	.res 1	; $0079
-player1_garbageHole:	.res 1	; $007A
-player1_completedRow:	.res 4	; $006A
+player1_curtainRow:	.res 1	; $0074
+player1_startHeight:	.res 1	; $0075
+player1_garbageHole:	.res 1	; $0076
+player1_completedRow:	.res 4	; $0077
 .res 5
 player2_tetriminoX:	.res 1	; $0080
 player2_tetriminoY:	.res 1	; $0081

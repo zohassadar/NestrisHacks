@@ -247,8 +247,3 @@ isPositionValidActual:
 @invalid:
         lda     #$FF
         rts
-
-
-.repeat 21
-nop
-.endrepeat

@@ -214,6 +214,10 @@ chooseNextTetrimino:
 @notBig:
     jmp chooseNextTetriminoActual
 
+
+; two score tables aren't necessary but haven't fully decided on if 1-4 lines should be different
+; when scoring with a big piece
+
 pointsTableRegular:
         .word   $0000,$0040,$0100,$0300
         .word   $1200

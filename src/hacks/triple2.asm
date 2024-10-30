@@ -350,7 +350,3 @@ updatePlayfield:
         bpl     @ret
         sta     vramRow
 @ret:   rts
-
-.repeat 200
-nop
-.endrepeat
