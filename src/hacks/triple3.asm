@@ -219,6 +219,6 @@ pointsTableRegular:
         .word   $1200
 
 pointsTableBig:
-        .word   $0000,$0040,$0060,$0100
-        .word   $0150,$0300,$0450,$1200
-        .word   $6600
+        .word   $0000,$0040,$0100,$0300
+        .word   $1200,$2000,$3000,$4000
+        .word   $6000
