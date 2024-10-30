@@ -202,7 +202,7 @@ get_flag_opts (){
                     echo "TRIPLE ENABLED"
                     omit_ud1
                     buildflags+=("-D TRIPLEWIDE")
-                    name_modifiers+=("30Wide")
+                    name_modifiers+=("30WideWithBig")
                     ;;
                 "tourney")
                     echo "Tournament Enabled"

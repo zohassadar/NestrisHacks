@@ -173,7 +173,7 @@ chooseNextTetrimino:
     lsr
     lsr
     and #$0F
-    cmp #$7
+    cmp #$3
     bcs @nextNotBig
 
 ; setup vars for next piece

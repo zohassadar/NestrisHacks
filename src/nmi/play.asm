@@ -267,7 +267,7 @@ render_mode_play_and_demo:
         sta     PPUADDR
         ldx     #$00
         lda     completedLines
-        cmp     #$04
+        cmp     tetrisSound
         bne     @setPaletteColor
         lda     frameCounter
         and     #$03
