@@ -78,7 +78,7 @@ anydasControllerInput:
         sta anydasARRValue
         lda #$0A
         sta levelOffset
-        lda #$03
+        lda #$00
         sta bigChance
         inc anydasInit
 @initialized:
@@ -149,7 +149,7 @@ arrowOffsets:
         .byte $00,$20,$45,$64
 
 anydasUpperLimit:
-        .byte $32,$32,$02,$11
+        .byte $32,$32,$02,$04
 
 
 checkFor0Arr:

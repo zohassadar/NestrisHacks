@@ -158,7 +158,7 @@ chooseNextTetrimino:
     lda nextBigFlag
     sta bigFlag
 
-; default not big
+; default not big for next piece
     lda #$00
     sta nextBigFlag
     lda #<orientationToSpriteTableRegular
@@ -166,18 +166,19 @@ chooseNextTetrimino:
     lda #>orientationToSpriteTableRegular
     sta orientationToSpriteTable+1
 
-; condition (maybe tweak this??)
+; condition for next next piece
+    ldx bigChance
     lda rng_seed+1
     eor frameCounter
     eor spawnCount
     lsr
-    lsr
+    lsr   ; shift right to ignore line clear animation framerule
     and #$0F
-    cmp bigChance
+    cmp bigChanceTable,x
     bcs @nextNotBig
 
-; setup vars for next piece
-    lda #$08
+; big vars for next piece
+    lda #$80 ; use negative flag so bit can be used
     sta nextBigFlag
     lda #<orientationToSpriteTableBig
     sta orientationToSpriteTable
@@ -199,8 +200,6 @@ chooseNextTetrimino:
     beq @notBig
 
 ; big vars for current piece
-    lda #$80
-    sta bigFlag
     lda #$08
     sta tetrisSound
     lda #$10
@@ -226,3 +225,7 @@ pointsTableBig:
         .word   $0000,$0040,$0100,$0300
         .word   $1200,$2000,$3000,$4000
         .word   $6000
+
+bigChanceTable:
+        ; theoretically 3/16, 7/16, 11/16 & 16/16 (can guarantee the last one!)
+        .byte $03,$07,$0B,$10
