@@ -33,7 +33,7 @@ anydasMenu: .res $1                 ; $001C
 anydasDASValue: .res $1             ; $001D
 anydasARRValue: .res $1             ; $001E
 anydasARECharge: .res $1            ; $001F
-levelOffset: .res $1                ; $0020
+bigChance: .res $1                ; $0020
 
 ; SPS
 set_seed_input: .res $3          ; $0021
@@ -45,7 +45,8 @@ bseedCopy: .res 1                ; $002C
 displayedNextPiece: .res 1       ; $002D
 topRowValidityCheck: .res 1      ; $002E
 tetrisSound: .res 1              ; $002F
-.res $02
+levelOffset:  .res 1               ; $0030   Set to 10 and left that way in this mode
+.res $01
 halfSpeed: .res $1                  ; $0032
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034

@@ -48,7 +48,7 @@ renderAnydasMenu:
         sta PPUADDR
         lda #$D3
         sta PPUADDR
-        lda levelOffset
+        lda bigChance
         jsr renderByteBCD
         lda #$FF
         sta PPUDATA
@@ -78,6 +78,8 @@ anydasControllerInput:
         sta anydasARRValue
         lda #$0A
         sta levelOffset
+        lda #$03
+        sta bigChance
         inc anydasInit
 @initialized:
         lda gameMode
@@ -147,7 +149,7 @@ arrowOffsets:
         .byte $00,$20,$45,$64
 
 anydasUpperLimit:
-        .byte $32,$32,$02,$F7
+        .byte $32,$32,$02,$11
 
 
 checkFor0Arr:
