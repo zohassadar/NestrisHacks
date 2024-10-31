@@ -149,7 +149,7 @@ arrowOffsets:
         .byte $00,$20,$45,$64
 
 anydasUpperLimit:
-        .byte $32,$32,$02,$04
+        .byte $32,$32,$02,$05
 
 
 checkFor0Arr:

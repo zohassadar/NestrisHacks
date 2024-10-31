@@ -214,6 +214,15 @@ chooseNextTetrimino:
     jmp chooseNextTetriminoActual
 
 
+draw_big_chance_then_finish:
+    lda #$20
+    sta PPUADDR
+    lda #$41
+    sta PPUADDR
+    lda bigChance
+    sta PPUDATA
+    jmp gameModeState_initGameBackground_finish
+
 ; two score tables aren't necessary but haven't fully decided on if 1-4 lines should be different
 ; when scoring with a big piece
 
@@ -233,4 +242,4 @@ pointsTableBig:
 
 bigChanceTable:
         ; theoretically 3/16, 7/16, 11/16 & 16/16 (can guarantee the last one!)
-        .byte $03,$07,$0B,$10
+        .byte $00,$03,$07,$0B,$10

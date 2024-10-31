@@ -65,7 +65,7 @@ gameModeState_initGameBackground:
 .ifdef SPS
         jmp     drawSeedOnBackground
 .else
-        jmp     gameModeState_initGameBackground_finish
+        jmp     draw_big_chance_then_finish
 .endif
 
 @typeB: lda     #$0B
@@ -120,7 +120,7 @@ gameModeState_initGameBackground:
         lda     startHeight
         and     #$0F
         sta     PPUDATA
-        jmp     gameModeState_initGameBackground_finish
+        jmp     draw_big_chance_then_finish
 
 gameModeState_initGameBackground_finish:
         jsr     waitForVBlankAndEnableNmi

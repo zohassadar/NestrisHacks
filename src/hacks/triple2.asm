@@ -113,6 +113,8 @@ playState_checkForCompletedRows:
 @yInRange:
         clc
         adc     lineIndex
+    ; todo - potential bug here maybe.  exit if below bottom row??
+    ; probably not possible to manifest
         sta     generalCounter2
         asl     a
         sta     generalCounter
