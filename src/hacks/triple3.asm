@@ -226,6 +226,11 @@ pointsTableBig:
         .word   $1200,$2000,$3000,$4000
         .word   $6000
 
+; ideas:
+; 40,100,300,1200,1200,1200,5000 (or 6000)
+; 40,40,100,100,300,300,1200,5000 (or 6000)
+; 40,100,300,1200,2000,3000,4000,6000 (current)
+
 bigChanceTable:
         ; theoretically 3/16, 7/16, 11/16 & 16/16 (can guarantee the last one!)
         .byte $03,$07,$0B,$10
