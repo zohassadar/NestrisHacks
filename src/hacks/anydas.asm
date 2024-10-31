@@ -78,7 +78,7 @@ anydasControllerInput:
         sta anydasARRValue
         lda #$0A
         sta levelOffset
-        lda #$00
+        lda #$02 ; default to medium
         sta bigChance
         inc anydasInit
 @initialized:

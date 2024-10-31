@@ -241,5 +241,5 @@ pointsTableBig:
 ; 40,100,300,1200,2000,3000,4000,6000 (current)
 
 bigChanceTable:
-        ; theoretically 3/16, 7/16, 11/16 & 16/16 (can guarantee the last one!)
+        ; theoretically 0/16, 3/16, 7/16, 11/16 & 16/16 (can guarantee the first and last!)
         .byte $00,$03,$07,$0B,$10
