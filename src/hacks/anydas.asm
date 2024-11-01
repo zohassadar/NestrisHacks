@@ -154,10 +154,11 @@ anydasUpperLimit:
 
 checkFor0Arr:
         lda     anydasARRValue
-        ; disable 0 arr for the time being
-        ; beq     @zeroArr
+        beq     @zeroArr
         jmp     buttonHeldDown
 @zeroArr:
+        bit     bigFlag
+        bmi     zeroArrForBig
         lda     heldButtons
         and     #BUTTON_RIGHT
         beq     @checkLeftPressed
@@ -189,6 +190,128 @@ checkFor0Arr:
 @leftNotPressed:
         rts
 
+soundNeeded=generalCounter
+yStash=generalCounter2
+yBackup=generalCounter3
+loopCounter=generalCounter4
+abovePlayfield=generalCounter5
+tablePointer=tmp3
+
+shiftBackToLeft:
+        dec  tetriminoX
+        lda  $01
+        sta  autorepeatX
+        lda  soundNeeded
+        beq  @storeSound
+        lda  #$03
+@storeSound:
+        sta  soundEffectSlot1Init
+        rts
+
+zeroArrForBig:
+        lda #$00
+        sta soundNeeded
+        lda currentPiece
+        asl a
+        asl a
+        asl a
+        sta tablePointer
+        lda heldButtons
+        and #BUTTON_RIGHT
+        beq @checkLeftPressed
+@shiftRight:
+        inc tetriminoX
+
+        lda tablePointer
+        sta yBackup
+        lda #$08
+        sta loopCounter
+@checkSquareRight:
+        ldy yBackup
+        lda zeroArrYRight,y
+        clc
+        adc tetriminoY
+        sta abovePlayfield
+        tax
+        lda multBy10Table,x
+        sta yStash
+        lda zeroArrXRight,y
+        clc
+        adc tetriminoX
+        cmp #$1e
+        bcs shiftBackToLeft
+        bit abovePlayfield
+        bmi @skipCheckLeft
+        tax
+        lda tetriminoXPlayfieldTable,x
+        sta playfieldAddr+1
+        lda effectiveTetriminoXTable,x
+        clc
+        adc yStash
+        tay
+        lda (playfieldAddr),y
+        bpl shiftBackToLeft
+@skipCheckLeft:
+        inc yBackup
+        dec loopCounter
+        bne @checkSquareRight
+        inc soundNeeded
+        bne @shiftRight
+
+@checkLeftPressed:
+        lda heldButtons
+        and #BUTTON_LEFT
+        beq @leftNotPressed
+
+@shiftLeft:
+        dec tetriminoX
+        lda tablePointer
+        sta yBackup
+        lda #$08
+        sta loopCounter
+@checkSquareLeft:
+        ldy yBackup
+        lda zeroArrYLeft,y
+        clc
+        adc tetriminoY
+        sta abovePlayfield
+        tax
+        lda multBy10Table,x
+        sta yStash
+
+        lda zeroArrXLeft,y
+        clc
+        adc tetriminoX
+        bmi @shiftBackToRight
+        bit abovePlayfield
+        bmi @skipCheckRight
+        tax
+        lda tetriminoXPlayfieldTable,x
+        sta playfieldAddr+1
+        lda effectiveTetriminoXTable,x
+        clc
+        adc yStash
+        tay
+        lda (playfieldAddr),y
+        bpl @shiftBackToRight
+@skipCheckRight:
+        inc yBackup
+        dec loopCounter
+        bne @checkSquareLeft
+        inc soundNeeded
+        bne @shiftLeft
+
+@shiftBackToRight:
+        inc tetriminoX
+        lda #$01
+        sta autorepeatX
+        lda soundNeeded
+        beq @storeSound
+        lda #$03
+@storeSound:
+        sta soundEffectSlot1Init
+@leftNotPressed:
+        rts
 
 
 renderByteBCD:

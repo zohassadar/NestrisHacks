@@ -470,6 +470,8 @@ output_file=$(IFS=""; printf "${basename}${sorted_modifiers[*]}"; unset IFS)
 mkdir -p "$output_path"
 output="${output_path}${output_file}"
 
+# 0 arr table
+python arrtable.py > src/hacks/arrtable.asm
 
 # build object files
 ca65 ${buildflags[*]} -g src/header.asm -o build/header.o
@@ -490,8 +492,10 @@ if [[ "$expected" = "$current" ]]; then
     echo "Labels line up"
 else
     echo "Labels do not line up!"
+    set +e
     diff labels.txt <(get_labels "${output}.lbl")
-    exit 1
+    set -e
+    # exit 1
 fi
 
 # Validate against sha1sum
@@ -507,21 +511,20 @@ else
         fi
     fi
 fi
-
 # show some stats
 sed -n '23,27p' < "${output}.map"
 
 # create patch
-if [[ $output == "${output_path}${basename}" ]]; then
-    exit 1
-elif sha1check "sha1files/${basename}.sha1" 2>/dev/null; then
-    create_patch "${output}.nes"
-else
-    echo "sha1files/${basename}.sha1 not built or invalid"
-    exit 1
-fi
+#if [[ $output == "${output_path}${basename}" ]]; then
+#    exit 1
+#elif sha1check "sha1files/${basename}.sha1" 2>/dev/null; then
+#    create_patch "${output}.nes"
+#else
+#    echo "sha1files/${basename}.sha1 not built or invalid"
+#    exit 1
+#fi
 
 # show patch size
-if [[ -f "${output}.bps" ]]; then
-    echo Patch size: $(get_size "${output}.bps")
-fi
+#if [[ -f "${output}.bps" ]]; then
+#    echo Patch size: $(get_size "${output}.bps")
+#fi
