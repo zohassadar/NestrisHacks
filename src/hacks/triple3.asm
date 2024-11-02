@@ -235,3 +235,72 @@ pointsTableBig:
 bigChanceTable:
         ; theoretically 0/16, 3/16, 7/16, 11/16 & 16/16 (can guarantee the first and last!)
         .byte $00,$03,$07,$0B,$10
+
+; a bit faster than memset_page to give breathing room to 0arr
+customOAMClear:
+        lda #$FF
+        sta oamStaging+0
+        sta oamStaging+4
+        sta oamStaging+8
+        sta oamStaging+12
+        sta oamStaging+16
+        sta oamStaging+20
+        sta oamStaging+24
+        sta oamStaging+28
+        sta oamStaging+32
+        sta oamStaging+36
+        sta oamStaging+40
+        sta oamStaging+44
+        sta oamStaging+48
+        sta oamStaging+52
+        sta oamStaging+56
+        sta oamStaging+60
+        sta oamStaging+64
+        sta oamStaging+68
+        sta oamStaging+72
+        sta oamStaging+76
+        sta oamStaging+80
+        sta oamStaging+84
+        sta oamStaging+88
+        sta oamStaging+92
+        sta oamStaging+96
+        sta oamStaging+100
+        sta oamStaging+104
+        sta oamStaging+108
+        sta oamStaging+112
+        sta oamStaging+116
+        sta oamStaging+120
+        sta oamStaging+124
+        sta oamStaging+128
+        sta oamStaging+132
+        sta oamStaging+136
+        sta oamStaging+140
+        sta oamStaging+144
+        sta oamStaging+148
+        sta oamStaging+152
+        sta oamStaging+156
+        sta oamStaging+160
+        sta oamStaging+164
+        sta oamStaging+168
+        sta oamStaging+172
+        sta oamStaging+176
+        sta oamStaging+180
+        sta oamStaging+184
+        sta oamStaging+188
+        sta oamStaging+192
+        sta oamStaging+196
+        sta oamStaging+200
+        sta oamStaging+204
+        sta oamStaging+208
+        sta oamStaging+212
+        sta oamStaging+216
+        sta oamStaging+220
+        sta oamStaging+224
+        sta oamStaging+228
+        sta oamStaging+232
+        sta oamStaging+236
+        sta oamStaging+240
+        sta oamStaging+244
+        sta oamStaging+248
+        sta oamStaging+252
+        rts

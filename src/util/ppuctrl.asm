@@ -11,10 +11,14 @@ updateAudioWaitForNmiAndResetOamStaging:
 @checkForNmi:
         lda     verticalBlankingInterval
         beq     @checkForNmi
+
+; go to faster routine instead
+        jmp     customOAMClear
         lda     #$FF
         ldx     #$02
         ldy     #$02
-        jsr     memset_page
+; commented to make room for above jmp
+        ; jsr     memset_page
         rts
 
 updateAudioAndWaitForNmi:
@@ -69,4 +73,3 @@ copyCurrentScrollAndCtrlToPPU:
         lda     currentPpuCtrl
         sta     PPUCTRL
         rts
-    
