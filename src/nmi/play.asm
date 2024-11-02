@@ -260,6 +260,9 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$BF
         sta     outOfDateRenderFlags
+; flash palette isn't used so flash doesn't occur
+; dump routine causes this to get skipped.  tetris sound logic added to end of
+; controller reading
 @renderTetrisFlashAndSound:
         lda     #$3F
         sta     PPUADDR
