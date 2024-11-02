@@ -166,17 +166,16 @@ chooseNextTetrimino:
     lda #>orientationToSpriteTableRegular
     sta orientationToSpriteTable+1
 
-; condition for next next piece
+; condition for next next piece based on controller input
     ldx bigChance
-    lda rng_seed+1
-    eor frameCounter
-    eor spawnCount
-    lsr
-    lsr   ; shift right to ignore line clear animation framerule
-    and #$0F
+    cpx #$04
+    beq @nextBig
+
+    lda controllerEntropy
     cmp bigChanceTable,x
     bcs @nextNotBig
 
+@nextBig:
 ; big vars for next piece
     lda #$80 ; use negative flag so bit can be used
     sta nextBigFlag
@@ -234,7 +233,7 @@ pointsTableBig:
 
 bigChanceTable:
         ; theoretically 0/16, 3/16, 7/16, 11/16 & 16/16 (can guarantee the first and last!)
-        .byte $00,$03,$07,$0B,$10
+        .byte $00,$30,$70,$B0 ; 4th index never used
 
 ; a bit faster than memset_page to give breathing room to 0arr
 customOAMClear:

@@ -70,6 +70,50 @@ renderAnydasMenu:
 
 anydasControllerInput:
         jsr pollController
+
+; collectControllerEntropy:
+        ; when buttons held: mess with 2 bytes for every button not held
+        ; when buttons newly pressed: mess with same 2 bytes for every button not newly pressed
+
+        ldy #$00 ; 0 or 1 to control loop
+        lda heldButtons_player1
+        beq @rotate ; skip if no buttons pressed
+@newlyPressedAdd:
+        sta generalCounter
+        ldx #$08
+@loop:
+        dex
+        bmi @checkNewlyPressed
+        lsr generalCounter
+        bcs @loop
+        inc controllerEntropy
+        dec controllerEntropy+4
+        jmp @loop
+
+@checkNewlyPressed:
+        tya
+        bne @rotate
+        iny ; finished with loop after this
+        lda newlyPressedButtons_player1
+        bne @newlyPressedAdd
+
+        ; always rotate bits and mess with another 2 bytes
+@rotate:
+        lda controllerEntropy+7
+        lsr
+        ror controllerEntropy
+        ror controllerEntropy+1
+        ror controllerEntropy+2
+        ror controllerEntropy+3
+        ror controllerEntropy+4
+        ror controllerEntropy+5
+        ror controllerEntropy+6
+        ror controllerEntropy+7
+
+        inc controllerEntropy+2
+        dec controllerEntropy+6
+
+; resume anydas render
         lda anydasInit
         bne @initialized
         lda #$10

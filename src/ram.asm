@@ -50,7 +50,8 @@ levelOffset:  .res 1               ; $0030   Set to 10 and left that way in this
 halfSpeed: .res $1                  ; $0032
 verticalBlankingInterval:.res $1	; $0033
 unused_0E: .res $1                  ; $0034
-.res $B
+controllerEntropy: .res 8           ; $0035
+.res $3
 tetriminoX:	.res $1	                ; $0040
 tetriminoY:	.res $1	                ; $0041
 currentPiece: .res 1	            ; $0042
