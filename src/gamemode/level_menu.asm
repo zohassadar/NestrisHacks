@@ -99,7 +99,11 @@ gameMode_levelMenu_processPlayer1Navigation:
         lda     player1_startLevel
         clc
 .ifdef ANYDAS
+    .ifdef TRIPLEWIDE
+        adc     #$0A
+    .else
         adc     levelOffset
+    .endif
 .else
         adc     #$0A
 .endif
