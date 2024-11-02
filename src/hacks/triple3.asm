@@ -223,22 +223,14 @@ draw_big_chance_then_finish:
     sta PPUDATA
     jmp gameModeState_initGameBackground_finish
 
-; two score tables aren't necessary but haven't fully decided on if 1-4 lines should be different
-; when scoring with a big piece
-
 pointsTableRegular:
         .word   $0000,$0040,$0100,$0300
         .word   $1200
 
 pointsTableBig:
-        .word   $0000,$0040,$0100,$0300
-        .word   $1200,$2000,$3000,$4000
+        .word   $0000,$0020,$0050,$0150
+        .word   $0600,$1200,$2000,$3000
         .word   $6000
-
-; ideas:
-; 40,100,300,1200,1200,1200,5000 (or 6000)
-; 40,40,100,100,300,300,1200,5000 (or 6000)
-; 40,100,300,1200,2000,3000,4000,6000 (current)
 
 bigChanceTable:
         ; theoretically 0/16, 3/16, 7/16, 11/16 & 16/16 (can guarantee the first and last!)
