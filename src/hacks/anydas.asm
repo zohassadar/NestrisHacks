@@ -41,18 +41,24 @@ renderAnydasMenu:
         lda #$FF
         sta PPUDATA
 @drawArrow:
-        lda #$FF
-        sta PPUDATA
+        ldx #$FF
+        stx PPUDATA
 
+; draw big chance
         lda #$22
         sta PPUADDR
         lda #$D3
         sta PPUADDR
+        stx PPUDATA
         lda bigChance
-        jsr renderByteBCD
-        lda #$FF
         sta PPUDATA
+        lda #$4F ; /
+        sta PPUDATA
+        lda #$04
+        sta PPUDATA
+        stx PPUDATA
 
+; arrow
         lda #$22
         sta PPUADDR
         lda #$72
@@ -210,7 +216,7 @@ anydasControllerInput:
         rts
 
 arrowOffsets:
-        .byte $00,$20,$45,$64
+        .byte $00,$20,$45,$65
 
 anydasUpperLimit:
         .byte $32,$32,$02,$05
