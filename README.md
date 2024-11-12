@@ -6,11 +6,11 @@ this branch only works when built with these flags:
 
 | big chance | rough odds |
 |-------|-------|
-| 0 | 0/16 |
-| 1 | 3/16 |
-| 2 | 7/16 |
-| 3 | 11/16 |
-| 4 | 16/16 |
+| 0/4 | no big pieces |
+| 1/4 | 25%-ish |
+| 2/4 | sorta 50% |
+| 3/4 | close to 75% |
+| 4/4 | all big pieces |
 
 Scoring based on piece size:
 
@@ -34,3 +34,7 @@ Scoring based on piece size:
 [qalle2](https://github.com/qalle2/nes-util) CHR tools
 
 [kirjavascript](https://github.com/kirjavascript/TetrisGYM) borrowed bits
+
+[HydrantDude](https://github.com/hydrantdude) Original DAS Controls code
+
+[Kirby703](https://github.com/Kirby703) Original 0 Arr Code
