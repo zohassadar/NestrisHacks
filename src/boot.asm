@@ -93,7 +93,7 @@ initRamContinued:
         lda     #$2C
         jsr     LAA82
         lda     #$EF
-.ifdef TRIPLE
+.ifdef TRIPLEWIDE
         ldx     #$03
 .else
         ldx     #$04
