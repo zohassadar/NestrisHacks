@@ -179,6 +179,8 @@ unreferenced_data1:
 
 .segment        "PRG_chunk2": absolute
 .include "data/demo_data.asm"
+
+.segment        "PRG_chunkSound": absolute
 .include "sound.asm"
 ; End of "PRG_chunk2" segment
 .code
