@@ -1,6 +1,5 @@
         .setcpu "6502"
 
-.include "compat.asm"
 .include "constants.asm"
 .include "charmap.asm"
 .include "ram.asm"
@@ -136,49 +135,9 @@ type_a_ending_nametable:
 ; End of "PRG_chunk1" segment
 .code
 
-
-.segment        "unreferenced_data1": absolute
 unreferenced_data1:
-
-.ifdef TALLER
-        .include "hacks/taller.asm"
-.endif
-
-.ifdef TOURNAMENT
-        .include "hacks/tourney.asm"
-.endif
-.ifdef TWELVE
-        .include "hacks/12wide.asm"
-.endif
-.ifdef TRIPLEWIDE
-        .include "hacks/triple2.asm"
-.endif
-
-.if .defined(SPS) .or .defined(ANYDAS)
-        .include "hacks/menudas.asm"
-.endif
-
-.ifdef ANYDAS
-        .include "hacks/anydas.asm"
-.endif
-
-.ifdef WALLHACK2
-        .include "hacks/wallhack2.asm"
-.endif
-
-.ifdef SPS
-        .include "hacks/same_piece_sets.asm"
-.endif
-
-.ifndef OMIT_UD1
-        .incbin "data/unreferenced_data1.bin"
-.endif
-; End of "unreferenced_data1" segment
-.code
-
-
-.segment        "PRG_chunk2": absolute
-.include "data/demo_data.asm"
+demoButtonsTable:
+demoTetriminoTypeTable:
 
 .segment        "PRG_chunkSound": absolute
 .include "sound.asm"
@@ -186,15 +145,15 @@ unreferenced_data1:
 .code
 
 
-.segment        "unreferenced_data4": absolute
-.include "data/unreferenced_data4.asm"
+;.segment        "unreferenced_data4": absolute
+;.include "data/unreferenced_data4.asm"
 ; End of "unreferenced_data4" segment
 .code
 
 .segment        "PRG_chunk3": absolute
 ; incremented to reset MMC1 reg
 .include "reset.asm"
-.include "data/unreferenced_data5.asm"
+; .include "data/unreferenced_data5.asm"
 MMC1_PRG:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00

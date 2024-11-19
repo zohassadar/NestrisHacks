@@ -65,3 +65,34 @@ PAUSE_SPRITE_X := $6C
 PAUSE_SPRITE_X := $74
 .endif
 PAUSE_SPRITE_Y := $58
+
+MMC3_IRQ_LATCH := $C000
+MMC3_IRQ_RELOAD := $C001
+MMC3_IRQ_DISABLE := $E000
+MMC3_IRQ_ENABLE := $E001
+
+MMC3_MIRRORING := $A000
+MMC3_RAM_PROTECT := $A001
+
+MMC3_BANK_SELECT := $8000
+MMC3_BANK_DATA := $8001
+
+.macro setMMC3Banks idx
+        lda #$06
+        sta MMC3_BANK_SELECT
+        lda #idx*2
+        sta MMC3_BANK_DATA
+
+        lda #$07
+        sta MMC3_BANK_SELECT
+        lda #idx*2+1
+        sta MMC3_BANK_DATA
+        rts
+.endmacro
+
+.macro initMMC3
+    lda #$00
+    sta MMC3_IRQ_DISABLE
+    lda #$80
+    sta MMC3_RAM_PROTECT
+.endmacro
