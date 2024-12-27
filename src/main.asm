@@ -1,4 +1,31 @@
-        .setcpu "6502"
+.setcpu "6502"
+
+.macro omitUD1
+    .ifndef OMIT_UD1
+    OMIT_UD1=1
+    .endif
+.endmacro
+
+.ifdef ANYDAS
+    omitUD1
+.endif
+
+.ifdef TRIPLEWIDE
+    omitUD1
+.endif
+
+.ifdef TALLER
+    omitUD1
+.endif
+
+.ifdef SPS
+    omitUD1
+.endif
+
+.ifdef TWELVE
+    omitUD1
+.endif
+
 
 .include "compat.asm"
 .include "constants.asm"
@@ -144,7 +171,7 @@ unreferenced_data1:
         .include "hacks/taller.asm"
 .endif
 
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         .include "hacks/tourney.asm"
 .endif
 .ifdef TWELVE

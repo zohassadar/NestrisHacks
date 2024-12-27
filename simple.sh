@@ -5,7 +5,7 @@
 # e.g. OUTPUT=Tetris creates Tetris.nes Tetris.dbg Tetris.lbl Tetris.map
 
 # AnyDAS rom with tournament friendly features:
-BUILDFLAGS="-D ANYDAS -D TOURNAMENT -D OMIT_UD1"
+BUILDFLAGS="-D ANYDAS"
 OUTPUT=TetrisAnyTrn
 
 # Vanilla:
@@ -30,7 +30,6 @@ OUTPUT=TetrisAnyTrn
 # SOMETIMES_WRONG_NEXTBOX
 # SPS
 # TALLER
-# TOURNAMENT
 # TRIPLEWIDE
 # TWELVE
 # UPSIDEDOWN

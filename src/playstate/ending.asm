@@ -91,7 +91,7 @@ L9EA4:  jsr     bulkCopyToPpu
         lda     #$0A
         jsr     setMusicTrack
         lda     #$80
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jsr     render_endingSkippable_B
 .else
         jsr     render_endingUnskippable
@@ -109,7 +109,7 @@ L9EA4:  jsr     bulkCopyToPpu
         sta     player1_score+1
         sta     player1_score+2
         lda     #$40
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jsr     render_endingSkippable_B
 .else
         jsr     render_endingUnskippable
@@ -130,7 +130,7 @@ L9EFA:  lda     generalCounter4
         lda     #$01
         sta     soundEffectSlot1Init
         lda     #$02
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jsr     render_endingSkippable_B
 .else
         jsr     render_endingUnskippable
@@ -138,7 +138,7 @@ L9EFA:  lda     generalCounter4
         lda     generalCounter4
         bne     L9EE8
         lda     #$40
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jsr     render_endingSkippable_B
 .else
         jsr     render_endingUnskippable
@@ -159,7 +159,7 @@ L9F28:  lda     generalCounter5
         lda     #$01
         sta     soundEffectSlot1Init
         lda     #$02
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jsr     render_endingSkippable_B
 .else
         jsr     render_endingUnskippable
@@ -169,13 +169,13 @@ L9F28:  lda     generalCounter5
         lda     #$02
         sta     soundEffectSlot1Init
         lda     #$40
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jsr     render_endingSkippable_B
 .else
         jsr     render_endingUnskippable
 .endif
 L9F45:
-.ifdef TOURNAMENT
+.ifdef ANYDAS
 @loop:
         jsr     render_endingSkippable_B
         lda     player2_score

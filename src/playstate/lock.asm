@@ -117,7 +117,7 @@ playState_updateGameOverCurtain_unused:
 .else
 playState_updateGameOverCurtain:
 .endif
-.ifndef TOURNAMENT
+.ifndef ANYDAS
         lda     curtainRow
   .ifdef TALLER
         cmp     #$18
@@ -169,7 +169,7 @@ playState_updateGameOverCurtain:
 @ret:   rts
 
 @curtainFinished:
-.ifdef TOURNAMENT
+.ifdef ANYDAS
 @endingAnimationCheck:
         lda     newlyPressedButtons_player1
         cmp     #$10

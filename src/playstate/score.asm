@@ -170,7 +170,7 @@ L9C84:  lda     score+2
         and     #$F0
         cmp     #$A0
         bcc     L9C94
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         nop
         nop
         nop

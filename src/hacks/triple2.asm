@@ -182,7 +182,7 @@ playState_checkForCompletedRows:
 @ret:   rts
 
 playState_updateGameOverCurtain:
-.ifndef TOURNAMENT
+.ifndef ANYDAS
         lda     curtainRow
         cmp     #$1A
         beq     @curtainFinished
@@ -231,7 +231,7 @@ playState_updateGameOverCurtain:
         bne     @ret
 @ret:   rts
 @curtainFinished:
-.ifdef TOURNAMENT
+.ifdef ANYDAS
 @endingAnimationCheck:
         lda     newlyPressedButtons_player1
         cmp     #$10
