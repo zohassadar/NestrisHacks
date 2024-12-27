@@ -143,7 +143,11 @@ gameMode_levelMenu_processPlayer1Navigation:
         cmp     #$0A
         bpl     @chooseRandomHole_player2
         sta     player2_garbageHole
+.ifdef ANYDAS
+        jsr     copyGameSettingsThenWait
+.else
         jsr     updateAudioWaitForNmiAndResetOamStaging
+.endif
         jmp     gameMode_levelMenu_processPlayer1Navigation
 
 ; Starts by checking if right pressed

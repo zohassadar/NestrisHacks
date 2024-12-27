@@ -6,7 +6,7 @@ gameModeState_checkForResetKeyCombo:
         beq     @reset
         inc     gameModeState
         rts
-.ifdef TOURNAMENT
+.ifdef ANYDAS
 @reset: jsr     clearLineCounterThenUpdateAudio2
 .else
 @reset: jsr     updateAudio2

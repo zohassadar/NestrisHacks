@@ -14,7 +14,6 @@ hacks=(
     "scrolltris"
     "sps"
     "taller"
-    "tourney"
     "upsidedown"
     "wallhack2"
     "warp7"
@@ -158,7 +157,7 @@ get_flag_opts (){
                     echo "Anydas enabled"
                     omit_ud1
                     buildflags+=("-D ANYDAS")
-                    name_modifiers+=("Any")
+                    name_modifiers+=("AnyTrn")
                     ;;
                 "twelve")
                     echo "12 Wide enabled"
@@ -203,12 +202,6 @@ get_flag_opts (){
                     omit_ud1
                     buildflags+=("-D TRIPLEWIDE")
                     name_modifiers+=("30WideWithBig")
-                    ;;
-                "tourney")
-                    echo "Tournament Enabled"
-                    omit_ud1
-                    buildflags+=("-D TOURNAMENT")
-                    name_modifiers+=("Trn")
                     ;;
                 "upsidedown")
                     echo "Upside Down enabled"

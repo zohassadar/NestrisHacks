@@ -154,5 +154,9 @@ L830B:  lda     #$FF
         sta     spriteIndexInOamContentLookup
 @flickerCursorPair2:
         jsr     loadSpriteIntoOamStaging
+.ifdef ANYDAS
+        jsr     copyGameSettingsThenWait
+.else
         jsr     updateAudioWaitForNmiAndResetOamStaging
+.endif
         jmp     L830B

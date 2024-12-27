@@ -1,3 +1,4 @@
+; this is bugged for TRIPLEWIDE.  fixed in the branch 30big
 
 updateMusicSpeed:
         ; ldx     #$05

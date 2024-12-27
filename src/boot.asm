@@ -33,7 +33,7 @@ initRamContinued:
         lda     initMagic+4
         cmp     #$9A
         bne     @initHighScoreTable
-        jmp     @continueWarmBootInit
+        jmp     continueWarmBootInit
 
         ldx     #$00
 ; Only run on cold boot
@@ -56,7 +56,7 @@ initRamContinued:
         sta     initMagic+3
         lda     #$9A
         sta     initMagic+4
-@continueWarmBootInit:
+continueWarmBootInit:
         ldx     #$89
         stx     rng_seed
         dex
@@ -93,7 +93,7 @@ initRamContinued:
         lda     #$2C
         jsr     LAA82
         lda     #$EF
-.ifdef TRIPLE
+.ifdef TRIPLEWIDE
         ldx     #$03
 .else
         ldx     #$04

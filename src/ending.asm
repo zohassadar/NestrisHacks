@@ -549,7 +549,7 @@ LA926:  jsr     updateAudioWaitForNmiAndDisablePpuRendering
         lda     #$0A
         jsr     setMusicTrack
         lda     #$80
-.ifdef TOURNAMENT
+.ifdef ANYDAS
         jmp     render_endingSkippable_A
 .else
         jsr     render_endingUnskippable

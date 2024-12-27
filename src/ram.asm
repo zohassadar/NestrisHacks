@@ -28,12 +28,17 @@ spawnID: .res $1	                ; $0019
 spawnCount:	.res $1	                ; $001A
 
 ; Anydas
-anydasInit: .res $1            ; $001B
+resetCounter: .res $1
 anydasMenu: .res $1                 ; $001C
+
+anydasSettings:
 anydasDASValue: .res $1             ; $001D
 anydasARRValue: .res $1             ; $001E
 anydasARECharge: .res $1            ; $001F
 bigChance: .res $1                ; $0020
+anydasSettingsEnd:
+
+ANYDAS_OPTIONS_LENGTH = <(anydasSettingsEnd-anydasSettings)
 
 ; SPS
 set_seed_input: .res $3          ; $0021
@@ -308,10 +313,16 @@ soundEffectSlot4Playing:	.res 1	; $06FC
 currentlyPlayingMusicTrack:	.res 1	; $06FD
 .res 1
 unreferenced_soundRngTmp:  .res 1  ; $06FF
+
+highScores:
 highScoreNames:	.res $30	; $0700
 highScoreScoresA:	.res $C	; $0730
 highScoreScoresB:	.res $C	; $073C
 highScoreLevels:	.res $08	; $0748
+highScoresEnd:
+
+HIGHSCORES_LENGTH = <(highScoresEnd-highScores)
+
 initMagic:	.res $05	; $0750
 .res $9B
 .ifdef TRIPLEWIDE
@@ -319,3 +330,18 @@ statsByType: .res $10
 .else
 .res $10
 .endif
+
+.segment "SRAM"
+
+sramHighScores:
+.res HIGHSCORES_LENGTH
+
+sramInitMagic:	.res $05        	; $6050
+
+sramAnydasSettings:
+.res ANYDAS_OPTIONS_LENGTH
+
+sramMusicType: .res 1
+sramGameType: .res 1
+sramStartLevel: .res 1
+sramStartHeight: .res 1
