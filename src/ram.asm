@@ -321,21 +321,14 @@ statsByType: .res $10
 .endif
 
 .segment "SRAM"
+
 sramHighScores:
-sramHighScoreNames:	.res $30	    ; $6000
-sramHighScoreScoresA:	.res $C	    ; $6030
-sramHighScoreScoresB:	.res $C	    ; $603C
-sramHighScoreLevels:	.res $08	; $6048
+.res HIGHSCORES_LENGTH
 
 sramInitMagic:	.res $05        	; $6050
 
-
 sramAnydasSettings:
-sramAnydasDASValue: .res $1         ; $6055
-sramAnydasARRValue: .res $1         ; $6056
-sramAnydasARECharge: .res $1        ; $6057
-sramLevelOffset: .res $1            ; $6058
-
+.res ANYDAS_OPTIONS_LENGTH
 
 sramMusicType: .res 1
 sramGameType: .res 1
