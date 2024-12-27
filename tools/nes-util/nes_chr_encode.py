@@ -1,10 +1,14 @@
 """Convert an image file into an NES CHR data file."""
 
 import argparse
+import logging
 import os
 import sys
 from PIL import Image  # Pillow
 import neslib
+
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
 
 def decode_color_code(color):
     """Decode a 6-digit hexadecimal color code. Return (R, G, B)."""
@@ -46,7 +50,7 @@ def parse_arguments():
     if not os.path.isfile(args.input_file):
         sys.exit("Input file not found.")
     if os.path.exists(args.output_file):
-        print("Output file already exists and will be overwritten.")
+        logger.warning("Output file already exists and will be overwritten.")
     if len(set(decode_color_code(c) for c in args.palette)) < 4:
         sys.exit("All colors in --palette must be distinct.")
 
