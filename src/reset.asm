@@ -39,4 +39,8 @@ reset:  cld
         lda     #$00
         jsr     changePRGBank
 .endif
+.ifdef ANYDAS
+        jmp     validateSRAMThenInitRam
+.else
         jmp     initRam     ;ff2d
+.endif

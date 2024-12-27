@@ -70,21 +70,29 @@ renderAnydasMenu:
 
 anydasControllerInput:
         jsr pollController
-        lda anydasInit
-        bne @initialized
-        lda #$10
-        sta anydasDASValue
-        lda #$06
-        sta anydasARRValue
-        lda #$0A
-        sta levelOffset
-        inc anydasInit
-@initialized:
         lda gameMode
         cmp #$01
         beq @getInputs
         rts
 @getInputs:
+
+; check for default first
+        lda heldButtons_player1
+        and #BUTTON_SELECT
+        beq @resetResetCounter
+@checkDuration:
+        inc resetCounter
+        lda resetCounter
+        cmp #$40
+        bne @checkDown
+        jsr defaultScoresAndSettings
+        jsr copyHighScoresToSram
+
+@resetResetCounter:
+        lda #$00
+        sta resetCounter
+
+@checkDown:
 
         lda #BUTTON_DOWN
         jsr menuThrottle
@@ -141,7 +149,7 @@ anydasControllerInput:
         lda #$00
         sta anydasDASValue,x
 @rightNotPressed:
-        rts
+        jmp copyAnydasOptionsToSram
 
 arrowOffsets:
         .byte $00,$20,$45,$64
@@ -220,6 +228,162 @@ renderByteBCDStart:
         jmp twoDigsToPPU
 
 
+validateSRAMThenInitRam:
+        ldy #$06
+        sty tmp2
+        ldy #$00
+        sty tmp1
+        lda #$00
+@zeroOutPages:
+        sta (tmp1),y
+        dey
+        bne @zeroOutPages
+        dec tmp2
+        bpl @zeroOutPages
+
+        lda sramInitMagic
+        cmp #'Z'
+        bne @resetThenInitRam
+
+        lda sramInitMagic+1
+        cmp #'O'
+        bne @resetThenInitRam
+
+        lda sramInitMagic+2
+        cmp #'H'
+        bne @resetThenInitRam
+
+        lda sramInitMagic+3
+        cmp #'A'
+        bne @resetThenInitRam
+
+        lda sramInitMagic+4
+        cmp #'S'
+        bne @resetThenInitRam
+
+        jmp @copySramtoRamThenInitRam
+
+@resetThenInitRam:
+        jsr defaultScoresAndSettings
+        jsr copyHighScoresToSram
+        jsr copyAnydasOptionsToSram
+        jsr copyGameSettingsToSram
+
+    ; magic number
+        lda #'Z'
+        sta sramInitMagic
+        lda #'O'
+        sta sramInitMagic+1
+        lda #'H'
+        sta sramInitMagic+2
+        lda #'A'
+        sta sramInitMagic+3
+        lda #'S'
+        sta sramInitMagic+4
+        jmp continueWarmBootInit
+
+
+@copySramtoRamThenInitRam:
+        ldx #0
+@copyAnydasOptions:
+        lda sramAnydasSettings,x
+        sta anydasSettings,x
+        inx
+        cpx #ANYDAS_OPTIONS_LENGTH
+        bne @copyAnydasOptions
+
+        ldx #0
+@copyHighScores:
+        lda sramHighScores,x
+        sta highScores,x
+        inx
+        cpx #HIGHSCORES_LENGTH
+        bne @copyHighScores
+
+        lda sramGameType
+        sta gameType
+        lda sramMusicType
+        sta musicType
+        lda sramStartLevel
+        sta player1_startLevel
+        lda sramStartHeight
+        sta player1_startHeight
+
+
+
+        jmp continueWarmBootInit
+
+copyAnydasOptionsToSram:
+        ldx #0
+@copyAnydasOptions:
+        lda anydasSettings,x
+        sta sramAnydasSettings,x
+        inx
+        cpx #ANYDAS_OPTIONS_LENGTH
+        bne @copyAnydasOptions
+        rts
+
+copyGameSettingsToSram:
+        lda player1_startHeight
+        sta sramStartHeight
+        lda player1_startLevel
+        sta sramStartLevel
+        lda gameType
+        sta sramGameType
+        lda musicType
+        sta sramMusicType
+        rts
+
+defaultScoresAndSettings:
+    ; default anydas
+        lda #$10
+        sta anydasDASValue
+        lda #$06
+        sta anydasARRValue
+        lda #$00
+        sta anydasARECharge
+        lda #$0A
+        sta levelOffset
+
+    ; default settings
+        lda #$00
+        sta musicType
+        sta gameType
+        sta player1_startLevel
+        sta player1_startHeight
+
+    ; default high scores
+        ldx #$00
+; Only run on cold boot
+@initHighScoreTable:
+        lda defaultHighScoresTable,x
+        cmp #$FF
+        beq @ret
+        sta highScoreNames,x
+        inx
+        jmp @initHighScoreTable
+@ret:
+        rts
+
+
+copyGameSettingsThenWait:
+        jsr copyGameSettingsToSram
+        jmp updateAudioWaitForNmiAndResetOamStaging
+
+copyHighScoresToSramThenWait:
+        jsr copyHighScoresToSram
+        jmp updateAudioWaitForNmiAndResetOamStaging
+
+copyHighScoresToSram:
+        ldx #0
+@copyHighScores:
+        lda highScores,x
+        sta sramHighScores,x
+        inx
+        cpx #HIGHSCORES_LENGTH
+        bne @copyHighScores
+        rts
+
 longerByteToBCDTable: ; original goes to 49
         .byte   $00,$01,$02,$03,$04,$05,$06,$07
         .byte   $08,$09,$10,$11,$12,$13,$14,$15
@@ -230,4 +394,10 @@ longerByteToBCDTable: ; original goes to 49
         .byte   $48,$49
         ; 50 extra bytes is shorter than a conversion routine (and super fast)
         ; (used in renderByteBCD)
-        .byte   $50,$51,$52,$53,$54,$55,$56,$57,$58,$59,$60,$61,$62,$63,$64,$65,$66,$67,$68,$69,$70,$71,$72,$73,$74,$75,$76,$77,$78,$79,$80,$81,$82,$83,$84,$85,$86,$87,$88,$89,$90,$91,$92,$93,$94,$95,$96,$97,$98,$99
+        .byte   $50,$51,$52,$53,$54,$55,$56,$57
+        .byte   $58,$59,$60,$61,$62,$63,$64,$65
+        .byte   $66,$67,$68,$69,$70,$71,$72,$73
+        .byte   $74,$75,$76,$77,$78,$79,$80,$81
+        .byte   $82,$83,$84,$85,$86,$87,$88,$89
+        .byte   $90,$91,$92,$93,$94,$95,$96,$97
+        .byte   $98,$99

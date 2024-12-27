@@ -13,7 +13,11 @@ INES_MAPPER = 3 ; 0 = NROM
 INES_MAPPER = 1 ; 0 = NROM
 .endif
 INES_MIRROR = 0 ; 0 = horizontal mirroring, 1 = vertical mirroring
+.ifdef ANYDAS
+INES_SRAM = 1
+.else
 INES_SRAM   = 0 ; 1 = battery backed SRAM at $6000-7FFF
+.endif
 
 .byte 'N', 'E', 'S', $1A ; ID
 .byte $02 ; 16k PRG chunk count

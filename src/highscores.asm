@@ -436,7 +436,11 @@ highScoreEntryScreen:
         sta     highScoreEntryCurrentLetter
         lda     #$80
         sta     outOfDateRenderFlags
+.ifdef ANYDAS
+        jsr     copyHighScoresToSramThenWait
+.else
         jsr     updateAudioWaitForNmiAndResetOamStaging
+.endif
         jmp     @renderFrame
 
 @ret:   jsr     updateAudioWaitForNmiAndResetOamStaging
