@@ -485,10 +485,7 @@ if [[ "$expected" = "$current" ]]; then
     echo "Labels line up"
 else
     echo "Labels do not line up!"
-    set +e
-    diff labels.txt <(get_labels "${output}.lbl")
-    set -e
-    # exit 1
+    diff labels.txt <(get_labels "${output}.lbl") || true
 fi
 
 # Validate against sha1sum
@@ -508,16 +505,16 @@ fi
 sed -n '23,27p' < "${output}.map"
 
 # create patch
-#if [[ $output == "${output_path}${basename}" ]]; then
-#    exit 1
-#elif sha1check "sha1files/${basename}.sha1" 2>/dev/null; then
-#    create_patch "${output}.nes"
-#else
-#    echo "sha1files/${basename}.sha1 not built or invalid"
-#    exit 1
-#fi
+if [[ $output == "${output_path}${basename}" ]]; then
+    exit 1
+elif sha1check "sha1files/${basename}.sha1" 2>/dev/null; then
+    create_patch "${output}.nes"
+else
+    echo "sha1files/${basename}.sha1 not built or invalid"
+    exit 1
+fi
 
 # show patch size
-#if [[ -f "${output}.bps" ]]; then
-#    echo Patch size: $(get_size "${output}.bps")
-#fi
+if [[ -f "${output}.bps" ]]; then
+    echo Patch size: $(get_size "${output}.bps")
+fi
