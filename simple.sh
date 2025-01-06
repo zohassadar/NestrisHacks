@@ -60,6 +60,10 @@ python tools/nes-util/nes_chr_encode.py src/gfx/title_menu_tileset_anydas_seed.p
 python tools/nes-util/nes_chr_encode.py src/gfx/typeA_ending_tileset.png src/gfx/typeA_ending_tileset.chr
 python tools/nes-util/nes_chr_encode.py src/gfx/typeB_ending_tileset.png src/gfx/typeB_ending_tileset.chr
 
+
+# create build directory, ignore if it already exists
+mkdir -p build
+
 # assemble
 ca65 $BUILDFLAGS -g src/header.asm -o build/header.o
 ca65 $BUILDFLAGS -l ${OUTPUT}.lst -g src/main.asm -o build/main.o
