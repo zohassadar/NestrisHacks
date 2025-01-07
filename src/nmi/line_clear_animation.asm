@@ -1,4 +1,8 @@
+.ifndef BIGMODE30
 updateLineClearingAnimation:
+.else
+updateLineClearingAnimationUnused:
+.endif
         lda     frameCounter
 .ifndef TRIPLEWIDE
         and     #$03
@@ -94,13 +98,17 @@ updateLineClearingAnimation:
 
 .ifndef TWELVE
 .ifndef TRIPLEWIDE
+.ifndef BIGMODE30
 leftColumns:
+.endif
 .endif
 .endif
         .byte   $04,$03,$02,$01,$00
 .ifndef TWELVE
 .ifndef TRIPLEWIDE
+.ifndef BIGMODE30
 rightColumns:
+.endif
 .endif
 .endif
         .byte   $05,$06,$07,$08,$09

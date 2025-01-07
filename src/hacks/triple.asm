@@ -328,7 +328,7 @@ vramRowDump:
         stx     generalCounter
         ldx     #$FF
         txs
-        .repeat 6
+        .repeat 5
         pla
         sta     PPUADDR
         pla

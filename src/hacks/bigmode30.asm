@@ -110,3 +110,76 @@ stageSpriteForCurrentPieceBigMode30:
         lda     #$10
         sta     tileOffset
         jmp     stageSpriteForCurrentPieceActual
+
+
+updateLineClearingAnimation:
+        lda     frameCounter
+        and     #$01
+        bne     @ret
+        lda     #$00
+        sta     generalCounter3
+@whileCounter3LessThan8:
+        lda     generalCounter3
+        and     #$01
+        sta     generalCounter5
+        lda     generalCounter3
+        lsr
+        tax
+        lda     completedRow,x
+        beq     @nextRow
+        asl     a
+        clc
+        adc     generalCounter5
+        asl     a
+        tay
+        lda     vramPlayfieldRows,y
+        sta     generalCounter
+        ; lda     generalCounter
+        ; clc
+        ; adc     #$06
+        ; sta     generalCounter
+        iny
+        lda     vramPlayfieldRows,y
+        sta     generalCounter2
+        sta     PPUADDR
+        ldx     rowY
+        lda     leftColumns,x
+        clc
+        adc     generalCounter
+        sta     PPUADDR
+        lda     #$FF
+        sta     PPUDATA
+        lda     generalCounter2
+        sta     PPUADDR
+        ldx     rowY
+        lda     rightColumns,x
+        clc
+        adc     generalCounter
+        sta     PPUADDR
+        lda     #$FF
+        sta     PPUDATA
+@nextRow:
+        inc     generalCounter3
+        lda     generalCounter3
+        cmp     #$08
+        bne     @whileCounter3LessThan8
+        inc     rowY
+        lda     rowY
+        cmp     #$0F
+        bmi     @ret
+        inc     playState
+@ret:   rts
+
+leftColumns:
+        .byte   $0e,$0d,$0c,$0b,$0a,$09,$08,$07,$06,$05,$04,$03,$02,$01,$00
+rightColumns:
+        .byte   $0f,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1a,$1b,$1c,$1d
+
+vramPlayfieldRows:
+        .word   $20a1,$20c1,$20e1
+        .word   $2101,$2121,$2141,$2161
+        .word   $2181,$21a1,$21c1,$21e1
+        .word   $2201,$2221,$2241,$2261
+        .word   $2281,$22a1,$22c1,$22e1
+        .word   $2301,$2321,$2341,$2361
+        .word   $2381
