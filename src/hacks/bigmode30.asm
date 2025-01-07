@@ -1,64 +1,21 @@
-.ifndef BIGMODE30
-stageSpriteForCurrentPiece:
-.endif
+stageSpriteForCurrentPieceActual:
         lda     tetriminoX
         asl     a
         asl     a
         asl     a
-.ifdef TWELVE
-        adc     #$50
-.elseif .defined(TRIPLEWIDE)
-        adc     #$08
-.else
-        adc     #$60
-.endif
+        clc
+        adc     #$04
         sta     generalCounter3 ; x position of center block
-.ifdef UPSIDEDOWN
-        bne     @calculateYPixel
-.else
-        lda     numberOfPlayers
-        cmp     #$01
-        beq     @calculateYPixel
-.endif
-.ifndef WALLHACK2
-        ; omit bytes to account for the extra bytes below
-        lda     generalCounter3
-        sec
-        sbc     #$40
-        sta     generalCounter3 ; if 2 player mode, player 1's field is more to the left
-        lda     activePlayer
-        cmp     #$01
-.endif
-.ifndef UPSIDEDOWN
-        beq     @calculateYPixel
-        lda     generalCounter3
-        adc     #$6F
-        sta     generalCounter3 ; and player 2's field is more to the right
-.endif
-@calculateYPixel:
         clc
         lda     tetriminoY
         rol     a
         rol     a
         rol     a
-.ifdef TALLER
-        adc     #$1F
-.elseif .defined(TRIPLEWIDE)
-        adc     #$1F
-.else
-        adc     #$2F
-.endif
         sta     generalCounter4 ; y position of center block
         lda     currentPiece
-.ifndef UPSIDEDOWN
         sta     generalCounter5
         clc
         lda     generalCounter5
-.else
-        nop
-        nop
-        clc
-.endif
         rol     a
         rol     a
         sta     generalCounter
@@ -75,18 +32,19 @@ stageSpriteForCurrentPiece:
         asl     a
         clc
         adc     generalCounter4
-.ifdef UPSIDEDOWN
-        sta     generalCounter5
-        lda     #$F6
-        sec
-        sbc     generalCounter5
-.endif
+        asl
+        clc
+        adc     spriteY
+        clc
+        adc     #$27
         sta     oamStaging,y ; stage y coordinate of mino
         sta     originalY
         inc     oamStagingLength
         iny
         inx
         lda     orientationTable,x
+        clc
+        adc     tileOffset
         sta     oamStaging,y ; stage block type of mino
         inc     oamStagingLength
         iny
@@ -94,20 +52,8 @@ stageSpriteForCurrentPiece:
         lda     #$02
         sta     oamStaging,y ; stage palette/front priority
         lda     originalY
-.ifdef UPSIDEDOWN
-        cmp #$C8 ; Maximum value in upside down mode
-        bcc @validYCoordinate
-.else
-
-.ifdef TALLER
-        cmp     #$1F
-.elseif .defined(TRIPLEWIDE)
-        cmp     #$1F
-.else
-        cmp     #$2F
-.endif
+        cmp     #$27 ; compares with smallest allowed y position on the screen, not the field
         bcs     @validYCoordinate
-.endif
         inc     oamStagingLength
         dey
         lda     #$FF
@@ -121,33 +67,15 @@ stageSpriteForCurrentPiece:
 @validYCoordinate:
         inc     oamStagingLength
         iny
-.ifdef WALLHACK2
-        sty     generalCounter
-        lda     orientationTable,x
-        clc
-        adc     tetriminoX
-        tay
-        lda     effectiveTetriminoXTable,y
-        asl     a
-        asl     a
-        asl     a
-        clc
-        adc     #$60
-        ldy     generalCounter
-.else
         lda     orientationTable,x
         asl     a
         asl     a
         asl     a
         clc
         adc     generalCounter3
-.endif
-.ifdef UPSIDEDOWN
-        sta     generalCounter5
-        lda     #$08
-        sec
-        sbc     generalCounter5
-.endif
+        asl
+        clc
+        adc     spriteX
         sta     oamStaging,y ; stage actual x coordinate
 @finishLoop:
         inc     oamStagingLength
@@ -156,3 +84,29 @@ stageSpriteForCurrentPiece:
         dec     generalCounter2
         bne     @stageMino
         rts
+
+multBy15Table:
+    ;>>> print(','.join(f'${i&0xff:02x}' for i in range(0,15*20,15)))
+    .byte $00,$0f,$1e,$2d,$3c,$4b,$5a,$69,$78,$87,$96,$a5,$b4,$c3,$d2,$e1,$f0,$ff,$0e,$1d
+
+stageSpriteForCurrentPieceBigMode30:
+        lda     #$00
+        sta     spriteX
+        sta     spriteY
+        sta     tileOffset
+        jsr     stageSpriteForCurrentPieceActual
+        lda     #$08
+        sta     spriteX
+        lda     #$01
+        sta     tileOffset
+        jsr     stageSpriteForCurrentPieceActual
+        lda     #$08
+        sta     spriteY
+        lda     #$11
+        sta     tileOffset
+        jsr     stageSpriteForCurrentPieceActual
+        lda     #$00
+        sta     spriteX
+        lda     #$10
+        sta     tileOffset
+        jmp     stageSpriteForCurrentPieceActual

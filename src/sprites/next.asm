@@ -49,7 +49,7 @@ L8B9D:  lda     orientationTable,y
 stageSpriteForNextPiece:
         lda     displayNextPiece
         bne     @ret
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         lda     #$78
         sta     spriteXOffset
         lda     #$0A

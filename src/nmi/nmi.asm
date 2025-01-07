@@ -30,12 +30,20 @@ returnFromAnydasRender:
         lda     #$00
         adc     frameCounter+1
         sta     frameCounter+1
+.ifdef BIGMODE30
+        lda     #$00
+        sta     ppuScrollX
+        sta     PPUSCROLL
+        sta     ppuScrollY
+        sta     PPUSCROLL
+.else
         ldx     #$17
         ldy     #$02
-.ifdef SPS
-        jsr     generateNextPseudoAndAlsoBSeed
-.else
-        jsr     generateNextPseudorandomNumber
+    .ifdef SPS
+            jsr     generateNextPseudoAndAlsoBSeed
+    .else
+            jsr     generateNextPseudorandomNumber
+    .endif
 .endif
 .ifdef SCROLLTRIS
         nop
@@ -49,11 +57,18 @@ returnFromAnydasRender:
         nop
         jsr     incrementScroll
 .else
+
+.ifdef BIGMODE30
+        ldx     #$17
+        ldy     #$02
+        jsr generateNextPseudorandomNumber
+.else
         lda     #$00
         sta     ppuScrollX
         sta     PPUSCROLL
         sta     ppuScrollY
         sta     PPUSCROLL
+.endif
 .endif
         lda     #$01
         sta     verticalBlankingInterval

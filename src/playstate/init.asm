@@ -25,6 +25,10 @@ gameModeState_initGameBackground:
         jsr     initTripleWide
         nop
         nop
+.elseif .defined(BIGMODE30)
+        jsr     initBigMode30
+        nop
+        nop
 .else
         jsr     bulkCopyToPpu
         .addr   game_nametable
@@ -33,7 +37,7 @@ gameModeState_initGameBackground:
         sta     PPUADDR
 .ifdef TWELVE
         lda     #$81  ; "A" or "B" 2 tiles to the left
-.elseif .defined(TRIPLEWIDE)
+.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         lda     #$43
 .else
         lda     #$83
@@ -45,7 +49,7 @@ gameModeState_initGameBackground:
         sta     PPUDATA
 
 ; any unintended consequences of writing to CHR ROM?
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         lda     #$00
         sta     PPUADDR
         lda     #$00
@@ -70,7 +74,7 @@ gameModeState_initGameBackground:
 
 @typeB: lda     #$0B
         sta     PPUDATA
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         lda     #$00
         sta     PPUADDR
         lda     #$00
@@ -106,7 +110,7 @@ gameModeState_initGameBackground:
         jmp     @nextPpuData
 
 @endOfPpuPatching:
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         lda     #$20
         sta     PPUADDR
         lda     #$48
@@ -139,7 +143,7 @@ gameModeState_initGameBackground_finish:
 
 game_typeb_nametable_patch:
         .byte   $22,$F7
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         .byte   $FD  ; skip over this if triplewide
 .else
         .byte   $38
@@ -151,7 +155,11 @@ game_typeb_nametable_patch:
         .byte   $FE,$23,$57,$3D,$3E,$3E,$3E,$3E
         .byte   $3E,$3E,$3F,$FD
 gameModeState_initGameState:
+.ifdef BIGMODE30
+        lda     #$EA
+.else
         lda     #$EF
+.endif
 .ifdef TRIPLEWIDE
         ldx     #$03
         ldy     #$05
@@ -182,6 +190,9 @@ gameModeState_initGameState:
 .else
     .ifdef TWELVE
         lda     #$06
+    .elseif .defined(BIGMODE30)
+        .out "THIS IS A THING!"
+        lda     #$07
     .elseif .defined(TRIPLEWIDE)
         lda     #$0F
     .else
@@ -195,6 +206,11 @@ gameModeState_initGameState:
         sta     player2_tetriminoY
 .ifdef TWELVE
         lda     #$13
+        sta     player1_vramRow
+        lda     #$00
+        sta     player1_fallTimer
+.elseif .defined(BIGMODE30)
+        lda     #$0 ; don't know if this needs adjusted yet
         sta     player1_vramRow
         lda     #$00
         sta     player1_fallTimer
@@ -380,7 +396,11 @@ initPlayfieldIfTypeB:
         jmp     endTypeBInit
 
 initPlayfieldForTypeB:
+.ifdef BIGMODE30
+        lda     #$0A
+.else
         lda     #$0C
+.endif
         sta     generalCounter  ; decrements
 
 typeBRows:
@@ -390,6 +410,8 @@ typeBRows:
         lda     #$18
 .elseif .defined(TRIPLEWIDE)
         lda     #$19
+.elseif .defined(BIGMODE30)
+        lda     #$0C
 .else
         lda     #$14
 .endif
@@ -401,6 +423,8 @@ typeBRows:
         sta     player2_vramRow
 .ifdef TWELVE
         lda     #$0B
+.elseif .defined(BIGMODE30)
+        lda     #$0E
 .else
         lda     #$09
 .endif
@@ -427,6 +451,8 @@ typeBGarbageInRow:
         ldx     generalCounter2
 .ifdef TWELVE
         lda     multBy12Table,x
+.elseif .defined(BIGMODE30)
+        lda     multBy15Table,x
 .else
         lda     multBy10Table,x
 .endif
@@ -462,6 +488,8 @@ typeBGuaranteeBlank:
         and     #$0F
 .ifdef TWELVE
         cmp     #$0C
+.elseif .defined(BIGMODE30)
+        cmp     #$0F
 .else
         cmp     #$0A
 .endif
@@ -471,25 +499,31 @@ typeBGuaranteeBlank:
         ldx     generalCounter2
 .ifdef TWELVE
         lda     multBy12Table,x
+.elseif .defined(BIGMODE30)
+        lda     multBy15Table,x
 .else
         lda     multBy10Table,x
 .endif
         clc
         adc     generalCounter5
         tay
+.ifdef BIGMODE30
+        lda     #$EA
+.else
         lda     #$EF
+.endif
 .ifndef TRIPLEWIDE
         sta     playfield,y
 .else
         sta     (playfieldAddr),y
         nop
 .endif
-        .ifndef TRIPLEWIDE
-        jsr     updateAudioWaitForNmiAndResetOamStaging
+        .if .defined(TRIPLEWIDE)
+        nop
+        nop
+        nop
         .else
-        nop
-        nop
-        nop
+        jsr     updateAudioWaitForNmiAndResetOamStaging
         .endif
         dec     generalCounter
         bne     typeBRows
@@ -513,7 +547,11 @@ copyPlayfieldToPlayer2:
         ldx     player1_startHeight
         lda     typeBBlankInitCountByHeightTable,x
         tay
+.ifdef BIGMODE30
+        lda     #$EA
+.else
         lda     #$EF
+.endif
 
 typeBBlankInitPlayer1:
 .ifndef TRIPLEWIDE
@@ -553,10 +591,18 @@ typeBBlankInitCountByHeightTable:
         .byte   $F0,$CC,$B4,$90,$78,$60
     .elseif .defined(TRIPLEWIDE)
         .byte   $fa,$dc,$c8,$aa,$96,$82
+    .elseif .defined(BIGMODE30)
+        ; >>> print(','.join(f'${(12*15)-rows*15:02x}' for rows in [0,1,3,5,7,9]))
+        .byte   $b4,$a5,$87,$69,$4b,$2d
     .else
         .byte   $C8,$AA,$96,$78,$64,$50
     .endif
 .endif
 rngTable:
+.ifdef BIGMODE30
+        .byte   $EA,$9B,$EA,$93,$E0,$E0,$EA
+        .byte   $EA
+.else
         .byte   $EF,$7B,$EF,$7C,$7D,$7D,$EF
         .byte   $EF
+.endif

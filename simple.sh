@@ -5,8 +5,8 @@
 # e.g. OUTPUT=Tetris creates Tetris.nes Tetris.dbg Tetris.lbl Tetris.map
 
 # AnyDAS rom with tournament friendly features:
-BUILDFLAGS="-D ANYDAS"
-OUTPUT=TetrisAnyTrn
+BUILDFLAGS="-D ANYDAS -D BIGMODE30"
+OUTPUT=TetrisBigMode30
 
 # Vanilla:
 # BUILDFLAGS=

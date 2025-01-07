@@ -46,12 +46,22 @@ isPositionValid:
         bpl     @invalid
 .else
         lda     tetriminoY
+.ifdef BIGMODE30
+        asl
+        asl
+        asl
+        asl
+        sec
+        sbc     tetriminoY
+        clc
+.else
         asl     a
         sta     generalCounter
         asl     a
         asl     a
         clc
         adc     generalCounter
+.endif
         adc     tetriminoX
         sta     generalCounter
         lda     currentPiece
@@ -73,17 +83,28 @@ isPositionValid:
         adc     #$02
 .ifdef TALLER
         cmp     #$1A
+.elseif .defined(BIGMODE30)
+        cmp     #$0E
 .else
         cmp     #$16
 .endif
         bcs     @invalid
         lda     orientationTable,x
+.ifdef BIGMODE30
+        asl
+        asl
+        asl
+        asl
+        sec
+        sbc     orientationTable,x
+.else
         asl     a
         sta     generalCounter4
         asl     a
         asl     a
         clc
         adc     generalCounter4
+.endif
         clc
         adc     generalCounter
         sta     selectingLevelOrHeight
@@ -94,12 +115,20 @@ isPositionValid:
         adc     selectingLevelOrHeight
         tay
         lda     (playfieldAddr),y
+.ifdef BIGMODE30
+        cmp     #$EA
+.else
         cmp     #$EF
+.endif
         bcc     @invalid
         lda     orientationTable,x
         clc
         adc     tetriminoX
+.ifdef BIGMODE30
+        cmp     #$0F
+.else
         cmp     #$0A
+.endif
         bcs     @invalid
 .endif
         inx

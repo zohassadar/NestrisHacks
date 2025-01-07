@@ -60,12 +60,22 @@ playState_lockTetrimino:
         inx
 .else
         lda     tetriminoY
+.ifdef BIGMODE30
+        asl
+        asl
+        asl
+        asl
+        sec
+        sbc     tetriminoY
+        clc
+.else
         asl     a
         sta     generalCounter
         asl     a
         asl     a
         clc
         adc     generalCounter
+.endif
         adc     tetriminoX
         sta     generalCounter
         lda     currentPiece
@@ -82,12 +92,21 @@ playState_lockTetrimino:
 ; Copies a single square of the tetrimino to the playfield
 @lockSquare:
         lda     orientationTable,x
+.ifdef BIGMODE30
+        asl
+        asl
+        asl
+        asl
+        sec
+        sbc     orientationTable,x
+.else
         asl     a
         sta     generalCounter4
         asl     a
         asl     a
         clc
         adc     generalCounter4
+.endif
         clc
         adc     generalCounter
         sta     selectingLevelOrHeight
@@ -231,18 +250,36 @@ playstate_checkForCompletedRowsUnused:
         clc
         adc     lineIndex
         sta     generalCounter2
+.ifdef BIGMODE30
+        asl
+        asl
+        asl
+        asl
+        sec
+        sbc     generalCounter2
+        nop
+.else
         asl     a
         sta     generalCounter
         asl     a
         asl     a
         clc
         adc     generalCounter
+.endif
         sta     generalCounter
         tay
+.ifdef BIGMODE30
+        ldx     #$0F
+.else
         ldx     #$0A
+.endif
 @checkIfRowComplete:
         lda     (playfieldAddr),y
+.ifdef BIGMODE30
+        cmp     #$EA
+.else
         cmp     #$EF
+.endif
 .ifdef AEPPOZ
         beq     @keepGoingAnyway
 @keepGoingAnyway:
@@ -262,7 +299,11 @@ playstate_checkForCompletedRowsUnused:
         dey
 @movePlayfieldDownOneRow:
         lda     (playfieldAddr),y
+.ifdef BIGMODE30
+        ldx     #$0F
+.else
         ldx     #$0A
+.endif
         stx     playfieldAddr
         sta     (playfieldAddr),y
         lda     #$00
@@ -270,12 +311,20 @@ playstate_checkForCompletedRowsUnused:
         dey
         cpy     #$FF
         bne     @movePlayfieldDownOneRow
+.ifdef BIGMODE30
+        lda     #$EA
+.else
         lda     #$EF
+.endif
         ldy     #$00
 @clearRowTopRow:
         sta     (playfieldAddr),y
         iny
+.ifdef BIGMODE30
+        cpy     #$0F
+.else
         cpy     #$0A
+.endif
         bne     @clearRowTopRow
         lda     #$13
         sta     currentPiece

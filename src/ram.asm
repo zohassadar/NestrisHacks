@@ -7,7 +7,14 @@ tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
 
 ; for triplewide
 effectiveTetriminoX: .res $1        ; $0006
-.res $6
+
+
+; for bigmode30
+spriteX: .res $1
+spriteY: .res $1
+tileOffset: .res $1
+successFlag: .res $1
+.res $2
 vramDumpNeeded: .res $1                ; $000D
 
 
@@ -193,7 +200,7 @@ currentPpuCtrl:	.res 1	; $00FF
 
 .bss
 stack:
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
 row1Address:
 row1Data := row1Address + 2
 row2Address := row1Data + 30
@@ -204,6 +211,8 @@ row4Address := row3Data + 30
 row4Data := row4Address + 2
 row5Address := row4Data + 30
 row5Data := row5Address + 2
+row6Address := row5Data + 30
+row6Data := row6Address + 2
 .endif
 .res $100	; $0100
 oamStaging:	.res $100	; $0200

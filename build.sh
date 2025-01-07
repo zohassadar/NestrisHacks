@@ -197,6 +197,12 @@ get_flag_opts (){
                     buildflags+=("-D TALLER")
                     name_modifiers+=("Tall")
                     ;;
+                "bigmode30")
+                    echo "BIGMODE30 ENABLED"
+                    omit_ud1
+                    buildflags+=("-D BIGMODE30 -D ANYDAS")
+                    name_modifiers+=("BigMode30")
+                    ;;
                 "triple")
                     echo "TRIPLE ENABLED"
                     omit_ud1

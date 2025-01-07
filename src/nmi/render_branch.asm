@@ -3,7 +3,7 @@ render: lda     renderMode
         .addr   render_mode_legal_and_title_screens
         .addr   render_mode_menu_screens
         .addr   render_mode_congratulations_screen
-.ifdef TRIPLEWIDE
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
         .addr   render_mode_play_and_demo_or_dump
 .else
         .addr   render_mode_play_and_demo
