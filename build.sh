@@ -180,6 +180,11 @@ get_flag_opts (){
                     buildflags+=("-D RANDO")
                     name_modifiers+=("Ro")
                     ;;
+                "rotnext")
+                    echo "Rotate Next Box Piece"
+                    buildflags+=("-D ROTNEXT")
+                    name_modifiers+=("RotNext")
+                    ;;
                 "scrolltris")
                     echo "Scrolltris enabled"
                     buildflags+=("-D SCROLLTRIS")
