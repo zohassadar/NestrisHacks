@@ -71,7 +71,7 @@ incrementScroll:
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
 .endif
 
-.if .defined(RANDO) | .defined(UPSIDEDOWN)
+.if .defined(RANDO) | .defined(UPSIDEDOWN) | .defined(ROTNEXT)
         ; padding for easy adjustment in case of future development
         nop
         nop
