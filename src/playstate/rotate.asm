@@ -3,7 +3,11 @@ rotate_tetrimino:
         lda     currentPiece
         sta     originalY
         clc
+.ifdef ROTNEXT
+        lda     nextPiece
+.else
         lda     currentPiece
+.endif
         asl     a
         tax
         lda     newlyPressedButtons
@@ -12,8 +16,14 @@ rotate_tetrimino:
         bne     @aNotPressed
         inx
         lda     rotationTable,x
+.ifdef ROTNEXT
+        sta     nextPiece
+        lda     #$00
+        nop
+.else
         sta     currentPiece
         jsr     isPositionValid
+.endif
         bne     @restoreOrientationID
         lda     #$05
         sta     soundEffectSlot1Init
@@ -25,8 +35,14 @@ rotate_tetrimino:
         cmp     #$40
         bne     @ret
         lda     rotationTable,x
+.ifdef ROTNEXT
+        sta     nextPiece
+        lda     #$00
+        nop
+.else
         sta     currentPiece
         jsr     isPositionValid
+.endif
         bne     @restoreOrientationID
         lda     #$05
         sta     soundEffectSlot1Init

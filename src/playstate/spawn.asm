@@ -42,7 +42,7 @@ playState_spawnNextTetrimino:
     .endif
 .endif
         sta     tetriminoX
-.ifdef RANDO
+.if .defined(RANDO) .or .defined(ROTNEXT)
         nop
         nop
         nop

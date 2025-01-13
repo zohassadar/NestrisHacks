@@ -50,7 +50,7 @@
 .include "playstate/shift.asm"
 .include "sprites/current.asm"
 .include "data/otable.asm"
-.if .defined(RANDO) | .defined(UPSIDEDOWN)
+.if .defined(RANDO) | .defined(UPSIDEDOWN) | .defined(ROTNEXT)
 .include "hacks/otable_nextbox.asm"
 .else
 .include "sprites/next.asm"
