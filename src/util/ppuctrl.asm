@@ -1,9 +1,5 @@
 ; canon is waitForVerticalBlankingInterval
-.ifdef PLAYFIELD_TOGGLE
-actualWait:
-.else
 updateAudioWaitForNmiAndResetOamStaging:
-.endif
 .ifdef SCROLLTRIS
         jsr     shiftSpritesThenUpdateAudio
 .else
@@ -73,3 +69,4 @@ copyCurrentScrollAndCtrlToPPU:
         lda     currentPpuCtrl
         sta     PPUCTRL
         rts
+    
