@@ -193,11 +193,7 @@ gameModeState_initGameState:
     .endif
 .endif
         sta     player1_tetriminoX
-.ifdef PLAYFIELD_TOGGLE
-        sta     playfieldAddr+1
-.else
         sta     player2_tetriminoX
-.endif
         lda     #$00
         sta     player1_tetriminoY
         sta     player2_tetriminoY
@@ -217,13 +213,13 @@ gameModeState_initGameState:
         sta     player1_score
         sta     player1_score+1
         sta     player1_score+2
-        sta     player2_score
-        sta     player2_score+1
-        sta     player2_score+2
+        lda     #$04
+        sta     renderAddr+1
+        lda     #$FF
+        sta     lineClearTile
+        lda     #$00
         sta     player1_lines
         sta     player1_lines+1
-        sta     player2_lines
-        sta     player2_lines+1
         sta     twoPlayerPieceDelayCounter
         sta     lineClearStatsByType
         sta     lineClearStatsByType+1

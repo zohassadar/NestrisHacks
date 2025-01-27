@@ -1,5 +1,5 @@
 ; canon is waitForVerticalBlankingInterval
-updateAudioWaitForNmiAndResetOamStaging:
+actualWait:
 .ifdef SCROLLTRIS
         jsr     shiftSpritesThenUpdateAudio
 .else
@@ -69,4 +69,3 @@ copyCurrentScrollAndCtrlToPPU:
         lda     currentPpuCtrl
         sta     PPUCTRL
         rts
-    

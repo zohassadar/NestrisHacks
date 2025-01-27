@@ -7,7 +7,9 @@ tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
 
 ; for triplewide
 effectiveTetriminoX: .res $1        ; $0006
-.res $6
+.res $3
+renderAddr: .res 2
+lineClearTile: .res 1
 vramDumpNeeded: .res $1                ; $000D
 
 

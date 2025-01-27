@@ -2,11 +2,7 @@ render_mode_play_and_demo:
         lda     player1_playState
         cmp     #$04
         bne     @playStateNotDisplayLineClearingAnimation
-.ifdef PLAYFIELD_TOGGLE
-        lda     playfieldAddr+1
-.else
         lda     #$04
-.endif
         sta     playfieldAddr+1
         lda     player1_rowY
         sta     rowY
@@ -32,11 +28,7 @@ render_mode_play_and_demo:
 @playStateNotDisplayLineClearingAnimation:
         lda     player1_vramRow
         sta     vramRow
-.ifdef PLAYFIELD_TOGGLE
-        lda     playfieldAddr+1
-.else
         lda     #$04
-.endif
         sta     playfieldAddr+1
 .ifdef TRIPLEWIDE
         .repeat 12
@@ -63,11 +55,7 @@ render_mode_play_and_demo:
         lda     player2_playState
         cmp     #$04
         bne     @player2PlayStateNotDisplayLineClearingAnimation
-.ifdef PLAYFIELD_TOGGLE
-        lda     playfieldAddr+1
-.else
         lda     #$05
-.endif
         sta     playfieldAddr+1
         lda     player2_rowY
         sta     rowY
@@ -93,11 +81,7 @@ render_mode_play_and_demo:
 @player2PlayStateNotDisplayLineClearingAnimation:
         lda     player2_vramRow
         sta     vramRow
-.ifdef PLAYFIELD_TOGGLE
-        lda     playfieldAddr+1
-.else
         lda     #$05
-.endif
         sta     playfieldAddr+1
         jsr     copyPlayfieldRowToVRAM
         jsr     copyPlayfieldRowToVRAM
@@ -458,7 +442,7 @@ copyPlayfieldRowToVRAM:
         ldx     #$0A
 .endif
 @copyByte:
-        lda     (playfieldAddr),y
+        lda     (renderAddr),y
         sta     PPUDATA
 .ifdef UPSIDEDOWN
         dey
