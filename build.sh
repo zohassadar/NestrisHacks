@@ -153,6 +153,12 @@ get_flag_opts (){
                 ;;
             H)
                 case "${OPTARG}" in
+                "toggle")
+                    echo "toggle playfield enabled"
+                    omit_ud1
+                    buildflags+=("-D PLAYFIELD_TOGGLE")
+                    name_modifiers+=("Toggle")
+                    ;;
                 "anydas")
                     echo "Anydas enabled"
                     omit_ud1

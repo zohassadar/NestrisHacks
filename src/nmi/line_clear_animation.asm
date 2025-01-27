@@ -1,4 +1,9 @@
+.ifdef PLAYFIELD_TOGGLE
+updateLineClearingAnimationActual:
+.else
 updateLineClearingAnimation:
+.endif
+
         lda     frameCounter
 .ifndef TRIPLEWIDE
         and     #$03

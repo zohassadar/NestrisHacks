@@ -1,6 +1,19 @@
 unreferenced_data4:
+.ifdef PLAYFIELD_TOGGLE
+updateLineClearingAnimation:
+        jsr     updateLineClearingAnimationActual
+        lda     rowY
+        cmp     #$05
+        bne     @ret
+        lda     playfieldAddr+1
+        eor     #$01
+        sta     playfieldAddr+1
+@ret:
+        rts
+.else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
+.endif
         .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
@@ -200,10 +213,10 @@ warp7ButtonHeldDown:
         lda     heldButtons
 .ifdef UPSIDEDOWN
         and     #BUTTON_LEFT
-.else           
-        and     #BUTTON_RIGHT                      
+.else
+        and     #BUTTON_RIGHT
 .endif
-        beq     rightNotPressed                      
+        beq     rightNotPressed
 rightLoop:
         lda     tetriminoX
         sta     tmp3
@@ -211,49 +224,49 @@ rightLoop:
 .ifdef WALLHACK2
         jsr     testRightShiftAndValidate
 .else
-        jsr     isPositionValid                 
+        jsr     isPositionValid
 .endif
-        bne     restoreTetriminoX                           
-        lda     #$03                      
+        bne     restoreTetriminoX
+        lda     #$03
         sta     soundEffectSlot1Init
         dec     generalCounter5
         bne     rightLoop
         jmp     resetAutorepeatX
 rightNotPressed:
-        lda     heldButtons                     
+        lda     heldButtons
 .ifdef UPSIDEDOWN
-        and     #BUTTON_RIGHT                      
-.else           
+        and     #BUTTON_RIGHT
+.else
         and     #BUTTON_LEFT
-.endif                 
-        beq     leftNotPressed                           
+.endif
+        beq     leftNotPressed
 leftLoop:
         lda     tetriminoX
         sta     tmp3
-        dec     tetriminoX                      
+        dec     tetriminoX
 .ifdef WALLHACK2
         jsr     testLeftShiftAndValidate
 .else
-        jsr     isPositionValid                 
-.endif               
-        bne     restoreTetriminoX                      
-        lda     #$03                            
-        sta     soundEffectSlot1Init            
+        jsr     isPositionValid
+.endif
+        bne     restoreTetriminoX
+        lda     #$03
+        sta     soundEffectSlot1Init
         dec     generalCounter5
         bne     leftLoop
         jmp     resetAutorepeatX
 restoreTetriminoX:
         lda     tmp3
         sta     tetriminoX
-resetAutorepeatX:            
+resetAutorepeatX:
 .ifdef ANYDAS
         lda     #$01
 .else
         lda     #$10
-.endif                       
-        sta     autorepeatX                     
+.endif
+        sta     autorepeatX
 leftNotPressed:
-        rts                                     
+        rts
         nop
         nop
         nop

@@ -157,7 +157,11 @@ gameModeState_initGameState:
         ldy     #$05
 .else
         ldx     #$04
+.ifdef PLAYFIELD_TOGGLE
+        ldy     #$05
+.else
         ldy     #$04
+.endif
 .endif
         jsr     memset_page
 .ifdef TRIPLEWIDE
@@ -189,7 +193,11 @@ gameModeState_initGameState:
     .endif
 .endif
         sta     player1_tetriminoX
+.ifdef PLAYFIELD_TOGGLE
+        sta     playfieldAddr+1
+.else
         sta     player2_tetriminoX
+.endif
         lda     #$00
         sta     player1_tetriminoY
         sta     player2_tetriminoY
@@ -291,7 +299,11 @@ gameModeState_initGameState:
 makePlayer1Active:
         lda     #$01
         sta     activePlayer
+.ifdef PLAYFIELD_TOGGLE
+        lda     playfieldAddr+1
+.else
         lda     #$04
+.endif
         sta     playfieldAddr+1
         lda     newlyPressedButtons_player1
         sta     newlyPressedButtons
@@ -321,7 +333,11 @@ makePlayer2Active:
 makePlayer2Active:
         lda     #$02
         sta     activePlayer
+.ifdef PLAYFIELD_TOGGLE
+        lda     playfieldAddr+1
+.else
         lda     #$05
+.endif
         sta     playfieldAddr+1
         lda     newlyPressedButtons_player2
         sta     newlyPressedButtons

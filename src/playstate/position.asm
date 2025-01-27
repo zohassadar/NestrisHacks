@@ -42,7 +42,12 @@ isPositionValid:
         clc
         adc     effectiveTetriminoXTable,y
         tay
+.ifdef PLAYFIELD_TOGGLE
+        lda     (playfieldAddr),y
+        nop
+.else
         lda     playfield,y
+.endif
         bpl     @invalid
 .else
         lda     tetriminoY
