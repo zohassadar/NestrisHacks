@@ -261,7 +261,12 @@ gameModeState_initGameState:
 .ifdef SOMETIMES_WRONG_NEXTBOX
         jsr     pickNextAndPossiblyDisplayWrongNext
 .else
-        jsr     chooseNextTetrimino
+    .ifdef PLAYFIELD_TOGGLE
+            lda     player1_currentPiece
+            nop
+    .else
+            jsr     chooseNextTetrimino
+    .endif
 .endif
 
 .endif

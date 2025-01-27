@@ -1,23 +1,44 @@
 unreferenced_data4:
 .ifdef PLAYFIELD_TOGGLE
 updateLineClearingAnimation:
-        jsr     updateLineClearingAnimationActual
-        lda     rowY
-        cmp     #$05
-        bne     @ret
-        lda     playfieldAddr+1
-        eor     #$01
-        sta     playfieldAddr+1
+        jsr updateLineClearingAnimationActual
+        lda rowY
+        cmp #$05
+        bne @ret
+        lda playfieldAddr+1
+        eor #$01
+        sta playfieldAddr+1
 @ret:
         rts
+
+updateAudioWaitForNmiAndResetOamStaging:
+        lda playState
+        cmp #$05
+        bne @finished
+        lda playfieldAddr+1
+        eor #$01
+        sta playfieldAddr+1
+@finished:
+        jmp actualWait
+
+chooseNextTetriminoMaybe:
+        lda playfieldAddr+1
+        lsr
+        bcs @repeat
+        jmp chooseNextTetrimino
+@repeat:
+        lda nextPiece
+        rts
+
 .else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
-.endif
         .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        .byte   $FF,$FF
+.endif
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$20,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00

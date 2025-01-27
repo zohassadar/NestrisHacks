@@ -77,11 +77,15 @@ playState_spawnNextTetrimino:
 .ifdef RANDO
         jsr     chooseNextAndRandomizeOrientation
 .else
-.ifdef SOMETIMES_WRONG_NEXTBOX
-        jsr     pickNextAndPossiblyDisplayWrongNext
-.else
-        jsr     chooseNextTetrimino
-.endif
+    .ifdef SOMETIMES_WRONG_NEXTBOX
+            jsr     pickNextAndPossiblyDisplayWrongNext
+    .else
+            .ifdef PLAYFIELD_TOGGLE
+                jsr     chooseNextTetriminoMaybe
+            .else
+                jsr     chooseNextTetrimino
+            .endif
+    .endif
 .endif
         sta     nextPiece
 @resetDownHold:
