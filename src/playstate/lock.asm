@@ -15,7 +15,7 @@ playState_lockTetrimino:
         sta     playState
         lda     #$F0
         sta     curtainRow
-        jsr     resetPlayfieldThenUpdateAudio2
+        jsr     updateAudio2
         rts
 
 @notGameOver:

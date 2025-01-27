@@ -1,4 +1,9 @@
+.ifdef PLAYFIELD_TOGGLE
+updateLineClearingAnimationActual:
+.else
 updateLineClearingAnimation:
+.endif
+
         lda     frameCounter
 .ifndef TRIPLEWIDE
         and     #$03
@@ -63,7 +68,7 @@ updateLineClearingAnimation:
         clc
         adc     generalCounter
         sta     PPUADDR
-        lda     lineClearTile
+        lda     #$FF
         sta     PPUDATA
         lda     generalCounter2
         sta     PPUADDR
@@ -72,7 +77,7 @@ updateLineClearingAnimation:
         clc
         adc     generalCounter
         sta     PPUADDR
-        lda     lineClearTile
+        lda     #$FF
         sta     PPUDATA
 @nextRow:
         inc     generalCounter3

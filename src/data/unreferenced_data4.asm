@@ -1,29 +1,22 @@
 unreferenced_data4:
 .ifdef PLAYFIELD_TOGGLE
-updateAudioWaitForNmiAndResetOamStaging:
-        lda     playState
+updateLineClearingAnimation:
+        jsr     updateLineClearingAnimationActual
+        lda     rowY
         cmp     #$05
-        bne     @finished
-        lda     renderAddr+1
+        bne     @ret
+        lda     playfieldAddr+1
         eor     #$01
-        sta     renderAddr+1
-        lda     lineClearTile
-        eor     #$84
-        sta     lineClearTile
-@finished:
-        jmp     actualWait
-
-
-resetPlayfieldThenUpdateAudio2:
-        lda  #$04
-        sta   renderAddr+1
-        lda   #$00
-        sta   vramRow
-        jmp   updateAudio2
+        sta     playfieldAddr+1
+@ret:
+        rts
 .else
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
         .byte   $00,$00,$00,$00,$00,$00,$00,$00
 .endif
+        .byte   $00,$00,$00,$00,$00,$FF,$FF,$FF
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
         .byte   $FF,$FF,$FF,$FF,$FF,$00,$00,$00
         .byte   $00,$00,$20,$00,$00,$00,$00,$00
