@@ -2,7 +2,7 @@
 
 this branch only works when built with these flags:
 
-`bash build.sh -H tourney -H triple -H anydas`
+`bash build.sh -H triple -H anydas`
 
 | big chance | rough odds |
 |-------|-------|
