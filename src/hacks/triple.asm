@@ -1,19 +1,19 @@
 initTripleWide:
-    lda     #$2C     ; glitch uses lower left nametable, no need to fix
+    lda     #$20
     jsr     LAA82
     jsr bulkCopyToPpu
     .addr triplewide_nt
     rts
 
 triplewide_nt:
-    .byte $2C,$80,$D9,$33 ; left border
-    .byte $2C,$9F,$D9,$34 ; right border
-    .byte $2F,$A0,$01,$35 ; lower left corner
-    .byte $2F,$BF,$01,$37 ; lower right corner
-    .byte $2F,$A1,$5E,$36 ; bottom border
-    .byte $2C,$44,$04,$1D,$22,$19,$0E ; "TYPE"
-    .byte $2F,$C0,$48,$FF ; info attributes
-    .byte $2F,$C8,$78,$AA ; playfield attributes
+    .byte $20,$80,$D9,$33 ; left border
+    .byte $20,$9F,$D9,$34 ; right border
+    .byte $23,$A0,$01,$35 ; lower left corner
+    .byte $23,$BF,$01,$37 ; lower right corner
+    .byte $23,$A1,$5E,$36 ; bottom border
+    .byte $20,$44,$04,$1D,$22,$19,$0E ; "TYPE"
+    .byte $23,$C0,$48,$FF ; info attributes
+    .byte $23,$C8,$78,$AA ; playfield attributes
     .byte $FF
 
 tripleWideVramRowsHi:
