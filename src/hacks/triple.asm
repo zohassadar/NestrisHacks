@@ -71,6 +71,8 @@ initBigMode30:
     jsr     LAA82
     jsr bulkCopyToPpu
     .addr bigmode30_nt
+    lda #$00
+    sta vramDumpNeeded
     rts
 
 bigmode30_nt:
