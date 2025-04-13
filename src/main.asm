@@ -204,11 +204,15 @@ unreferenced_data1:
         .incbin "data/unreferenced_data1.bin"
 .endif
 ; End of "unreferenced_data1" segment
-.code
 
-
-.segment        "PRG_chunk2": absolute
+.ifndef ANYDAS
 .include "data/demo_data.asm"
+.else
+demoButtonsTable:
+demoTetriminoTypeTable:
+.endif
+.code
+.segment        "PRG_chunkaudio": absolute
 .include "sound.asm"
 ; End of "PRG_chunk2" segment
 .code

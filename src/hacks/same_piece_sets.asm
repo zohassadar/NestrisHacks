@@ -141,7 +141,11 @@ drawSeedOnBackground:
         beq @dontDrawSeed
         lda #$20
         sta PPUADDR
+.ifdef BIGMODE30
+        lda #$43
+.else
         lda #$83
+.endif
         sta PPUADDR
         lda set_seed_input
         jsr twoDigsToPPU
