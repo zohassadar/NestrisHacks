@@ -73,6 +73,25 @@ anydasControllerInput:
         lda gameMode
         cmp #$01
         beq @getInputs
+
+; set tetris sound.  dump routine causes this to get skipped sometimes in og render routine
+        lda renderMode
+        cmp #$03 ; render_mode_play_and_demo
+        bne @ret
+
+        lda completedLines
+        cmp #$4
+        bne @ret
+
+        ldx frameCounter
+        dex ; use last frame's value
+        txa
+        and #$07
+        bne @ret
+
+        lda #$09
+        sta soundEffectSlot1Init
+@ret:
         rts
 @getInputs:
 
