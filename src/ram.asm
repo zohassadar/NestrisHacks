@@ -9,7 +9,7 @@ tmpBulkCopyToPpuReturnAddr: .res $1 ; $0005
 effectiveTetriminoX: .res $1        ; $0006
 
 
-; for bigmode30
+; for bigmodewide
 spriteX: .res $1
 spriteY: .res $1
 tileOffset: .res $1

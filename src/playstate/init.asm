@@ -26,7 +26,7 @@ gameModeState_initGameBackground:
         nop
         nop
 .elseif .defined(BIGMODEWIDE)
-        jsr     initBigMode30
+        jsr     initBigModeWide
         nop
         nop
 .else

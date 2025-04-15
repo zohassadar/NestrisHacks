@@ -89,7 +89,7 @@ multBy15Table:
     ;>>> print(','.join(f'${i&0xff:02x}' for i in range(0,15*20,15)))
     .byte $00,$0f,$1e,$2d,$3c,$4b,$5a,$69,$78,$87,$96,$a5,$b4,$c3,$d2,$e1,$f0,$ff,$0e,$1d
 
-stageSpriteForCurrentPieceBigMode30:
+stageSpriteForCurrentPieceBigModeWide:
         lda     #$00
         sta     spriteX
         sta     spriteY

@@ -178,7 +178,7 @@ unreferenced_data1:
         .include "hacks/12wide.asm"
 .endif
 .ifdef BIGMODEWIDE
-        .include "hacks/bigmode30.asm"
+        .include "hacks/bigmodewide.asm"
 .endif
 .ifdef TRIPLEWIDE
         .include "hacks/triple2.asm"

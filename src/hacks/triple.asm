@@ -66,17 +66,17 @@ tripleWideVramRowsLo:
 
 
 
-initBigMode30:
+initBigModeWide:
     lda     #$2C     ; glitch uses lower left nametable, no need to fix
     jsr     LAA82
     jsr bulkCopyToPpu
-    .addr bigmode30_nt
+    .addr bigmodewide_nt
     lda #$00
     sta vramDumpNeeded
     sta levelUpHappened
     rts
 
-bigmode30_nt:
+bigmodewide_nt:
     .byte $2C,$81,$5E,$31 ; top border
     .byte $2C,$80,$01,$30 ; top left corner
     .byte $2C,$9F,$01,$32 ; top right corner
@@ -110,7 +110,7 @@ render_mode_play_and_demo_or_dump:
         jmp     render_mode_play_and_demo
 
 stageSpriteForCurrentPiece:
-        jsr stageSpriteForCurrentPieceBigMode30
+        jsr stageSpriteForCurrentPieceBigModeWide
 
 stageVramRows:
         lda     vramRow
