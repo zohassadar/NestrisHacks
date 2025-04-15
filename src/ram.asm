@@ -14,7 +14,8 @@ spriteX: .res $1
 spriteY: .res $1
 tileOffset: .res $1
 successFlag: .res $1
-.res $2
+levelUpHappened: .res $1
+.res $1
 vramDumpNeeded: .res $1                ; $000D
 
 

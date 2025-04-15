@@ -73,6 +73,7 @@ initBigMode30:
     .addr bigmode30_nt
     lda #$00
     sta vramDumpNeeded
+    sta levelUpHappened
     rts
 
 bigmode30_nt:

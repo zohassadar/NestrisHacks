@@ -86,7 +86,8 @@ L9BD0:  lda     lines+1
         bpl     L9BFB
         inc     levelNumber
         lda     #$06
-        sta     soundEffectSlot1Init
+        sta     levelUpHappened
+        nop
         lda     outOfDateRenderFlags
         ora     #$02
         sta     outOfDateRenderFlags

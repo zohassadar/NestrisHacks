@@ -1,5 +1,5 @@
 
-playState_receiveGarbage:
+playState_receiveGarbageOld:
         lda     numberOfPlayers
         cmp     #$01
         beq     @ret

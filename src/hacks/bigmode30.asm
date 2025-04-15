@@ -183,3 +183,15 @@ vramPlayfieldRows:
         .word   $2281,$22a1,$22c1,$22e1
         .word   $2301,$2321,$2341,$2361
         .word   $2381
+
+
+playState_receiveGarbage:
+    lda levelUpHappened
+    beq @ret
+    lda #$06
+    sta soundEffectSlot1Init
+    lda #$00
+    sta levelUpHappened
+@ret:
+    inc playState
+    rts
