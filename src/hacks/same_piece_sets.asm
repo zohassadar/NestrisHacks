@@ -141,7 +141,7 @@ drawSeedOnBackground:
         beq @dontDrawSeed
         lda #$20
         sta PPUADDR
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         lda #$43
 .else
         lda #$83

@@ -37,7 +37,7 @@ playState_spawnNextTetrimino:
         lda     #$06
     .elseif .defined(TRIPLEWIDE)
         lda     #$0F
-    .elseif .defined(BIGMODE30)
+    .elseif .defined(BIGMODEWIDE)
         lda     #$07
     .else
         lda     #$05

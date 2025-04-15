@@ -134,7 +134,7 @@ level_menu_nametable:
 game_nametable:
 .ifdef TALLER
         .incbin "nametables/taller_game_nametable.bin"
-.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
         .include "hacks/triple.asm"
 .else
     .ifdef TWELVE
@@ -177,7 +177,7 @@ unreferenced_data1:
 .ifdef TWELVE
         .include "hacks/12wide.asm"
 .endif
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         .include "hacks/bigmode30.asm"
 .endif
 .ifdef TRIPLEWIDE

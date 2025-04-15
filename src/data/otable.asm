@@ -1,6 +1,6 @@
 
 orientationTable:
-.ifndef BIGMODE30
+.ifndef BIGMODEWIDE
         .byte   $00,$7B,$FF,$00,$7B,$00,$00,$7B
         .byte   $01,$FF,$7B,$00,$FF,$7B,$00,$00
         .byte   $7B,$00,$00,$7B,$01,$01,$7B,$00

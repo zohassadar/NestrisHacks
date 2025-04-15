@@ -30,7 +30,7 @@ render_mode_play_and_demo:
         sta     vramRow
         lda     #$04
         sta     playfieldAddr+1
-.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
         .repeat 12
         nop
         .endrepeat
@@ -105,7 +105,7 @@ render_mode_play_and_demo:
         sta     PPUADDR
 .ifdef TWELVE
         lda     #$72
-.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
         lda     #$54
 .else
         lda     #$73
@@ -149,7 +149,7 @@ render_mode_play_and_demo:
         cmp     #$02
         beq     @renderScore
 .ifdef ANYDAS
-.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
         lda     #$20
         sta     PPUADDR
         lda     #$49
@@ -172,7 +172,7 @@ render_mode_play_and_demo:
         ldx     player1_levelNumber
         lda     levelDisplayTable,x
         sta     generalCounter
-.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
         lda     #$20
         sta     PPUADDR
         lda     #$4A
@@ -196,7 +196,7 @@ render_mode_play_and_demo:
         lda     outOfDateRenderFlags
         and     #$04
         beq     @renderStats
-.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
         lda     #$20
         sta     PPUADDR
         lda     #$58
@@ -316,7 +316,7 @@ pieceToPpuStatAddr:
 .ifdef TWELVE
         .dbyt   $2184,$21C4,$2204,$2244
         .dbyt   $2284,$22C4,$2304
-.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
 
         .dbyt   $0000,$0000,$0000,$0000
         .dbyt   $0000,$0000,$0000
@@ -343,7 +343,7 @@ multBy10Table:
         .byte   $A0,$AA,$B4,$BE
 ; addresses
 .ifdef TALLER
-.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.elseif .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
 .else
 vramPlayfieldRows:
 .endif

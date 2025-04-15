@@ -1,4 +1,4 @@
-.ifndef BIGMODE30
+.ifndef BIGMODEWIDE
 updateLineClearingAnimation:
 .else
 updateLineClearingAnimationUnused:
@@ -98,7 +98,7 @@ updateLineClearingAnimationUnused:
 
 .ifndef TWELVE
 .ifndef TRIPLEWIDE
-.ifndef BIGMODE30
+.ifndef BIGMODEWIDE
 leftColumns:
 .endif
 .endif
@@ -106,7 +106,7 @@ leftColumns:
         .byte   $04,$03,$02,$01,$00
 .ifndef TWELVE
 .ifndef TRIPLEWIDE
-.ifndef BIGMODE30
+.ifndef BIGMODEWIDE
 rightColumns:
 .endif
 .endif

@@ -46,7 +46,7 @@ isPositionValid:
         bpl     @invalid
 .else
         lda     tetriminoY
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         asl
         asl
         asl
@@ -83,14 +83,14 @@ isPositionValid:
         adc     #$02
 .ifdef TALLER
         cmp     #$1A
-.elseif .defined(BIGMODE30)
+.elseif .defined(BIGMODEWIDE)
         cmp     #$0E
 .else
         cmp     #$16
 .endif
         bcs     @invalid
         lda     orientationTable,x
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         asl
         asl
         asl
@@ -115,7 +115,7 @@ isPositionValid:
         adc     selectingLevelOrHeight
         tay
         lda     (playfieldAddr),y
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         cmp     #$EA
 .else
         cmp     #$EF
@@ -124,7 +124,7 @@ isPositionValid:
         lda     orientationTable,x
         clc
         adc     tetriminoX
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         cmp     #$0F
 .else
         cmp     #$0A

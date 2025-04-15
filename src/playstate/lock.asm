@@ -60,7 +60,7 @@ playState_lockTetrimino:
         inx
 .else
         lda     tetriminoY
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         asl
         asl
         asl
@@ -92,7 +92,7 @@ playState_lockTetrimino:
 ; Copies a single square of the tetrimino to the playfield
 @lockSquare:
         lda     orientationTable,x
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         asl
         asl
         asl
@@ -250,7 +250,7 @@ playstate_checkForCompletedRowsUnused:
         clc
         adc     lineIndex
         sta     generalCounter2
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         asl
         asl
         asl
@@ -268,14 +268,14 @@ playstate_checkForCompletedRowsUnused:
 .endif
         sta     generalCounter
         tay
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         ldx     #$0F
 .else
         ldx     #$0A
 .endif
 @checkIfRowComplete:
         lda     (playfieldAddr),y
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         cmp     #$EA
 .else
         cmp     #$EF
@@ -299,7 +299,7 @@ playstate_checkForCompletedRowsUnused:
         dey
 @movePlayfieldDownOneRow:
         lda     (playfieldAddr),y
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         ldx     #$0F
 .else
         ldx     #$0A
@@ -311,7 +311,7 @@ playstate_checkForCompletedRowsUnused:
         dey
         cpy     #$FF
         bne     @movePlayfieldDownOneRow
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         lda     #$EA
 .else
         lda     #$EF
@@ -320,7 +320,7 @@ playstate_checkForCompletedRowsUnused:
 @clearRowTopRow:
         sta     (playfieldAddr),y
         iny
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         cpy     #$0F
 .else
         cpy     #$0A

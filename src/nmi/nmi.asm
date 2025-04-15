@@ -30,7 +30,7 @@ returnFromAnydasRender:
         lda     #$00
         adc     frameCounter+1
         sta     frameCounter+1
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         lda     #$00
         sta     ppuScrollX
         sta     PPUSCROLL
@@ -58,7 +58,7 @@ returnFromAnydasRender:
         jsr     incrementScroll
 .else
 
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
         ldx     #$17
         ldy     #$02
         jsr generateNextPseudorandomNumber

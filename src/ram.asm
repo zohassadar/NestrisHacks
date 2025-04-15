@@ -201,7 +201,7 @@ currentPpuCtrl:	.res 1	; $00FF
 
 .bss
 stack:
-.if .defined(TRIPLEWIDE) .or .defined(BIGMODE30)
+.if .defined(TRIPLEWIDE) .or .defined(BIGMODEWIDE)
 row1Address:
 row1Data := row1Address + 2
 row2Address := row1Data + 30

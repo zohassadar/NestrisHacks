@@ -39,7 +39,7 @@ triplewide_nt:
 
 .endif
 
-.ifdef BIGMODE30
+.ifdef BIGMODEWIDE
 
 
 tripleWideVramRowsHi:

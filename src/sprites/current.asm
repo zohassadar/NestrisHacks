@@ -1,4 +1,4 @@
-.ifndef BIGMODE30
+.ifndef BIGMODEWIDE
 stageSpriteForCurrentPiece:
 .endif
         lda     tetriminoX
